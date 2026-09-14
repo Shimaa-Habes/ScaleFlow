@@ -1,0 +1,5 @@
+AI-ML/Health-Model/data/declarations.csv filter=lfs diff=lfs merge=lfs -text
+AI-ML/Bottleneck-Model/data/itemlet_dataset.csv filter=lfs diff=lfs merge=lfs -text
+AI-ML/Bottleneck-Model/outputs/bottleneck_scores_full.csv filter=lfs diff=lfs merge=lfs -text
+AI-ML/Health-Model/data/tasks.csv filter=lfs diff=lfs merge=lfs -text
+AI-ML/Health-Model/data/tasks_computed.csv filter=lfs diff=lfs merge=lfs -text
