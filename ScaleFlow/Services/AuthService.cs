@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using ScaleFlow.Constants;
 using ScaleFlow.DTOs;
 using ScaleFlow.Models;
+using ScaleFlow.Options;
 
 namespace ScaleFlow.Services;
 
@@ -13,19 +15,22 @@ public class AuthService : IAuthService
     private readonly SignInManager<User> _signInManager;
     private readonly ScaleFlowDbContext _dbContext;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly JwtSettings _jwtSettings;
 
     public AuthService(
         UserManager<User> userManager,
         RoleManager<Role> roleManager,
         SignInManager<User> signInManager,
         ScaleFlowDbContext dbContext,
-        IJwtTokenService jwtTokenService)
+        IJwtTokenService jwtTokenService,
+        IOptions<JwtSettings>? jwtSettings = null)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _signInManager = signInManager;
         _dbContext = dbContext;
         _jwtTokenService = jwtTokenService;
+        _jwtSettings = jwtSettings?.Value ?? new JwtSettings();
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -85,7 +90,11 @@ public class AuthService : IAuthService
 
         var defaultRole = RoleConstants.Client;
         await EnsureRoleExistsAsync(defaultRole);
-        await _userManager.AddToRoleAsync(user, defaultRole);
+        var roleResult = await _userManager.AddToRoleAsync(user, defaultRole);
+        if (!roleResult.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join("; ", roleResult.Errors.Select(e => e.Description)));
+        }
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtTokenService.GenerateToken(user, roles);
@@ -96,7 +105,7 @@ public class AuthService : IAuthService
             Email = user.Email ?? string.Empty,
             FullName = user.FullName,
             AccessToken = token,
-            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60),
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
             Roles = roles.ToList()
         };
     }
@@ -141,7 +150,7 @@ public class AuthService : IAuthService
             Email = user.Email ?? string.Empty,
             FullName = user.FullName,
             AccessToken = token,
-            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60),
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
             Roles = roles.ToList()
         };
     }
