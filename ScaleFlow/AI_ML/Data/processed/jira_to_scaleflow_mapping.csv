@@ -1,0 +1,14 @@
+JIRA source,JIRA field,ScaleFlow field,Role
+issues.csv,key,task_key,Identifier
+issues.csv,project.key,project_key,Feature
+issues.csv,priority.name,priority,Feature
+issues.csv,issuetype.name,issue_type,Feature
+issues.csv,issuetype.subtask,is_subtask,Feature
+issues.csv,created,created_date,Feature / split
+issues.csv,resolutiondate,completed_date,Target source
+issuelinks.csv,all link rows,issue_link_count,Analytical feature
+issuelinks.csv,blocking links,dependency_count,Analytical feature
+changelog.csv,status,status_change_count,Historical feature
+changelog.csv,assignee,assignee_change_count,Historical feature
+changelog.csv,priority,priority_change_count,Leakage check
+comments.csv,comment text,future_text_features,Future work
