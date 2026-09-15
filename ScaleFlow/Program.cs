@@ -101,18 +101,27 @@ public class Program
 
         using (var scope = app.Services.CreateScope())
         {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ScaleFlowDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
             foreach (var roleName in RoleConstants.All)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    await roleManager.CreateAsync(new Role
+                    var result = await roleManager.CreateAsync(new Role
                     {
                         Name = roleName,
                         Code = roleName,
                         Scope = RoleScope.Global,
                         IsSystem = true
                     });
+
+                    if (!result.Succeeded)
+                    {
+                        throw new InvalidOperationException(
+                            $"Unable to seed role '{roleName}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
+                    }
                 }
             }
         }

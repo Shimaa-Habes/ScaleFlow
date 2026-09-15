@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using ScaleFlow.Constants;
 using ScaleFlow.DTOs;
 using ScaleFlow.Services;
@@ -49,7 +50,20 @@ public class AuthController : ControllerBase
     [HttpGet("me")]
     public IActionResult Me()
     {
-        return Ok(new { user = User.Identity?.Name });
+        return Ok(new
+        {
+            userId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            email = User.FindFirstValue(ClaimTypes.Email),
+            user = User.Identity?.Name,
+            roles = User.FindAll(ClaimTypes.Role).Select(claim => claim.Value).ToArray()
+        });
+    }
+
+    [Authorize]
+    [HttpGet("test")]
+    public IActionResult Test()
+    {
+        return Me();
     }
 
     [Authorize(Roles = RoleConstants.ProjectManager)]
