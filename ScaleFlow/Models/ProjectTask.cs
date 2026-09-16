@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 
 namespace ScaleFlow.Models;
-public class ProjectTask
+public class ProjectTask : SoftDeletableEntity
 {
-    public int Id { get; set; }
     public int ProjectId { get; set; }
     public int? MilestoneId { get; set; }
     public int? BoardColumnId { get; set; }
@@ -24,8 +23,6 @@ public class ProjectTask
     public int? RiskLevel { get; set; }
     public int CreatedBy { get; set; }
     public int UpdatedBy { get; set; }
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset? UpdatedAt { get; set; }
     public Project Project { get; set; } = null!;
     public Milestone? Milestone { get; set; }
     public BoardColumn? BoardColumn { get; set; }

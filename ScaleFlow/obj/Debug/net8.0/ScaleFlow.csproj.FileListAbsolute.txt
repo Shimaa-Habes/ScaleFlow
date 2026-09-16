@@ -17,7 +17,6 @@ D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\ScaleFlow.pdb
 D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\Azure.Core.dll
 D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\Azure.Identity.dll
 D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\FluentValidation.dll
-D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
 D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
 D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\Humanizer.dll
 D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
@@ -305,3 +304,6 @@ c:\Users\PC\ScaleFlow\ScaleFlow\obj\Debug\net8.0\ScaleFlow.pdb
 c:\Users\PC\ScaleFlow\ScaleFlow\obj\Debug\net8.0\ScaleFlow.genruntimeconfig.cache
 c:\Users\PC\ScaleFlow\ScaleFlow\obj\Debug\net8.0\ref\ScaleFlow.dll
 C:\Users\PC\ScaleFlow\ScaleFlow\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Visual Studio\ScaleFlow\ScaleFlow\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Visual Studio\ScaleFlow\ScaleFlow\obj\Debug\net8.0\ScaleFlow.sourcelink.json
+D:\Visual Studio\ScaleFlow\ScaleFlow\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
