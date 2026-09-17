@@ -4,3 +4,4 @@ ScaleFlow/AI_ML/Data/processed/final_dataset.csv filter=lfs diff=lfs merge=lfs -
 ScaleFlow/AI_ML/Data/processed/train.csv filter=lfs diff=lfs merge=lfs -text
 ScaleFlow/AI_ML/Data/processed/validation.csv filter=lfs diff=lfs merge=lfs -text
 ScaleFlow/AI_ML/Data/processed/test.csv filter=lfs diff=lfs merge=lfs -text
+ScaleFlow/AI_ML/Data/processed/bottleneck_dataset.csv filter=lfs diff=lfs merge=lfs -text
