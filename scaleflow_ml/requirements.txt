@@ -1,0 +1,25 @@
+# ScaleFlow AI/ML Module - Environment Requirements
+# Scoped to the models recommended in the AI/ML Model Approach document:
+# Random Forest Classifier/Regressor and Isolation Forest (all scikit-learn).
+
+# Core data handling
+pandas==2.2.2
+numpy==1.26.4
+
+# Machine learning (Random Forest + Isolation Forest live here)
+scikit-learn==1.5.1
+
+# Model persistence
+joblib==1.4.2
+
+# Evaluation & visualization
+matplotlib==3.9.1
+seaborn==0.13.2
+
+# Utilities
+python-dateutil==2.9.0.post0
+pyyaml==6.0.2
+
+# Notebook environment
+jupyter==1.0.0
+nbformat==5.10.4
