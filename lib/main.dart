@@ -36,7 +36,7 @@ class ScaleFlowApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/login': (context) => const LoginScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/home': (context) => const HomePage(),
       },
     );
   }

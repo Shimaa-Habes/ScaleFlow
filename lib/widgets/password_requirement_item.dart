@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
 
-/// عنصر واحد من شروط كلمة السر (مثلاً: 8+ أحرف)
-/// يتغيّر لونه وأيقونته للأخضر لمّا الشرط يتحقق أثناء الكتابة
+/// Displays one password requirement and its current validation state.
 class PasswordRequirementItem extends StatelessWidget {
   final String text;
   final bool isSatisfied;
@@ -18,6 +18,7 @@ class PasswordRequirementItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final color =
         isSatisfied ? AppColors.hintTextActive : AppColors.hintTextInactive;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -28,7 +29,10 @@ class PasswordRequirementItem extends StatelessWidget {
             color: color,
           ),
           const SizedBox(width: 8),
-          Text(text, style: AppTextStyles.hintItem.copyWith(color: color)),
+          Text(
+            text,
+            style: AppTextStyles.hintItem.copyWith(color: color),
+          ),
         ],
       ),
     );
