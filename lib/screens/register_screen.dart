@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
 import '../data/mock_data.dart';
 import '../widgets/custom_text_field.dart';
-import '../widgets/password_requirement_item.dart';
-import '../widgets/scaleflow_logo.dart';
+import 'verification_code_screen.dart';
+// import '../widgets/password_requirement_item.dart';
 
-/// شاشة إنشاء حساب جديد (Register Screen)
-/// نفس التنسيق والألوان المعتمدة بالتصميم:
-/// عنوان + حقول (الاسم، الإيميل، كلمة السر، تأكيد كلمة السر)
-/// + صندوق شروط كلمة السر + زر إنشاء الحساب + رابط تسجيل الدخول
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -23,15 +20,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // خطأ مستقل لكل حقل — منقدر نعرض "This field is required" تحت أي
-  // حقل فاضي لحاله، بدل ما نعتمد بس على حالة الإيميل/تأكيد كلمة السر
+  // Stores the validation error for each field.
   String? _nameError;
   String? _emailError;
   String? _passwordError;
   String? _confirmPasswordError;
 
+  // Tracks password requirements while the user types.
   bool _has8Chars = false;
+  bool _hasLetter = false;
   bool _hasUppercase = false;
+  bool _hasSpecialSymbol = false;
   bool _hasNumber = false;
 
   @override
@@ -46,18 +45,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _onPasswordChanged(String value) {
     setState(() {
       _has8Chars = value.length >= 8;
+      _hasLetter = value.contains(RegExp(r'[A-Za-z]'));
       _hasUppercase = value.contains(RegExp(r'[A-Z]'));
+      _hasSpecialSymbol = value.contains(RegExp(r'[^A-Za-z0-9]'));
       _hasNumber = value.contains(RegExp(r'[0-9]'));
+
       if (_passwordError != null && value.isNotEmpty) {
         _passwordError = null;
       }
-      // إذا تعدلت كلمة السر الأساسية، لازم نعيد فحص تطابقها مع الحقل
-      // التاني (Confirm Password) بدل ما تبقى نتيجة الفحص القديمة معلّقة
+
+      // Revalidate the confirmation password whenever the main password changes.
       if (_confirmPasswordController.text.isNotEmpty) {
-        _confirmPasswordError =
-            _confirmPasswordController.text != value
-                ? 'Passwords do not match'
-                : null;
+        _confirmPasswordError = _confirmPasswordController.text != value
+            ? 'Passwords do not match'
+            : null;
       }
     });
   }
@@ -90,11 +91,67 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  bool get _isPasswordFullyValid => _has8Chars && _hasUppercase && _hasNumber;
+  bool get _isPasswordFullyValid =>
+      _has8Chars &&
+      _hasLetter &&
+      _hasUppercase &&
+      _hasSpecialSymbol &&
+      _hasNumber;
 
-  /// بيتفحص كل الحقول الأربعة وقت الضغط على "Create Account"، وبيحط
-  /// "This field is required" تحت أي حقل لسا فاضي — هاي بالضبط المشكلة
-  /// اللي طلبت حلها.
+  String get _passwordStrengthEmoji {
+    if (_passwordController.text.isEmpty) {
+      return '';
+    }
+
+    if (!_has8Chars) {
+      return '😖';
+    }
+    if (!_hasUppercase) {
+      return '😐';
+    }
+    if (!_hasNumber || !_hasSpecialSymbol) {
+      return '😉';
+    }
+    return '😎';
+  }
+
+  String get _passwordStrengthText {
+    if (_passwordController.text.isEmpty) {
+      return '';
+    }
+
+    if (!_has8Chars) {
+      return 'Weak. Must contain at least 8 characters';
+    }
+    if (!_hasUppercase) {
+      return 'Almost. Must contain an uppercase letter';
+    }
+    if (!_hasNumber || !_hasSpecialSymbol) {
+      return 'Almost. Must contain a number and special symbol';
+    }
+    return 'Awesome! You have a secure password.';
+  }
+
+  Color get _passwordStrengthColor {
+    if (_passwordController.text.isEmpty) {
+      return Colors.transparent;
+    }
+
+    if (!_has8Chars) {
+      return Colors.red;
+    }
+
+    if (!_hasLetter) {
+      return Colors.amber;
+    }
+
+    if (!_hasSpecialSymbol) {
+      return Colors.orange;
+    }
+
+    return Colors.green;
+  }
+
   void _handleCreateAccount() {
     setState(() {
       _nameError =
@@ -131,29 +188,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _confirmPasswordError == null;
 
     if (allValid) {
-      // منحفظ الحساب فعلياً هون — هاي اللي كانت ناقصة قبل، وسببت إنو
-      // تسجيل الدخول بعدين ما كان يلاقي بيانات المستخدم اللي سجّل حالياً
+      // Save the registered user using the current mock authentication flow.
       CurrentUser.register(
         fullName: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created successfully ✅')),
+      // Continue to verification after successful registration.
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => VerificationCodeScreen(
+            email: _emailController.text.trim(),
+          ),
+        ),
       );
-
-      // بعد نجاح إنشاء الحساب (mock حالياً) منروح على شاشة الـ Home
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) Navigator.of(context).pushReplacementNamed('/home');
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Directionality صريحة LTR هون كطبقة حماية إضافية، فوق الفرض العام
-    // بـ main.dart، حتى تتأكد إنو الحقول بتشتغل صح مهما كانت لغة الجهاز.
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
@@ -161,29 +215,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              // تصميم متجاوب: نحدد عرض أقصى للمحتوى حتى يبقى مرتب
-              // على الشاشات الكبيرة (تابلت / ويب) ويمتد على شاشات الموبايل
+              // Limit the content width on larger screens.
               final maxContentWidth =
                   constraints.maxWidth < 500 ? constraints.maxWidth : 420.0;
 
               return Center(
                 child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  padding: const EdgeInsets.fromLTRB(
+                    24,
+                    8,
+                    24,
+                    24,
+                  ),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxContentWidth),
+                    constraints: BoxConstraints(
+                      maxWidth: maxContentWidth,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Center(child: ScaleFlowLogo()),
+                        // Display the official ScaleFlow logo.
+                        Center(
+                          child: Image.asset(
+                            'assets/images/Logo.png',
+                            width: 200,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+
                         const SizedBox(height: 24),
-                        Text('Create your account',
-                            style: AppTextStyles.heading,
-                            textAlign: TextAlign.center),
+
+                        Text(
+                          'Create your account',
+                          style: AppTextStyles.heading,
+                          textAlign: TextAlign.center,
+                        ),
+
                         const SizedBox(height: 6),
-                        Text('Start managing your projects smarter.',
-                            style: AppTextStyles.subtitle,
-                            textAlign: TextAlign.center),
+
+                        Text(
+                          'Start managing your projects smarter.',
+                          style: AppTextStyles.subtitle,
+                          textAlign: TextAlign.center,
+                        ),
+
                         const SizedBox(height: 28),
 
                         CustomTextField(
@@ -197,6 +272,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                           },
                         ),
+
                         const SizedBox(height: 16),
 
                         CustomTextField(
@@ -210,6 +286,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _isValidEmail(_emailController.text),
                           onChanged: _validateEmail,
                         ),
+
                         const SizedBox(height: 16),
 
                         CustomTextField(
@@ -220,6 +297,87 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           errorText: _passwordError,
                           onChanged: _onPasswordChanged,
                         ),
+
+                        // Show password strength only after the user starts typing.
+                        if (_passwordController.text.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+
+                          Row(
+                            children: [
+                              Text(
+                                _passwordStrengthEmoji,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _passwordStrengthText,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: _passwordStrengthColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          // Thin password strength indicator.
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              height: 3,
+                              child: LinearProgressIndicator(
+                                value: _passwordStrengthValue,
+                                backgroundColor: Colors.grey.shade200,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  _passwordStrengthColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+
+                        // const SizedBox(height: 14),
+
+                        // Password requirements are shown below the password field.
+                        // Container(
+                        //   width: double.infinity,
+                        //   padding: const EdgeInsets.all(14),
+                        //   decoration: BoxDecoration(
+                        //     color: AppColors.hintBoxBackground,
+                        //     borderRadius: BorderRadius.circular(10),
+                        //   ),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Text(
+                        //         'Password must contain:',
+                        //         style: AppTextStyles.hintBoxTitle,
+                        //       ),
+                        //       const SizedBox(height: 6),
+                        //       PasswordRequirementItem(
+                        //         text: '8+ characters',
+                        //         isSatisfied: _has8Chars,
+                        //       ),
+                        //       PasswordRequirementItem(
+                        //         text: 'At least one letter',
+                        //         isSatisfied: _hasLetter,
+                        //       ),
+                        //       PasswordRequirementItem(
+                        //         text: 'One special symbol',
+                        //         isSatisfied: _hasSpecialSymbol,
+                        //       ),
+                        //       PasswordRequirementItem(
+                        //         text: 'One number',
+                        //         isSatisfied: _hasNumber,
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+
                         const SizedBox(height: 16),
 
                         CustomTextField(
@@ -234,37 +392,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   _passwordController.text,
                           onChanged: _validateConfirmPassword,
                         ),
-                        const SizedBox(height: 16),
 
-                        // صندوق شروط كلمة السر
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: AppColors.hintBoxBackground,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Password must contain:',
-                                  style: AppTextStyles.hintBoxTitle),
-                              const SizedBox(height: 6),
-                              PasswordRequirementItem(
-                                text: '8+ characters',
-                                isSatisfied: _has8Chars,
-                              ),
-                              PasswordRequirementItem(
-                                text: 'One uppercase letter',
-                                isSatisfied: _hasUppercase,
-                              ),
-                              PasswordRequirementItem(
-                                text: 'One number',
-                                isSatisfied: _hasNumber,
-                              ),
-                            ],
-                          ),
-                        ),
                         const SizedBox(height: 24),
 
                         SizedBox(
@@ -278,10 +406,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               elevation: 0,
                             ),
-                            child: Text('Create Account',
-                                style: AppTextStyles.buttonText),
+                            child: Text(
+                              'Create Account',
+                              style: AppTextStyles.buttonText,
+                            ),
                           ),
                         ),
+
                         const SizedBox(height: 20),
 
                         Center(
@@ -289,7 +420,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             text: TextSpan(
                               style: AppTextStyles.footerText,
                               children: [
-                                const TextSpan(text: 'Already have an account? '),
+                                const TextSpan(
+                                  text: 'Already have an account? ',
+                                ),
                                 WidgetSpan(
                                   alignment: PlaceholderAlignment.middle,
                                   child: GestureDetector(
@@ -297,8 +430,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       Navigator.of(context)
                                           .pushReplacementNamed('/login');
                                     },
-                                    child: Text('Log in',
-                                        style: AppTextStyles.footerLink),
+                                    child: Text(
+                                      'Log in',
+                                      style: AppTextStyles.footerLink,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -315,5 +450,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  double get _passwordStrengthValue {
+    if (_passwordController.text.isEmpty) {
+      return 0;
+    }
+
+    int score = 0;
+
+    if (_has8Chars) score++;
+    if (_hasLetter) score++;
+    if (_hasSpecialSymbol) score++;
+    if (_hasNumber) score++;
+
+    return score / 4;
   }
 }

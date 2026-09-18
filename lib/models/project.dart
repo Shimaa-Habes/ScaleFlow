@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
 import 'task_item.dart';
 
-/// حالة المشروع العامة — On Track = أخضر (نجاح)، At Risk = كورال (تنبيه)
-enum ProjectStatus { onTrack, atRisk }
+enum ProjectStatus {
+  onTrack,
+  atRisk,
+}
 
 extension ProjectStatusData on ProjectStatus {
   String get label {
@@ -25,16 +27,16 @@ extension ProjectStatusData on ProjectStatus {
   }
 }
 
-/// عضو بفريق المشروع — أفتكار بسيط عن الصورة (Initials بدل صورة حقيقية)
 class TeamMember {
   final String initials;
   final Color color;
 
-  const TeamMember({required this.initials, required this.color});
+  const TeamMember({
+    required this.initials,
+    required this.color,
+  });
 }
 
-/// المشروع الكامل بكل بياناته — نفس الحقول الظاهرة بشاشتي
-/// Home (My Projects) و Project Details
 class Project {
   final String id;
   final String name;
@@ -42,7 +44,7 @@ class Project {
   final ProjectStatus status;
   final int percentComplete;
   final String dueDate;
-  final int healthPercent; // Project Health %
+  final int healthPercent;
   final String healthNote;
   final int teamCount;
   final int tasksCompleted;
@@ -52,6 +54,10 @@ class Project {
   final String aiInsightBody;
   final List<TeamMember> team;
   final List<TaskItem> tasks;
+
+  // Additional project information
+  final String projectLink;
+  final List<String> memberNames;
 
   const Project({
     required this.id,
@@ -70,5 +76,7 @@ class Project {
     required this.aiInsightBody,
     required this.team,
     required this.tasks,
+    this.projectLink = '',
+    this.memberNames = const [],
   });
 }

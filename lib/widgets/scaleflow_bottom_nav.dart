@@ -1,25 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/app_colors.dart';
-import '../core/dash_text_styles.dart';
 
-class _NavItem {
-  final IconData icon;
-  final IconData activeIcon;
-  final String label;
-
-  const _NavItem(this.icon, this.activeIcon, this.label);
-}
-
-const List<_NavItem> _navItems = [
-  _NavItem(Icons.home_outlined, Icons.home, 'Home'),
-  _NavItem(Icons.folder_outlined, Icons.folder, 'Projects'),
-  _NavItem(Icons.grid_view_outlined, Icons.grid_view, 'Dashboard'),
-  _NavItem(Icons.auto_awesome_outlined, Icons.auto_awesome, 'AI'),
-  _NavItem(Icons.person_outline, Icons.person, 'Profile'),
-];
-
-/// شريط التنقل السفلي (Home / Projects / Dashboard / AI / Profile)،
-/// نفس المكون مكرر بكل شاشات الـ Dashboard حسب الـ design system
 class ScaleFlowBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int>? onTap;
@@ -32,44 +12,40 @@ class ScaleFlowBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceWhite,
-          border: const Border(
-            top: BorderSide(color: Color(0xFFE9ECEE)),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(_navItems.length, (index) {
-            final item = _navItems[index];
-            final isActive = index == currentIndex;
-            final color =
-                isActive ? AppColors.dataCyan : const Color(0xFF9AA5AF);
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Colors.white,
 
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => onTap?.call(index),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(isActive ? item.activeIcon : item.icon,
-                        size: 22, color: color),
-                    const SizedBox(height: 3),
-                    Text(item.label,
-                        style: DashTextStyles.navLabel(color: color)),
-                  ],
-                ),
-              ),
-            );
-          }),
+      // Same colors used in Home Page.
+      selectedItemColor: const Color(0xFF6C5CE7),
+      unselectedItemColor: const Color(0xFF858990),
+
+      currentIndex: currentIndex,
+
+      onTap: onTap,
+
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
         ),
-      ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.folder),
+          label: 'Projects',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard),
+          label: 'Dashboard',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.smart_toy),
+          label: 'AI',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
     );
   }
 }
