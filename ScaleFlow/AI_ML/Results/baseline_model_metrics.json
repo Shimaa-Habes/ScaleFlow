@@ -1,0 +1,42 @@
+{
+  "regression": {
+    "target": "resolution_time_days",
+    "validation": {
+      "MAE": 222.44004512761512,
+      "RMSE": 303.6449691612676,
+      "R2": -0.09241115548096546
+    },
+    "test": {
+      "MAE": 190.76733108884403,
+      "RMSE": 209.86526609595882,
+      "R2": -1.2720506161652172
+    }
+  },
+  "classification": {
+    "target": "long_resolution_risk",
+    "validation": {
+      "Accuracy": 0.7904538502381386,
+      "Precision": 0.2568527006380875,
+      "Recall": 0.1358946317341068,
+      "F1": 0.17774737234902668,
+      "ROC_AUC": 0.5835946664261966
+    },
+    "test": {
+      "Accuracy": 0.8314340507813738,
+      "Precision": 0.1560984060984061,
+      "Recall": 0.1351736553896932,
+      "F1": 0.14488442211055277,
+      "ROC_AUC": 0.5521268562571032
+    }
+  },
+  "bottleneck_isolation_forest": {
+    "target": null,
+    "rows_scored": 938948,
+    "potential_bottlenecks": 94578,
+    "potential_bottleneck_rate": 0.10072762282895326,
+    "output_columns": [
+      "anomaly_score",
+      "potential_bottleneck"
+    ]
+  }
+}
