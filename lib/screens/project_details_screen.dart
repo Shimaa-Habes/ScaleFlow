@@ -11,6 +11,11 @@ import '../widgets/scaleflow_bottom_nav.dart';
 import '../widgets/stat_chip.dart';
 import '../widgets/task_row.dart';
 import '../widgets/team_avatars.dart';
+import 'architecture_screen.dart';
+import 'ai_insights_screen.dart';
+import 'dashboard_screen.dart';
+import 'profile_screen.dart';
+import 'projects_screen.dart';
 
 class ProjectDetailsScreen extends StatefulWidget {
   final Project project;
@@ -26,6 +31,10 @@ class ProjectDetailsScreen extends StatefulWidget {
 
 class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   Project get project => widget.project;
+
+  // ============================================================
+  // ADD TASK
+  // ============================================================
 
   void _showAddTaskDialog() {
     showDialog(
@@ -202,16 +211,10 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                // ------------------------------------------------
-                // IMPORTANT:
-                // Actually add the project to the archive manager.
-                // ------------------------------------------------
                 ArchiveManager.archive(project);
 
-                // Close confirmation dialog.
                 Navigator.of(dialogContext).pop();
 
-                // Return to the previous screen.
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -369,6 +372,90 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     }
   }
 
+  // ============================================================
+  // PROJECT ARCHITECTURE CARD
+  // ============================================================
+
+  Widget _buildArchitectureCard() {
+    return Material(
+      color: AppColors.surfaceWhite,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const ArchitecturePage(),
+            ),
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.aiPurple.withOpacity(0.25),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppColors.tint(
+                    AppColors.aiPurple,
+                    0.10,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.account_tree_outlined,
+                  color: AppColors.aiPurple,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Project Architecture',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.darkCharcoal,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'View the system structure and connections.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.textSecondary,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -407,31 +494,50 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         _TopBar(
                           onMenuSelected: _handleProjectMenu,
                         ),
+
                         const SizedBox(height: 14),
+
                         _ProjectHeaderCard(
                           project: project,
                         ),
+
                         const SizedBox(height: 22),
+
                         Text(
                           'Project Overview',
                           style: DashTextStyles.sectionTitle(),
                         ),
+
                         const SizedBox(height: 10),
+
                         _ProjectOverviewRow(
                           project: project,
                         ),
+
                         const SizedBox(height: 22),
+
                         _ProjectHealthCard(
                           project: project,
                         ),
+
+                        const SizedBox(height: 14),
+
+                        // ==================================================
+                        // PROJECT ARCHITECTURE
+                        // ==================================================
+
+                        _buildArchitectureCard(),
+
                         const SizedBox(height: 22),
+
                         AiInsightCard(
                           body: project.aiInsightBody,
                         ),
+
                         const SizedBox(height: 22),
 
                         // ==================================================
-                        // UPCOMING TASKS HEADER
+                        // UPCOMING TASKS
                         // ==================================================
 
                         Row(
@@ -472,6 +578,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             ),
                           ],
                         ),
+
                         const SizedBox(height: 6),
 
                         // ==================================================
@@ -495,11 +602,14 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           ),
 
                         const SizedBox(height: 22),
+
                         Text(
                           'Project Team',
                           style: DashTextStyles.sectionTitle(),
                         ),
+
                         const SizedBox(height: 10),
+
                         TeamAvatars(
                           members: project.team,
                           totalCount: project.teamCount,
@@ -533,7 +643,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // BACK BUTTON — LEFT
+        // BACK BUTTON
         IconButton(
           tooltip: 'Back',
           onPressed: () {
@@ -546,7 +656,7 @@ class _TopBar extends StatelessWidget {
           ),
         ),
 
-        // TITLE — CENTER
+        // TITLE
         Expanded(
           child: Text(
             'Project Details',
@@ -557,7 +667,7 @@ class _TopBar extends StatelessWidget {
           ),
         ),
 
-        // MORE MENU — RIGHT
+        // MORE MENU
         PopupMenuButton<String>(
           tooltip: 'More options',
           onSelected: onMenuSelected,

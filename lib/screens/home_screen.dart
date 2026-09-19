@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../data/mock_data.dart';
 import '../data/archive_manager.dart';
-
 import '../models/project.dart';
 import '../models/task_item.dart';
-
 import '../widgets/ai_insight_card.dart';
-
+import '../widgets/scaleflow_bottom_nav.dart';
 import 'ai_insights_screen.dart';
 import 'profile_screen.dart';
 import 'project_details_screen.dart';
 import 'projects_screen.dart';
+import 'dashboard_screen.dart';
 
 // ============================================================
 // APP ENTRY POINT
@@ -232,13 +231,31 @@ class _HomePageState extends State<HomePage>
 
   final LayerLink _notificationLayerLink = LayerLink();
 
-  // ============================================================
+  // Avatar color is selected once and stays fixed
+  Color _avatarColor = const Color(0xFFD985AE);
+
+  final List<Color> _avatarColors = [
+    const Color(0xFFD985AE),
+    const Color(0xFF6C5CE7),
+    const Color(0xFF5B9BD5),
+    const Color(0xFF72B968),
+    const Color(0xFFE88973),
+    const Color(0xFF63BFC7),
+    const Color(0xFFD8B84C),
+  ];
+
+  // ==========================================================
   // INIT
-  // ============================================================
+  // ==========================================================
 
   @override
   void initState() {
     super.initState();
+
+    // Choose avatar color only once.
+    // It will not change when setState() is called.
+    _avatarColor = _avatarColors[
+        DateTime.now().millisecondsSinceEpoch % _avatarColors.length];
 
     _aiBorderController = AnimationController(
       vsync: this,
@@ -246,9 +263,9 @@ class _HomePageState extends State<HomePage>
     )..repeat();
   }
 
-  // ============================================================
+  // ==========================================================
   // DISPOSE
-  // ============================================================
+  // ==========================================================
 
   @override
   void dispose() {
@@ -257,9 +274,9 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
-  // ============================================================
+  // ==========================================================
   // BUILD
-  // ============================================================
+  // ==========================================================
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +308,42 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+
+      // ========================================================
+      // SHARED SCALEFLOW BOTTOM NAVIGATION
+      // Home = index 0
+      // ========================================================
+
+      bottomNavigationBar: ScaleFlowBottomNav(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ProjectsScreen(),
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const DashboardPage(),
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AiInsightsPage(),
+              ),
+            );
+          } else if (index == 4) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ProfileScreen(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -331,7 +383,10 @@ class _HomePageState extends State<HomePage>
           ),
         ),
 
-        // Notification button
+        // ======================================================
+        // NOTIFICATION BUTTON
+        // ======================================================
+
         CompositedTransformTarget(
           link: _notificationLayerLink,
           child: SizedBox(
@@ -351,22 +406,51 @@ class _HomePageState extends State<HomePage>
 
         const SizedBox(width: 8),
 
-        // Profile avatar
+        // ======================================================
+        // PROFILE AVATAR
+        // ======================================================
+
         Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: _openProfile,
             borderRadius: BorderRadius.circular(22),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: const Color(0xFFD985AE),
-              child: Text(
-                firstLetter,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+            child: Container(
+              width: 40,
+              height: 40,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color.fromARGB(255, 81, 74, 74),
+                  width: 0.5,
                 ),
+              ),
+              child: CircleAvatar(
+                radius: 18,
+
+                // If there is no image, show the fixed avatar color.
+                // If there is an image, no background color is shown.
+                backgroundColor: CurrentUser.profileImage == null
+                    ? _avatarColor
+                    : Colors.transparent,
+
+                // Show the actual uploaded image.
+                backgroundImage: CurrentUser.profileImage != null
+                    ? MemoryImage(CurrentUser.profileImage!)
+                    : null,
+
+                // Show the first letter only when there is no image.
+                child: CurrentUser.profileImage == null
+                    ? Text(
+                        firstLetter,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
               ),
             ),
           ),
@@ -483,7 +567,9 @@ class _HomePageState extends State<HomePage>
                   bottom: 2,
                 ),
                 itemCount: fakeNotifications.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 7),
+                separatorBuilder: (_, __) {
+                  return const SizedBox(height: 7);
+                },
                 itemBuilder: (context, index) {
                   final NotificationItem notification =
                       fakeNotifications[index];
@@ -587,6 +673,30 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  void _openAiInsights() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AiInsightsPage(),
+      ),
+    );
+  }
+
+  void _openProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ProfileScreen(),
+      ),
+    ).then((_) {
+      // Rebuild Home after returning from Profile.
+      // This makes the newly uploaded/deleted image appear immediately.
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
   // ============================================================
   // ARCHIVE
   // ============================================================
@@ -640,7 +750,9 @@ class _HomePageState extends State<HomePage>
                     : ListView.separated(
                         shrinkWrap: true,
                         itemCount: archivedProjects.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        separatorBuilder: (_, __) {
+                          return const SizedBox(height: 8);
+                        },
                         itemBuilder: (context, index) {
                           final Project project = archivedProjects[index];
 
@@ -683,9 +795,7 @@ class _HomePageState extends State<HomePage>
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    ArchiveManager.restore(
-                                      project,
-                                    );
+                                    ArchiveManager.restore(project);
 
                                     dialogSetState(() {});
 
@@ -725,24 +835,6 @@ class _HomePageState extends State<HomePage>
           },
         );
       },
-    );
-  }
-
-  void _openAiInsights() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const AiInsightsScreen(),
-      ),
-    );
-  }
-
-  void _openProfile() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const ProfileScreen(),
-      ),
     );
   }
 
@@ -1110,9 +1202,7 @@ class _HomePageState extends State<HomePage>
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: projectColor.withOpacity(
-                                  0.12,
-                                ),
+                                color: projectColor.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -1257,51 +1347,6 @@ class _HomePageState extends State<HomePage>
               ),
             );
           },
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // BOTTOM NAVIGATION
-  // ============================================================
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      selectedItemColor: const Color(0xFF6C5CE7),
-      unselectedItemColor: const Color(0xFF858990),
-      currentIndex: 0,
-      onTap: (int index) {
-        if (index == 1) {
-          _openProjects();
-        } else if (index == 3) {
-          _openAiInsights();
-        } else if (index == 4) {
-          _openProfile();
-        }
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.folder),
-          label: 'Projects',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard),
-          label: 'Dashboard',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.smart_toy),
-          label: 'AI',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
         ),
       ],
     );
