@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ScaleFlow.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8cf563644b179855cfe8dd2595658058edb5a93")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e258851fdc182eaa21afb78754262d34c10d71ce")]
 [assembly: System.Reflection.AssemblyProductAttribute("ScaleFlow.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ScaleFlow.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
