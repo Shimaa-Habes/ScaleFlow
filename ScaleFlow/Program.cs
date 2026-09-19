@@ -27,7 +27,12 @@ public class Program
         builder.Services.AddValidatorsFromAssemblyContaining<ProjectRequestValidator>();
         builder.Services.AddScoped<ApiValidationFilter>();
         builder.Services.AddScoped<IProjectService, ProjectManagementService>();
-        builder.Services.AddScoped<ITaskService, ProjectManagementService>();
+        builder.Services.AddScoped<ITaskService, TaskService>();
+        builder.Services.AddScoped<IProjectProgressService, ProjectProgressService>();
+        builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
+        builder.Services.AddScoped<ITeamService, TeamService>();
+        builder.Services.AddScoped<IMlService, UnavailableMlService>();
+        builder.Services.AddScoped<IProjectAiService, ProjectAiService>();
         builder.Services.AddControllers(options => options.Filters.Add<ApiValidationFilter>())
             .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context =>
                 new BadRequestObjectResult(ApiResponse<object>.Fail("Validation failed.",

@@ -3,16 +3,36 @@
   "WorkspaceRootPath": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\data\\scaleflowdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:data\\scaleflowdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\services\\projectmemberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:services\\projectmemberservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\services\\projectaiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:services\\projectaiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\data\\migrations\\20260916191012_initialcreate.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:data\\migrations\\20260916191012_initialcreate.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\data\\migrations\\scaleflowdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:data\\migrations\\scaleflowdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\services\\projectmanagementservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:services\\projectmanagementservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0A12E019-D1CD-97F7-543E-5EB34CCA9488}|ScaleFlow.csproj|d:\\visual studio\\scaleflow\\scaleflow\\models\\airecommendation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,24 +70,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 15,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ProjectManagementService.cs",
-              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectManagementService.cs",
-              "RelativeDocumentMoniker": "Services\\ProjectManagementService.cs",
-              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectManagementService.cs",
-              "RelativeToolTip": "Services\\ProjectManagementService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-16T19:22:39.935Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ProjectMemberService.cs",
+              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectMemberService.cs",
+              "RelativeDocumentMoniker": "Services\\ProjectMemberService.cs",
+              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectMemberService.cs",
+              "RelativeToolTip": "Services\\ProjectMemberService.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAUwAoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-18T17:02:45.364Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "Services\\AuthService.cs",
+              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\AuthService.cs",
+              "RelativeToolTip": "Services\\AuthService.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAswA0AAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-18T17:02:42.352Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
@@ -75,7 +108,59 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ProjectAiService.cs",
+              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectAiService.cs",
+              "RelativeDocumentMoniker": "Services\\ProjectAiService.cs",
+              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectAiService.cs",
+              "RelativeToolTip": "Services\\ProjectAiService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-18T16:59:01.175Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "20260916191012_InitialCreate.Designer.cs",
+              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Data\\Migrations\\20260916191012_InitialCreate.Designer.cs",
+              "RelativeDocumentMoniker": "Data\\Migrations\\20260916191012_InitialCreate.Designer.cs",
+              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Data\\Migrations\\20260916191012_InitialCreate.Designer.cs",
+              "RelativeToolTip": "Data\\Migrations\\20260916191012_InitialCreate.Designer.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAjwA0AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-18T16:58:55.439Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ScaleFlowDbContextModelSnapshot.cs",
+              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Data\\Migrations\\ScaleFlowDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "Data\\Migrations\\ScaleFlowDbContextModelSnapshot.cs",
+              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Data\\Migrations\\ScaleFlowDbContextModelSnapshot.cs",
+              "RelativeToolTip": "Data\\Migrations\\ScaleFlowDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAArwAwAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-18T16:58:51.975Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ProjectManagementService.cs",
+              "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectManagementService.cs",
+              "RelativeDocumentMoniker": "Services\\ProjectManagementService.cs",
+              "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\ProjectManagementService.cs",
+              "RelativeToolTip": "Services\\ProjectManagementService.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAqwBAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-16T19:22:39.935Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "AuditLog.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Models\\AuditLog.cs",
               "RelativeDocumentMoniker": "Models\\AuditLog.cs",
@@ -87,7 +172,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 8,
               "Title": "AiRecommendation.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Models\\AiRecommendation.cs",
               "RelativeDocumentMoniker": "Models\\AiRecommendation.cs",
@@ -95,12 +180,11 @@
               "RelativeToolTip": "Models\\AiRecommendation.cs",
               "ViewState": "AgIAAAEAAAAAAAAAAAAQwAgAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T20:26:30.6Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-13T20:26:30.6Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 10,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -112,20 +196,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAIsAAAAAAAAAAAAowBcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAI8AAAAAAAAAAAAowBgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T20:10:35.048Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-13T20:10:35.048Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 12,
               "Title": "ss.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Infrastructure\\ss.cs",
               "RelativeDocumentMoniker": "Infrastructure\\ss.cs",
@@ -137,7 +220,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 13,
               "Title": "Serv.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Services\\Serv.cs",
               "RelativeDocumentMoniker": "Services\\Serv.cs",
@@ -149,7 +232,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 14,
               "Title": "res.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\DTOs\\res.cs",
               "RelativeDocumentMoniker": "DTOs\\res.cs",
@@ -161,20 +244,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "ScaleFlowDbContext.cs",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Data\\ScaleFlowDbContext.cs",
               "RelativeDocumentMoniker": "Data\\ScaleFlowDbContext.cs",
               "ToolTip": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\Data\\ScaleFlowDbContext.cs*",
               "RelativeToolTip": "Data\\ScaleFlowDbContext.cs*",
-              "ViewState": "AgIAAJMAAAAAAAAAAADwv0UAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-13T19:58:51.704Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 11,
               "Title": "ScaleFlow.csproj",
               "DocumentMoniker": "D:\\Visual Studio\\ScaleFlow\\ScaleFlow\\ScaleFlow.csproj",
               "RelativeDocumentMoniker": "ScaleFlow.csproj",

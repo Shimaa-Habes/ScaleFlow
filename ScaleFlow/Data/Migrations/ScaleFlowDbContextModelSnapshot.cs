@@ -569,40 +569,6 @@ namespace ScaleFlow.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("ScaleFlow.Models.Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Resource")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Permissions");
-                });
-
             modelBuilder.Entity("ScaleFlow.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -1002,33 +968,6 @@ namespace ScaleFlow.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("ScaleFlow.Models.RolePermission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("RoleId", "PermissionId")
-                        .IsUnique();
-
-                    b.ToTable("RolePermissions");
-                });
-
             modelBuilder.Entity("ScaleFlow.Models.TaskAssignment", b =>
                 {
                     b.Property<int>("Id")
@@ -1175,33 +1114,6 @@ namespace ScaleFlow.Migrations
                     b.HasIndex("TaskId");
 
                     b.ToTable("TaskDependencies");
-                });
-
-            modelBuilder.Entity("ScaleFlow.Models.TaskProgressSnapshot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProgressPercent")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("RecordedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("TaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
-
-                    b.ToTable("TaskProgressSnapshots");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.TaskStatusHistory", b =>
@@ -1423,48 +1335,6 @@ namespace ScaleFlow.Migrations
                         .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("ScaleFlow.Models.UserRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("AssignedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int?>("AssignedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedBy");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.WorkloadSnapshot", b =>
@@ -1833,25 +1703,6 @@ namespace ScaleFlow.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("ScaleFlow.Models.RolePermission", b =>
-                {
-                    b.HasOne("ScaleFlow.Models.Permission", "Permission")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ScaleFlow.Models.Role", "Role")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("ScaleFlow.Models.TaskAssignment", b =>
                 {
                     b.HasOne("ScaleFlow.Models.User", "AssignedByUser")
@@ -1943,17 +1794,6 @@ namespace ScaleFlow.Migrations
                     b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("ScaleFlow.Models.TaskProgressSnapshot", b =>
-                {
-                    b.HasOne("ScaleFlow.Models.ProjectTask", "Task")
-                        .WithMany("ProgressSnapshots")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Task");
-                });
-
             modelBuilder.Entity("ScaleFlow.Models.TaskStatusHistory", b =>
                 {
                     b.HasOne("ScaleFlow.Models.User", "ChangedByUser")
@@ -2028,39 +1868,6 @@ namespace ScaleFlow.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("ScaleFlow.Models.UserRole", b =>
-                {
-                    b.HasOne("ScaleFlow.Models.User", "AssignedByUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ScaleFlow.Models.Project", "Project")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ScaleFlow.Models.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ScaleFlow.Models.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AssignedByUser");
-
-                    b.Navigation("Project");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ScaleFlow.Models.WorkloadSnapshot", b =>
                 {
                     b.HasOne("ScaleFlow.Models.Project", "Project")
@@ -2120,11 +1927,6 @@ namespace ScaleFlow.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("ScaleFlow.Models.Permission", b =>
-                {
-                    b.Navigation("RolePermissions");
-                });
-
             modelBuilder.Entity("ScaleFlow.Models.Project", b =>
                 {
                     b.Navigation("AiRuns");
@@ -2145,8 +1947,6 @@ namespace ScaleFlow.Migrations
 
                     b.Navigation("Teams");
 
-                    b.Navigation("UserRoles");
-
                     b.Navigation("WorkloadSnapshots");
                 });
 
@@ -2162,8 +1962,6 @@ namespace ScaleFlow.Migrations
 
                     b.Navigation("DependentOn");
 
-                    b.Navigation("ProgressSnapshots");
-
                     b.Navigation("StatusHistory");
 
                     b.Navigation("SubTasks");
@@ -2172,13 +1970,6 @@ namespace ScaleFlow.Migrations
             modelBuilder.Entity("ScaleFlow.Models.ReportTemplate", b =>
                 {
                     b.Navigation("GeneratedReports");
-                });
-
-            modelBuilder.Entity("ScaleFlow.Models.Role", b =>
-                {
-                    b.Navigation("RolePermissions");
-
-                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.TaskComment", b =>
@@ -2224,8 +2015,6 @@ namespace ScaleFlow.Migrations
                     b.Navigation("TeamMemberships");
 
                     b.Navigation("UpdatedTasks");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -27,8 +27,4 @@ public class Project : SoftDeletableEntity
     public ICollection<WorkloadSnapshot> WorkloadSnapshots { get; set; } = new HashSet<WorkloadSnapshot>();
     public ICollection<GeneratedReport> GeneratedReports { get; set; } = new HashSet<GeneratedReport>();
     public ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
-    public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
 }
-
-
-
