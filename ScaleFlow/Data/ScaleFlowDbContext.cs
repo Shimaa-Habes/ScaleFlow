@@ -44,6 +44,70 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
 
         builder.ApplyConfigurationsFromAssembly(typeof(ScaleFlowDbContext).Assembly);
 
+        builder.Entity<AiPrediction>()
+            .Property(x => x.RiskScore)
+            .HasPrecision(5, 4);
+
+        builder.Entity<AiPrediction>()
+            .Property(x => x.DelayProbability)
+            .HasPrecision(5, 4);
+
+        builder.Entity<AiPrediction>()
+            .Property(x => x.Confidence)
+            .HasPrecision(5, 4);
+
+        builder.Entity<Project>()
+            .Property(x => x.Budget)
+            .HasPrecision(19, 4);
+
+        builder.Entity<ProjectHealthSnapshot>()
+            .Property(x => x.HealthScore)
+            .HasPrecision(5, 2);
+
+        builder.Entity<ProjectHealthSnapshot>()
+            .Property(x => x.Velocity)
+            .HasPrecision(12, 2);
+
+        builder.Entity<ProjectHealthSnapshot>()
+            .Property(x => x.Throughput)
+            .HasPrecision(12, 2);
+
+        builder.Entity<ProjectHealthSnapshot>()
+            .Property(x => x.OpenRiskRatio)
+            .HasPrecision(5, 4);
+
+        builder.Entity<ProjectHealthSnapshot>()
+            .Property(x => x.TeamUtilizationAvg)
+            .HasPrecision(5, 4);
+
+        builder.Entity<ProjectMember>()
+            .Property(x => x.HourlyRate)
+            .HasPrecision(19, 4);
+
+        builder.Entity<ProjectTask>()
+            .Property(x => x.EstimatedHours)
+            .HasPrecision(10, 2);
+
+        builder.Entity<ProjectTask>()
+            .Property(x => x.ActualHours)
+            .HasPrecision(10, 2);
+
+        builder.Entity<WorkloadSnapshot>()
+            .Property(x => x.PlannedHours)
+            .HasPrecision(10, 2);
+
+        builder.Entity<WorkloadSnapshot>()
+            .Property(x => x.ActualHours)
+            .HasPrecision(10, 2);
+
+        builder.Entity<WorkloadSnapshot>()
+            .Property(x => x.UtilizationRatio)
+            .HasPrecision(5, 4);
+
+        builder.Entity<WorkloadSnapshot>()
+            .Property(x => x.OverloadScore)
+            .HasPrecision(8, 4);
+
         var providerName = Database.ProviderName ?? string.Empty;
         var isNpgsql = providerName.Contains("Npgsql");
         var softDeleteFilter = isNpgsql
@@ -73,6 +137,12 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
             .HasOne(x => x.CreatedByUser)
             .WithMany(x => x.CreatedTasks)
             .HasForeignKey(x => x.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Project>()
+            .HasOne(x => x.Owner)
+            .WithMany(x => x.OwnedProjects)
+            .HasForeignKey(x => x.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<ProjectTask>()
@@ -121,6 +191,36 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
             .HasOne(x => x.User)
             .WithMany(x => x.TaskAssignments)
             .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<ProjectMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.ProjectMemberships)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<WorkloadSnapshot>()
+            .HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TeamMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.TeamMemberships)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskAttachment>()
+            .HasOne(x => x.Uploader)
+            .WithMany(x => x.Attachments)
+            .HasForeignKey(x => x.UploaderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskComment>()
+            .HasOne(x => x.Author)
+            .WithMany(x => x.Comments)
+            .HasForeignKey(x => x.AuthorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<TaskAssignment>()
