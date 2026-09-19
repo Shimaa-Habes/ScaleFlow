@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/app_colors.dart';
 import '../core/dash_text_styles.dart';
+import '../data/archive_manager.dart';
 import '../models/project.dart';
 import '../models/task_item.dart';
 import '../widgets/ai_insight_card.dart';
@@ -125,9 +126,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                   return;
                 }
 
-                // Project fields are final in the current model.
-                // The edit dialog is therefore prepared for the UI flow,
-                // while actual persistent editing will be handled by backend later.
                 Navigator.of(dialogContext).pop();
 
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -204,19 +202,17 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
             ),
             ElevatedButton(
               onPressed: () {
+                // ------------------------------------------------
+                // IMPORTANT:
+                // Actually add the project to the archive manager.
+                // ------------------------------------------------
+                ArchiveManager.archive(project);
+
+                // Close confirmation dialog.
                 Navigator.of(dialogContext).pop();
 
-                // Temporary local behavior:
-                // return to the Projects screen after archiving.
+                // Return to the previous screen.
                 Navigator.of(context).pop();
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${project.name} has been archived.',
-                    ),
-                  ),
-                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.alertCoral,
@@ -411,38 +407,27 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         _TopBar(
                           onMenuSelected: _handleProjectMenu,
                         ),
-
                         const SizedBox(height: 14),
-
                         _ProjectHeaderCard(
                           project: project,
                         ),
-
                         const SizedBox(height: 22),
-
                         Text(
                           'Project Overview',
                           style: DashTextStyles.sectionTitle(),
                         ),
-
                         const SizedBox(height: 10),
-
                         _ProjectOverviewRow(
                           project: project,
                         ),
-
                         const SizedBox(height: 22),
-
                         _ProjectHealthCard(
                           project: project,
                         ),
-
                         const SizedBox(height: 22),
-
                         AiInsightCard(
                           body: project.aiInsightBody,
                         ),
-
                         const SizedBox(height: 22),
 
                         // ==================================================
@@ -487,7 +472,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 6),
 
                         // ==================================================
@@ -511,14 +495,11 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           ),
 
                         const SizedBox(height: 22),
-
                         Text(
                           'Project Team',
                           style: DashTextStyles.sectionTitle(),
                         ),
-
                         const SizedBox(height: 10),
-
                         TeamAvatars(
                           members: project.team,
                           totalCount: project.teamCount,
@@ -552,10 +533,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // ========================================================
         // BACK BUTTON — LEFT
-        // ========================================================
-
         IconButton(
           tooltip: 'Back',
           onPressed: () {
@@ -568,10 +546,7 @@ class _TopBar extends StatelessWidget {
           ),
         ),
 
-        // ========================================================
         // TITLE — CENTER
-        // ========================================================
-
         Expanded(
           child: Text(
             'Project Details',
@@ -582,10 +557,7 @@ class _TopBar extends StatelessWidget {
           ),
         ),
 
-        // ========================================================
         // MORE MENU — RIGHT
-        // ========================================================
-
         PopupMenuButton<String>(
           tooltip: 'More options',
           onSelected: onMenuSelected,
