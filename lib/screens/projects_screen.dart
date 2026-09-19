@@ -6,6 +6,9 @@ import '../models/project.dart';
 import '../models/task_item.dart';
 import '../widgets/scaleflow_bottom_nav.dart';
 import 'project_details_screen.dart';
+import 'profile_screen.dart';
+import 'ai_insights_screen.dart';
+import 'dashboard_screen.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -129,6 +132,24 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pop();
+          } else if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const DashboardPage(),
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AiInsightsPage(),
+              ),
+            );
+          } else if (index == 4) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ProfileScreen(),
+              ),
+            );
           }
         },
       ),

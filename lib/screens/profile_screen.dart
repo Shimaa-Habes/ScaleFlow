@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../data/mock_data.dart';
+import '../widgets/scaleflow_bottom_nav.dart';
+import 'dashboard_screen.dart';
+import 'ai_insights_screen.dart';
+import 'projects_screen.dart';
+import 'home_screen.dart';
 
 // ============================================================
 // SCALEFLOW COLORS
@@ -61,6 +66,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool get notificationsEnabled => CurrentUser.notificationsEnabled;
 
   String selectedAppearance = 'Light Mode';
+
+  // A dedicated ImagePicker instance reused by both the avatar's
+  // quick upload/remove button and the full Edit Profile sheet.
+  final ImagePicker _profileImagePicker = ImagePicker();
 
   // ==========================================================
   // MAIN BUILD
@@ -222,12 +231,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
+
+      // ========================================================
+      // BOTTOM NAVIGATION
+      // Home → Projects → Dashboard → AI → Profile
+      // ========================================================
+
+      bottomNavigationBar: ScaleFlowBottomNav(
+        currentIndex: 4,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const HomePage(),
+              ),
+            );
+          } else if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ProjectsScreen(),
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const DashboardPage(),
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AiInsightsPage(),
+              ),
+            );
+          }
+          // index == 4 is Profile, so we do nothing.
+        },
+      ),
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // TOP BAR
-  // ==========================================================
+  // ============================================================
 
   Widget _buildTopBar() {
     return Padding(
@@ -269,9 +315,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // PROFILE HEADER
-  // ==========================================================
+  // The avatar now carries its own small camera button (bottom
+  // right) so the user can upload or remove a profile photo
+  // directly from this screen, independent of any avatar shown
+  // elsewhere (e.g. the Home screen) — this photo is stored only
+  // in CurrentUser.profileImage and nowhere else.
+  // ============================================================
 
   Widget _buildProfileHeader() {
     final Uint8List? imageBytes = CurrentUser.profileImage;
@@ -279,30 +330,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Center(
       child: Column(
         children: [
-          Container(
-            width: 92,
-            height: 92,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFE9EAED),
-              border: Border.all(
-                color: const Color(0xFFD9DBDF),
-                width: 1.5,
-              ),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: imageBytes != null
-                ? Image.memory(
-                    imageBytes,
-                    width: 92,
-                    height: 92,
-                    fit: BoxFit.cover,
-                  )
-                : const Icon(
-                    Icons.person,
-                    size: 45,
-                    color: _charcoal,
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 92,
+                height: 92,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFE9EAED),
+                  border: Border.all(
+                    color: const Color(0xFFD9DBDF),
+                    width: 1.5,
                   ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: imageBytes != null
+                    ? Image.memory(
+                        imageBytes,
+                        width: 92,
+                        height: 92,
+                        fit: BoxFit.cover,
+                      )
+                    : const Icon(
+                        Icons.person,
+                        size: 45,
+                        color: _charcoal,
+                      ),
+              ),
+
+              // ------------------------------------------------
+              // Camera / upload-remove button
+              // ------------------------------------------------
+              Positioned(
+                bottom: -2,
+                right: -2,
+                child: GestureDetector(
+                  onTap: _showAvatarOptions,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: _purple,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _pageBackground,
+                        width: 2.5,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt_outlined,
+                      size: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Text(
@@ -373,9 +457,122 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
+  // AVATAR OPTIONS (upload / remove)
+  // Opens a small action sheet with "Upload Photo" always shown,
+  // and "Remove Photo" shown only when a photo is already set.
+  // ============================================================
+
+  void _showAvatarOptions() {
+    final bool hasImage = CurrentUser.profileImage != null;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickProfileImage();
+                  },
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _purple.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.upload_outlined,
+                      size: 20,
+                      color: _purple,
+                    ),
+                  ),
+                  title: const Text(
+                    'Upload Photo',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: _charcoal,
+                    ),
+                  ),
+                ),
+                if (hasImage)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _removeProfileImage();
+                    },
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _coral.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline,
+                        size: 20,
+                        color: _coral,
+                      ),
+                    ),
+                    title: const Text(
+                      'Remove Photo',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: _coral,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickProfileImage() async {
+    final picked = await _profileImagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (picked == null) {
+      return;
+    }
+
+    final bytes = await picked.readAsBytes();
+
+    setState(() {
+      CurrentUser.profileImage = bytes;
+    });
+  }
+
+  void _removeProfileImage() {
+    setState(() {
+      CurrentUser.profileImage = null;
+    });
+  }
+
+  // ============================================================
   // SECTION TITLE
-  // ==========================================================
+  // ============================================================
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -388,9 +585,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // ACCOUNT OVERVIEW
-  // ==========================================================
+  // ============================================================
 
   Widget _buildAccountOverview() {
     return Container(
@@ -495,9 +692,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // PROFILE INFORMATION
-  // ==========================================================
+  // ============================================================
 
   Widget _buildProfileInformation() {
     return Container(
@@ -710,9 +907,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // SETTING TILE
-  // ==========================================================
+  // ============================================================
 
   Widget _buildSettingTile({
     required IconData icon,
@@ -790,9 +987,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // TRAILING TEXT
-  // ==========================================================
+  // ============================================================
 
   Widget _buildTrailingText(String text) {
     return Row(
@@ -816,9 +1013,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // LOG OUT
-  // ==========================================================
+  // ============================================================
 
   Widget _buildLogOutButton() {
     return SizedBox(
@@ -862,9 +1059,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // SETTINGS
-  // ==========================================================
+  // ============================================================
 
   void _openSettings() {
     showModalBottomSheet(
@@ -992,9 +1189,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // EDIT PROFILE
-  // ==========================================================
+  // ============================================================
 
   void _openEditProfile() {
     final nameController = TextEditingController(text: CurrentUser.fullName);
@@ -1060,13 +1257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: _charcoal,
                       ),
                     ),
-
                     const SizedBox(height: 18),
-
-                    // ==================================================
-                    // PROFILE IMAGE
-                    // ==================================================
-
                     Center(
                       child: Column(
                         children: [
@@ -1129,33 +1320,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: nameController,
                       label: 'Full Name',
                       icon: Icons.person_outline,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: emailController,
                       label: 'Email',
                       icon: Icons.email_outlined,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: jobTitleController,
                       label: 'Job Title',
                       icon: Icons.work_outline,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildDropdownField(
                       label: 'Role',
                       value: selectedRole,
@@ -1174,49 +1357,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       },
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: companyController,
                       label: 'Company / Organization',
                       icon: Icons.business_outlined,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: departmentController,
                       label: 'Department',
                       icon: Icons.apartment_outlined,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: phoneController,
                       label: 'Phone Number',
                       icon: Icons.phone_outlined,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: countryController,
                       label: 'Country',
                       icon: Icons.public_outlined,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildInputField(
                       controller: cityController,
                       label: 'City',
                       icon: Icons.location_city_outlined,
                     ),
-
                     const SizedBox(height: 12),
-
                     TextField(
                       controller: bioController,
                       maxLines: 4,
@@ -1265,9 +1436,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildDropdownField(
                       label: 'Language',
                       value: selectedLanguageValue,
@@ -1284,9 +1453,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       },
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildDropdownField(
                       label: 'Default View',
                       value: selectedDefaultViewValue,
@@ -1305,9 +1472,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       },
                     ),
-
                     const SizedBox(height: 12),
-
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 13,
@@ -1345,9 +1510,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
                     ),
-
                     const SizedBox(height: 18),
-
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -1362,7 +1525,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           setState(() {
                             CurrentUser.fullName = newName;
-
                             CurrentUser.email = newEmail;
 
                             CurrentUser.jobTitle =
@@ -1426,9 +1588,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // INPUT FIELD
-  // ==========================================================
+  // ============================================================
 
   Widget _buildInputField({
     required TextEditingController controller,
@@ -1478,9 +1640,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // DROPDOWN FIELD
-  // ==========================================================
+  // ============================================================
 
   Widget _buildDropdownField({
     required String label,
@@ -1544,9 +1706,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // APPEARANCE
-  // ==========================================================
+  // ============================================================
 
   void _openAppearanceSettings() {
     _showChoiceSheet(
@@ -1564,9 +1726,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // LANGUAGE
-  // ==========================================================
+  // ============================================================
 
   void _openLanguageSettings() {
     _showChoiceSheet(
@@ -1584,9 +1746,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // DEFAULT VIEW
-  // ==========================================================
+  // ============================================================
 
   void _openDefaultViewSettings() {
     _showChoiceSheet(
@@ -1606,9 +1768,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // GENERIC CHOICE SHEET
-  // ==========================================================
+  // ============================================================
 
   void _showChoiceSheet({
     required String title,
@@ -1682,9 +1844,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // PASSWORD & SECURITY
-  // ==========================================================
+  // ============================================================
 
   void _openPasswordSecurity() {
     final currentPasswordController = TextEditingController();
@@ -1821,11 +1983,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         fillColor: const Color(0xFFF9FAFB),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(11),
-          borderSide: const BorderSide(color: _border),
+          borderSide: const BorderSide(
+            color: _border,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(11),
-          borderSide: const BorderSide(color: _border),
+          borderSide: const BorderSide(
+            color: _border,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(11),
@@ -1838,9 +2004,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // PRIVACY & DATA
-  // ==========================================================
+  // ============================================================
 
   void _openPrivacySettings() {
     bool activityVisible = true;
@@ -1973,9 +2139,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // HELP & SUPPORT
-  // ==========================================================
+  // ============================================================
 
   void _openHelpSupport() {
     showModalBottomSheet(
@@ -2054,9 +2220,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ==========================================================
+  // ============================================================
   // LOGOUT DIALOG
-  // ==========================================================
+  // ============================================================
 
   void _showLogoutDialog() {
     final profileContext = context;
