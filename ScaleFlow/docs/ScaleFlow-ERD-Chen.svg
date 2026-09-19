@@ -1,0 +1,2972 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="8207" height="5183" viewBox="0 0 8207 5183" role="img" aria-labelledby="title desc"><title id="title">ScaleFlow — Chen-Style Entity Relationship Diagram</title><desc id="desc">Current EF Core schema after removal of custom UserRole, Permission, RolePermission and TaskProgressSnapshot. All 26 application entities and standard Identity role membership are shown with selected attributes and 51 foreign-key links. Context references repeat existing tables, not new entities.</desc><rect width="100%" height="100%" fill="#f7f9fc"/><g font-family="Arial, sans-serif" fill="#172033"><text x="70" y="75" font-size="48" font-weight="700">ScaleFlow — Chen-Style ERD</text><text x="70" y="120" font-size="25" fill="#64748b">Current schema • 26 application entities + standard Identity role join • selected attributes • 18 Sep 2026</text><text x="70" y="158" font-size="22" fill="#64748b">All application foreign keys are shown. Schema presence does not imply that every feature or API is implemented.</text><rect x="70" y="197" width="70" height="42" rx="3" fill="#fff" stroke="#263244" stroke-width="2" /><text x="157" y="225" font-size="23">Entity / table</text><ellipse cx="495" cy="218" rx="35" ry="22" fill="#fff7ed" stroke="#df4d08" stroke-width="2"/><text x="547" y="225" font-size="23">Primary key (PK)</text><ellipse cx="885" cy="218" rx="35" ry="22" fill="#edf7ff" stroke="#007cb8" stroke-width="2"/><text x="937" y="225" font-size="23">Foreign key (FK)</text><polygon points="1240,218 1275,195 1310,218 1275,241" fill="#e0f2fe" stroke="#007cb8" stroke-width="2"/><text x="1327" y="225" font-size="23">Relationship</text><rect x="1630" y="197" width="70" height="42" rx="3" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/><text x="1717" y="225" font-size="23">Repeated context reference</text><rect x="70" y="285" width="4001" height="1607" rx="12" fill="#ffffff" stroke="#d9e2ee" stroke-width="1.5"/><text x="100" y="328" font-size="30" font-weight="700">01  Organizations, projects &amp; teams</text><text x="100" y="365" font-size="21" fill="#64748b">Tenants, ownership and membership</text><svg x="105" y="577.5" width="3931" height="1092" viewBox="0 0 3931 1092">
+<g id="p0_graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 1070)">
+<title>ERD</title>
+<!-- Organizations&#45;&#45;Organizations__Id -->
+<g id="p0_edge1" class="edge">
+<title>Organizations&#45;&#45;Organizations__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M3622.34,-873.37C3663.24,-895.32 3714.81,-923 3714.81,-923 3714.81,-923 3734.81,-931.92 3755.44,-941.11"/>
+</g>
+<!-- Organizations&#45;&#45;Organizations__Name -->
+<g id="p0_edge2" class="edge">
+<title>Organizations&#45;&#45;Organizations__Name</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M3667.12,-862.73C3694.91,-867.39 3724.31,-872.31 3748.38,-876.34"/>
+</g>
+<!-- Organizations&#45;&#45;Organizations__Code -->
+<g id="p0_edge3" class="edge">
+<title>Organizations&#45;&#45;Organizations__Code</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M3667.12,-831.27C3696.37,-826.37 3727.41,-821.17 3752.13,-817.03"/>
+</g>
+<!-- Organizations&#45;&#45;Organizations__Timezone -->
+<g id="p0_edge4" class="edge">
+<title>Organizations&#45;&#45;Organizations__Timezone</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M3622.34,-820.63C3663.24,-798.68 3714.81,-771 3714.81,-771 3714.81,-771 3729.7,-764.36 3747.04,-756.63"/>
+</g>
+<!-- AspNetUsers&#45;&#45;AspNetUsers__Id -->
+<g id="p0_edge5" class="edge">
+<title>AspNetUsers&#45;&#45;AspNetUsers__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2675.39,-383.45C2809.5,-375.52 3052.22,-361.17 3164.39,-354.54"/>
+</g>
+<!-- AspNetUsers&#45;&#45;AspNetUsers__OrganizationId -->
+<g id="p0_edge6" class="edge">
+<title>AspNetUsers&#45;&#45;AspNetUsers__OrganizationId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2675.45,-364.86C2688.86,-361.41 2698.21,-359 2698.21,-359 2698.21,-359 2957.52,-317.59 3111.99,-292.92"/>
+</g>
+<!-- AspNetUsers&#45;&#45;AspNetUsers__FullName -->
+<g id="p0_edge7" class="edge">
+<title>AspNetUsers&#45;&#45;AspNetUsers__FullName</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2605.77,-415.31C2639.93,-452.51 2698.21,-516 2698.21,-516 2698.21,-516 3057.52,-609 3057.52,-609 3057.52,-609 3111.73,-621.36 3158.31,-631.98"/>
+</g>
+<!-- AspNetUsers&#45;&#45;AspNetUsers__Email -->
+<g id="p0_edge8" class="edge">
+<title>AspNetUsers&#45;&#45;AspNetUsers__Email</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2675.39,-394.55C2809.85,-402.5 3053.49,-416.91 3165.26,-423.52"/>
+</g>
+<!-- AspNetUsers&#45;&#45;rel_0_0 -->
+<g id="p0_edge25" class="edge">
+<title>AspNetUsers&#45;&#45;rel_0_0</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2675.45,-413.14C2688.86,-416.59 2698.21,-419 2698.21,-419 2698.21,-419 2964.42,-478.72 3118.06,-513.19"/>
+<text xml:space="preserve" text-anchor="middle" x="2865.87" y="-497.14" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- Projects&#45;&#45;Projects__Id -->
+<g id="p0_edge9" class="edge">
+<title>Projects&#45;&#45;Projects__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1566.91,-656.53C1593.88,-667.63 1619.07,-678 1619.07,-678 1619.07,-678 1824.32,-744 1824.32,-744 1824.32,-744 1871.31,-756.87 1910.58,-767.63"/>
+</g>
+<!-- Projects&#45;&#45;Projects__OrganizationId -->
+<g id="p0_edge10" class="edge">
+<title>Projects&#45;&#45;Projects__OrganizationId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1596.22,-645.47C1670.39,-657.71 1774.13,-674.83 1852.36,-687.74"/>
+</g>
+<!-- Projects&#45;&#45;Projects__OwnerId -->
+<g id="p0_edge11" class="edge">
+<title>Projects&#45;&#45;Projects__OwnerId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1596.22,-630C1673.55,-630 1783.01,-630 1862.21,-630"/>
+</g>
+<!-- Projects&#45;&#45;Projects__Status -->
+<g id="p0_edge12" class="edge">
+<title>Projects&#45;&#45;Projects__Status</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1596.22,-614.53C1690.51,-598.97 1832.58,-575.52 1909.3,-562.86"/>
+</g>
+<!-- Projects&#45;&#45;rel_0_1 -->
+<g id="p0_edge27" class="edge">
+<title>Projects&#45;&#45;rel_0_1</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1536.2,-656.32C1570.63,-683.2 1619.07,-721 1619.07,-721 1619.07,-721 1824.32,-820 1824.32,-820 1824.32,-820 2414.98,-835.33 2706.27,-842.88"/>
+<text xml:space="preserve" text-anchor="middle" x="1964.01" y="-832.21" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- Projects&#45;&#45;rel_0_2 -->
+<g id="p0_edge29" class="edge">
+<title>Projects&#45;&#45;rel_0_2</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1545.56,-603.62C1578.77,-583.28 1619.07,-558.6 1619.07,-558.6 1619.07,-558.6 1792.43,-512.43 1893,-485.65"/>
+<text xml:space="preserve" text-anchor="middle" x="1709.7" y="-563.7" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- ProjectMembers&#45;&#45;ProjectMembers__Id -->
+<g id="p0_edge13" class="edge">
+<title>ProjectMembers&#45;&#45;ProjectMembers__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M864.9,-232.53C916.04,-245.34 977.49,-260.74 1020.54,-271.53"/>
+</g>
+<!-- ProjectMembers&#45;&#45;ProjectMembers__ProjectId -->
+<g id="p0_edge14" class="edge">
+<title>ProjectMembers&#45;&#45;ProjectMembers__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M864.9,-209C898.47,-209 936.49,-209 970.82,-209"/>
+</g>
+<!-- ProjectMembers&#45;&#45;ProjectMembers__UserId -->
+<g id="p0_edge15" class="edge">
+<title>ProjectMembers&#45;&#45;ProjectMembers__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M864.9,-185.47C909.43,-174.31 961.78,-161.19 1002.99,-150.87"/>
+</g>
+<!-- ProjectMembers&#45;&#45;ProjectMembers__IsBlocked -->
+<g id="p0_edge16" class="edge">
+<title>ProjectMembers&#45;&#45;ProjectMembers__IsBlocked</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M811.75,-182.56C863.61,-148.88 946.59,-95 946.59,-95 946.59,-95 980.28,-84.97 1013.05,-75.22"/>
+</g>
+<!-- ProjectMembers&#45;&#45;rel_0_3 -->
+<g id="p0_edge31" class="edge">
+<title>ProjectMembers&#45;&#45;rel_0_3</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M790.55,-235.28C823.74,-279.97 887.63,-366 887.63,-366 887.63,-366 952.14,-389.16 1005.31,-408.24"/>
+<text xml:space="preserve" text-anchor="middle" x="905.11" y="-382.33" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- ProjectMembers&#45;&#45;rel_0_4 -->
+<g id="p0_edge33" class="edge">
+<title>ProjectMembers&#45;&#45;rel_0_4</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M811.75,-235.44C863.61,-269.12 946.59,-323 946.59,-323 946.59,-323 1126.21,-332.52 1231.11,-338.09"/>
+<text xml:space="preserve" text-anchor="middle" x="905.11" y="-311.19" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- Teams&#45;&#45;Teams__Id -->
+<g id="p0_edge17" class="edge">
+<title>Teams&#45;&#45;Teams__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M811.75,-845.44C863.61,-879.12 946.59,-933 946.59,-933 946.59,-933 987.27,-945.11 1022.71,-955.65"/>
+</g>
+<!-- Teams&#45;&#45;Teams__ProjectId -->
+<g id="p0_edge18" class="edge">
+<title>Teams&#45;&#45;Teams__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M864.9,-842.53C905.87,-852.79 953.44,-864.72 992.88,-874.6"/>
+</g>
+<!-- Teams&#45;&#45;Teams__LeadUserId -->
+<g id="p0_edge19" class="edge">
+<title>Teams&#45;&#45;Teams__LeadUserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M864.9,-819C890.47,-819 918.62,-819 945.75,-819"/>
+</g>
+<!-- Teams&#45;&#45;Teams__Name -->
+<g id="p0_edge20" class="edge">
+<title>Teams&#45;&#45;Teams__Name</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M864.9,-795.47C917.96,-782.18 982.1,-766.1 1025.29,-755.28"/>
+</g>
+<!-- Teams&#45;&#45;rel_0_5 -->
+<g id="p0_edge35" class="edge">
+<title>Teams&#45;&#45;rel_0_5</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M787.71,-792.56C831.53,-723.06 946.59,-540.6 946.59,-540.6 946.59,-540.6 1203.97,-505 1203.97,-505 1203.97,-505 1500.96,-462.04 1639.31,-442.04"/>
+<text xml:space="preserve" text-anchor="middle" x="1075.28" y="-545.7" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- Teams&#45;&#45;rel_0_6 -->
+<g id="p0_edge37" class="edge">
+<title>Teams&#45;&#45;rel_0_6</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M795.44,-845.42C843.68,-897.63 946.59,-1009 946.59,-1009 946.59,-1009 1074.28,-1028 1074.28,-1028 1074.28,-1028 1074.28,-1028 1710.7,-1028 1710.7,-1028 1982.27,-1006.13 2154.93,-992.23"/>
+<text xml:space="preserve" text-anchor="middle" x="1305.92" y="-1033.1" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- Teams&#45;&#45;rel_0_7 -->
+<g id="p0_edge39" class="edge">
+<title>Teams&#45;&#45;rel_0_7</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M811.75,-792.56C863.61,-758.88 946.59,-705 946.59,-705 946.59,-705 983.69,-684.08 1017.9,-664.79"/>
+<text xml:space="preserve" text-anchor="middle" x="905.11" y="-746.97" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- TeamMembers&#45;&#45;TeamMembers__Id -->
+<g id="p0_edge21" class="edge">
+<title>TeamMembers&#45;&#45;TeamMembers__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M188.34,-309.84C231.59,-321.76 281.31,-335.46 317.84,-345.53"/>
+</g>
+<!-- TeamMembers&#45;&#45;TeamMembers__TeamId -->
+<g id="p0_edge22" class="edge">
+<title>TeamMembers&#45;&#45;TeamMembers__TeamId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M188.34,-284C216.28,-284 246.94,-284 274.99,-284"/>
+</g>
+<!-- TeamMembers&#45;&#45;TeamMembers__UserId -->
+<g id="p0_edge23" class="edge">
+<title>TeamMembers&#45;&#45;TeamMembers__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M188.34,-258.16C225.34,-247.97 267.08,-236.46 301.25,-227.04"/>
+</g>
+<!-- TeamMembers&#45;&#45;TeamMembers__RoleInTeam -->
+<g id="p0_edge24" class="edge">
+<title>TeamMembers&#45;&#45;TeamMembers__RoleInTeam</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M135.32,-257.56C187.18,-223.88 270.15,-170 270.15,-170 270.15,-170 287.66,-163.36 308.03,-155.63"/>
+</g>
+<!-- TeamMembers&#45;&#45;rel_0_8 -->
+<g id="p0_edge41" class="edge">
+<title>TeamMembers&#45;&#45;rel_0_8</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M114.12,-310.28C147.31,-354.97 211.2,-441 211.2,-441 211.2,-441 292.97,-514.99 339.28,-556.89"/>
+<text xml:space="preserve" text-anchor="middle" x="228.68" y="-477.2" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TeamMembers&#45;&#45;rel_0_9 -->
+<g id="p0_edge43" class="edge">
+<title>TeamMembers&#45;&#45;rel_0_9</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M135.32,-310.44C187.18,-344.12 270.15,-398 270.15,-398 270.15,-398 472.53,-398 472.53,-398 472.53,-398 493.98,-391.2 517.1,-383.87"/>
+<text xml:space="preserve" text-anchor="middle" x="228.68" y="-386.19" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- rel_0_0&#45;&#45;Organizations -->
+<g id="p0_edge26" class="edge">
+<title>rel_0_0&#45;&#45;Organizations</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M3304.63,-570.89C3347.85,-589.57 3392.83,-609 3392.83,-609 3392.83,-609 3505,-758.65 3551.44,-820.62"/>
+<text xml:space="preserve" text-anchor="middle" x="3435.72" y="-691.08" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_1&#45;&#45;Organizations -->
+<g id="p0_edge28" class="edge">
+<title>rel_0_1&#45;&#45;Organizations</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M3036.47,-847C3174.87,-847 3365.27,-847 3477.57,-847"/>
+<text xml:space="preserve" text-anchor="middle" x="3225.18" y="-852.1" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_2&#45;&#45;AspNetUsers -->
+<g id="p0_edge30" class="edge">
+<title>rel_0_2&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2057.02,-455.32C2172.47,-440.67 2369.38,-415.68 2485.71,-400.92"/>
+<text xml:space="preserve" text-anchor="middle" x="2295.36" y="-451.18" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_3&#45;&#45;Projects -->
+<g id="p0_edge32" class="edge">
+<title>rel_0_3&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1137.96,-461.65C1219.99,-499.74 1363.87,-566.56 1443.47,-603.53"/>
+<text xml:space="preserve" text-anchor="middle" x="1305.92" y="-576.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_4&#45;&#45;AspNetUsers -->
+<g id="p0_edge34" class="edge">
+<title>rel_0_4&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1381.78,-344.76C1601.44,-352.88 2243.93,-376.6 2485.94,-385.54"/>
+<text xml:space="preserve" text-anchor="middle" x="1709.7" y="-364.88" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_5&#45;&#45;AspNetUsers -->
+<g id="p0_edge36" class="edge">
+<title>rel_0_5&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1765.51,-415.4C1794.57,-406.61 1824.32,-397.6 1824.32,-397.6 1824.32,-397.6 2283.59,-392.37 2485.86,-390.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1964.01" y="-402.7" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_6&#45;&#45;Organizations -->
+<g id="p0_edge38" class="edge">
+<title>rel_0_6&#45;&#45;Organizations</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2435.01,-969.34C2648.55,-951.38 3033.52,-919 3033.52,-919 3033.52,-919 3392.83,-871 3392.83,-871 3392.83,-871 3434.35,-865.41 3477.32,-859.63"/>
+<text xml:space="preserve" text-anchor="middle" x="2865.87" y="-951.72" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_7&#45;&#45;Projects -->
+<g id="p0_edge40" class="edge">
+<title>rel_0_7&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1187.73,-632.21C1255.85,-631.73 1342,-631.12 1406.62,-630.66"/>
+<text xml:space="preserve" text-anchor="middle" x="1305.92" y="-636.96" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_8&#45;&#45;Teams -->
+<g id="p0_edge42" class="edge">
+<title>rel_0_8&#45;&#45;Teams</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M413.3,-609.16C488.13,-653.3 646.36,-746.64 724.06,-792.47"/>
+<text xml:space="preserve" text-anchor="middle" x="574.48" y="-754.96" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_0_9&#45;&#45;AspNetUsers -->
+<g id="p0_edge44" class="edge">
+<title>rel_0_9&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M598.89,-321.7C628.72,-265.28 676.43,-175 676.43,-175 676.43,-175 904.11,0 904.11,0 904.11,0 904.11,0 1965.01,0 1965.01,0 2399.52,-275.01 2537.85,-362.57"/>
+<text xml:space="preserve" text-anchor="middle" x="1305.92" y="-5.1" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- Organizations -->
+<g id="p0_node1" class="node">
+<title>Organizations</title>
+<g id="p0_a_node1"><a xlink:title="Organization | Id, Code, CreatedAt, DeletedAt?, DeletedBy?, Industry?, IsDeleted, Name, Slug, Timezone?, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="3665.81,-872.2 3478.61,-872.2 3478.61,-821.8 3665.81,-821.8 3665.81,-872.2"/>
+<text xml:space="preserve" text-anchor="middle" x="3572.21" y="-840.4" font-family="Arial" font-size="22.00" fill="#172033">Organizations</text>
+</a>
+</g>
+</g>
+<!-- Organizations__Id -->
+<g id="p0_node2" class="node">
+<title>Organizations__Id</title>
+<g id="p0_a_node2"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="3801.06" cy="-961" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3769.94" y="-956" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- Organizations__Name -->
+<g id="p0_node3" class="node">
+<title>Organizations__Name</title>
+<g id="p0_a_node3"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="3801.06" cy="-885" rx="54.02" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3774.39" y="-877" font-family="Arial" font-size="20.00">Name</text>
+</a>
+</g>
+</g>
+<!-- Organizations__Code -->
+<g id="p0_node4" class="node">
+<title>Organizations__Code</title>
+<g id="p0_a_node4"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="3801.06" cy="-809" rx="50.1" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3777.15" y="-801" font-family="Arial" font-size="20.00">Code</text>
+</a>
+</g>
+</g>
+<!-- Organizations__Timezone -->
+<g id="p0_node5" class="node">
+<title>Organizations__Timezone</title>
+<g id="p0_a_node5"><a xlink:title="String nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="3801.06" cy="-733" rx="86.25" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3751.59" y="-725" font-family="Arial" font-size="20.00">Timezone?</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers -->
+<g id="p0_node6" class="node">
+<title>AspNetUsers</title>
+<g id="p0_a_node6"><a xlink:title="User | Id, AccessFailedCount, AvatarUrl?, ConcurrencyStamp?, CreatedAt, DeletedAt?, DeletedBy?, Email?, EmailConfirmed, EmailVerifiedAt?, FullName, IsActive, IsDeleted, JobTitle?, LastLoginAt?, LockoutEnabled, LockoutEnd?, NormalizedEmail?, NormalizedUserName?, OrganizationId, PasswordHash?, Phone?, PhoneNumber?, PhoneNumberConfirmed, SecurityStamp?, TwoFactorEnabled, UpdatedAt?, UserName?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="2674.21,-414.2 2487.01,-414.2 2487.01,-363.8 2674.21,-363.8 2674.21,-414.2"/>
+<text xml:space="preserve" text-anchor="middle" x="2580.61" y="-382.4" font-family="Arial" font-size="22.00" fill="#172033">AspNetUsers</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers__Id -->
+<g id="p0_node7" class="node">
+<title>AspNetUsers__Id</title>
+<g id="p0_a_node7"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="3225.18" cy="-351" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3194.06" y="-346" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers__OrganizationId -->
+<g id="p0_node8" class="node">
+<title>AspNetUsers__OrganizationId</title>
+<g id="p0_a_node8"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="3225.18" cy="-275" rx="139.69" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3137.92" y="-267" font-family="Arial" font-size="20.00">OrganizationId (FK)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers__FullName -->
+<g id="p0_node9" class="node">
+<title>AspNetUsers__FullName</title>
+<g id="p0_a_node9"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="3225.18" cy="-647" rx="76.8" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3182.39" y="-639" font-family="Arial" font-size="20.00">FullName</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers__Email -->
+<g id="p0_node10" class="node">
+<title>AspNetUsers__Email</title>
+<g id="p0_a_node10"><a xlink:title="String nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="3225.18" cy="-427" rx="59.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="3194.61" y="-419" font-family="Arial" font-size="20.00">Email?</text>
+</a>
+</g>
+</g>
+<!-- Projects -->
+<g id="p0_node11" class="node">
+<title>Projects</title>
+<g id="p0_a_node11"><a xlink:title="Project | Id, Budget?, CreatedAt, DeletedAt?, DeletedBy?, Description?, EndDate?, IsArchived, IsDeleted, Name, OrganizationId, OwnerId, Priority, StartDate?, Status, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1595.07,-655.2 1407.87,-655.2 1407.87,-604.8 1595.07,-604.8 1595.07,-655.2"/>
+<text xml:space="preserve" text-anchor="middle" x="1501.47" y="-623.4" font-family="Arial" font-size="22.00" fill="#172033">Projects</text>
+</a>
+</g>
+</g>
+<!-- Projects__Id -->
+<g id="p0_node12" class="node">
+<title>Projects__Id</title>
+<g id="p0_a_node12"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1964.01" cy="-782" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1932.89" y="-777" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- Projects__OrganizationId -->
+<g id="p0_node13" class="node">
+<title>Projects__OrganizationId</title>
+<g id="p0_a_node13"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1964.01" cy="-706" rx="139.69" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1876.76" y="-698" font-family="Arial" font-size="20.00">OrganizationId (FK)</text>
+</a>
+</g>
+</g>
+<!-- Projects__OwnerId -->
+<g id="p0_node14" class="node">
+<title>Projects__OwnerId</title>
+<g id="p0_a_node14"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1964.01" cy="-630" rx="101.16" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1904" y="-622" font-family="Arial" font-size="20.00">OwnerId (FK)</text>
+</a>
+</g>
+</g>
+<!-- Projects__Status -->
+<g id="p0_node15" class="node">
+<title>Projects__Status</title>
+<g id="p0_a_node15"><a xlink:title="ProjectStatus">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1964.01" cy="-554" rx="56.38" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1935.66" y="-546" font-family="Arial" font-size="20.00">Status</text>
+</a>
+</g>
+</g>
+<!-- ProjectMembers -->
+<g id="p0_node16" class="node">
+<title>ProjectMembers</title>
+<g id="p0_a_node16"><a xlink:title="ProjectMember | Id, CreatedAt, HourlyRate?, IsBlocked, JoinedAt, ProjectId, RoleOverride?, UpdatedAt?, UserId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="863.63,-234.2 676.43,-234.2 676.43,-183.8 863.63,-183.8 863.63,-234.2"/>
+<text xml:space="preserve" text-anchor="middle" x="770.03" y="-202.4" font-family="Arial" font-size="22.00" fill="#172033">ProjectMembers</text>
+</a>
+</g>
+</g>
+<!-- ProjectMembers__Id -->
+<g id="p0_node17" class="node">
+<title>ProjectMembers__Id</title>
+<g id="p0_a_node17"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1075.28" cy="-285" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1044.16" y="-280" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectMembers__ProjectId -->
+<g id="p0_node18" class="node">
+<title>ProjectMembers__ProjectId</title>
+<g id="p0_a_node18"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1075.28" cy="-209" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1013.6" y="-201" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectMembers__UserId -->
+<g id="p0_node19" class="node">
+<title>ProjectMembers__UserId</title>
+<g id="p0_a_node19"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1075.28" cy="-133" rx="89.36" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1023.61" y="-125" font-family="Arial" font-size="20.00">UserId (FK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectMembers__IsBlocked -->
+<g id="p0_node20" class="node">
+<title>ProjectMembers__IsBlocked</title>
+<g id="p0_a_node20"><a xlink:title="Boolean">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1075.28" cy="-57" rx="77.6" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1031.92" y="-49" font-family="Arial" font-size="20.00">IsBlocked</text>
+</a>
+</g>
+</g>
+<!-- Teams -->
+<g id="p0_node21" class="node">
+<title>Teams</title>
+<g id="p0_a_node21"><a xlink:title="Team | Id, CreatedAt, Description?, LeadUserId?, Name, OrganizationId, ProjectId?, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="863.63,-844.2 676.43,-844.2 676.43,-793.8 863.63,-793.8 863.63,-844.2"/>
+<text xml:space="preserve" text-anchor="middle" x="770.03" y="-812.4" font-family="Arial" font-size="22.00" fill="#172033">Teams</text>
+</a>
+</g>
+</g>
+<!-- Teams__Id -->
+<g id="p0_node22" class="node">
+<title>Teams__Id</title>
+<g id="p0_a_node22"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1075.28" cy="-971" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1044.16" y="-966" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- Teams__ProjectId -->
+<g id="p0_node23" class="node">
+<title>Teams__ProjectId</title>
+<g id="p0_a_node23"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1075.28" cy="-895" rx="111.39" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1008.04" y="-887" font-family="Arial" font-size="20.00">ProjectId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- Teams__LeadUserId -->
+<g id="p0_node24" class="node">
+<title>Teams__LeadUserId</title>
+<g id="p0_a_node24"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1075.28" cy="-819" rx="128.69" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="995.8" y="-811" font-family="Arial" font-size="20.00">LeadUserId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- Teams__Name -->
+<g id="p0_node25" class="node">
+<title>Teams__Name</title>
+<g id="p0_a_node25"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1075.28" cy="-743" rx="54.02" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1048.6" y="-735" font-family="Arial" font-size="20.00">Name</text>
+</a>
+</g>
+</g>
+<!-- TeamMembers -->
+<g id="p0_node26" class="node">
+<title>TeamMembers</title>
+<g id="p0_a_node26"><a xlink:title="TeamMember | Id, CreatedAt, JoinedAt, RoleInTeam?, TeamId, UserId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="187.2,-309.2 0,-309.2 0,-258.8 187.2,-258.8 187.2,-309.2"/>
+<text xml:space="preserve" text-anchor="middle" x="93.6" y="-277.4" font-family="Arial" font-size="22.00" fill="#172033">TeamMembers</text>
+</a>
+</g>
+</g>
+<!-- TeamMembers__Id -->
+<g id="p0_node27" class="node">
+<title>TeamMembers__Id</title>
+<g id="p0_a_node27"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="371.34" cy="-360" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="340.22" y="-355" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- TeamMembers__TeamId -->
+<g id="p0_node28" class="node">
+<title>TeamMembers__TeamId</title>
+<g id="p0_a_node28"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="371.34" cy="-284" rx="95.65" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="315.22" y="-276" font-family="Arial" font-size="20.00">TeamId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TeamMembers__UserId -->
+<g id="p0_node29" class="node">
+<title>TeamMembers__UserId</title>
+<g id="p0_a_node29"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="371.34" cy="-208" rx="89.36" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="319.67" y="-200" font-family="Arial" font-size="20.00">UserId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TeamMembers__RoleInTeam -->
+<g id="p0_node30" class="node">
+<title>TeamMembers__RoleInTeam</title>
+<g id="p0_a_node30"><a xlink:title="String nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="371.34" cy="-132" rx="101.19" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="311.31" y="-124" font-family="Arial" font-size="20.00">RoleInTeam?</text>
+</a>
+</g>
+</g>
+<!-- rel_0_0 -->
+<g id="p0_node31" class="node">
+<title>rel_0_0</title>
+<g id="p0_a_node31"><a xlink:title="AspNetUsers.OrganizationId &#45;&gt; Organizations | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="3225.18,-599.88 3057.52,-537 3225.18,-474.12 3392.83,-537 3225.18,-599.88"/>
+<text xml:space="preserve" text-anchor="middle" x="3225.18" y="-542.7" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="3225.18" y="-519.9" font-family="Arial" font-size="19.00" fill="#125779">ORGANIZATION</text>
+</a>
+</g>
+</g>
+<!-- rel_0_1 -->
+<g id="p0_node32" class="node">
+<title>rel_0_1</title>
+<g id="p0_a_node32"><a xlink:title="Projects.OrganizationId &#45;&gt; Organizations | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="2865.87,-909.88 2698.21,-847 2865.87,-784.12 3033.52,-847 2865.87,-909.88"/>
+<text xml:space="preserve" text-anchor="middle" x="2865.87" y="-852.7" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="2865.87" y="-829.9" font-family="Arial" font-size="19.00" fill="#125779">ORGANIZATION</text>
+</a>
+</g>
+</g>
+<!-- rel_0_2 -->
+<g id="p0_node33" class="node">
+<title>rel_0_2</title>
+<g id="p0_a_node33"><a xlink:title="Projects.OwnerId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1964.01,-507.08 1837.52,-467 1964.01,-426.92 2090.5,-467 1964.01,-507.08"/>
+<text xml:space="preserve" text-anchor="middle" x="1964.01" y="-461.3" font-family="Arial" font-size="19.00" fill="#125779">OWNED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_0_3 -->
+<g id="p0_node34" class="node">
+<title>rel_0_3</title>
+<g id="p0_a_node34"><a xlink:title="ProjectMembers.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1075.28,-495.88 963.56,-433 1075.28,-370.12 1186.99,-433 1075.28,-495.88"/>
+<text xml:space="preserve" text-anchor="middle" x="1075.28" y="-438.7" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1075.28" y="-415.9" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_0_4 -->
+<g id="p0_node35" class="node">
+<title>rel_0_4</title>
+<g id="p0_a_node35"><a xlink:title="ProjectMembers.UserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1305.92,-404.88 1227.97,-342 1305.92,-279.12 1383.87,-342 1305.92,-404.88"/>
+<text xml:space="preserve" text-anchor="middle" x="1305.92" y="-347.7" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="1305.92" y="-324.9" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+<!-- rel_0_5 -->
+<g id="p0_node36" class="node">
+<title>rel_0_5</title>
+<g id="p0_a_node36"><a xlink:title="Teams.LeadUserId &#45;&gt; AspNetUsers | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1709.7,-472.08 1619.07,-432 1709.7,-391.92 1800.32,-432 1709.7,-472.08"/>
+<text xml:space="preserve" text-anchor="middle" x="1709.7" y="-426.3" font-family="Arial" font-size="19.00" fill="#125779">LED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_0_6 -->
+<g id="p0_node37" class="node">
+<title>rel_0_6</title>
+<g id="p0_a_node37"><a xlink:title="Teams.OrganizationId &#45;&gt; Organizations | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="2295.36,-1043.88 2127.7,-981 2295.36,-918.12 2463.01,-981 2295.36,-1043.88"/>
+<text xml:space="preserve" text-anchor="middle" x="2295.36" y="-986.7" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="2295.36" y="-963.9" font-family="Arial" font-size="19.00" fill="#125779">ORGANIZATION</text>
+</a>
+</g>
+</g>
+<!-- rel_0_7 -->
+<g id="p0_node38" class="node">
+<title>rel_0_7</title>
+<g id="p0_a_node38"><a xlink:title="Teams.ProjectId &#45;&gt; Projects | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1075.28,-695.88 963.56,-633 1075.28,-570.12 1186.99,-633 1075.28,-695.88"/>
+<text xml:space="preserve" text-anchor="middle" x="1075.28" y="-638.7" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1075.28" y="-615.9" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_0_8 -->
+<g id="p0_node39" class="node">
+<title>rel_0_8</title>
+<g id="p0_a_node39"><a xlink:title="TeamMembers.TeamId &#45;&gt; Teams | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="371.34,-625.08 271.24,-585 371.34,-544.92 471.44,-585 371.34,-625.08"/>
+<text xml:space="preserve" text-anchor="middle" x="371.34" y="-579.3" font-family="Arial" font-size="19.00" fill="#125779">IN TEAM</text>
+</a>
+</g>
+</g>
+<!-- rel_0_9 -->
+<g id="p0_node40" class="node">
+<title>rel_0_9</title>
+<g id="p0_a_node40"><a xlink:title="TeamMembers.UserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="574.48,-428.88 496.53,-366 574.48,-303.12 652.43,-366 574.48,-428.88"/>
+<text xml:space="preserve" text-anchor="middle" x="574.48" y="-371.7" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="574.48" y="-348.9" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+</g>
+</svg><rect x="4136" y="285" width="4001" height="1607" rx="12" fill="#ffffff" stroke="#d9e2ee" stroke-width="1.5"/><text x="4166" y="328" font-size="30" font-weight="700">02  Tasks, dependencies &amp; audit history</text><text x="4166" y="365" font-size="21" fill="#64748b">Task structure, prerequisites and assigned users</text><svg x="5065" y="390" width="2143" height="1467" viewBox="0 0 2143 1467">
+<g id="p1_graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 1444.98)">
+<title>ERD</title>
+<!-- ProjectTasks&#45;&#45;ProjectTasks__Id -->
+<g id="p1_edge1" class="edge">
+<title>ProjectTasks&#45;&#45;ProjectTasks__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1107.1,-513.84C1141.6,-481.3 1195.77,-430.19 1195.77,-430.19 1195.77,-430.19 1517.12,-326.19 1517.12,-326.19 1517.12,-326.19 1566.7,-313.06 1607.57,-302.23"/>
+</g>
+<!-- ProjectTasks&#45;&#45;ProjectTasks__ProjectId -->
+<g id="p1_edge2" class="edge">
+<title>ProjectTasks&#45;&#45;ProjectTasks__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1093.94,-513.72C1125.32,-457.48 1195.77,-331.19 1195.77,-331.19 1195.77,-331.19 1450.8,-265.9 1583.04,-232.04"/>
+</g>
+<!-- ProjectTasks&#45;&#45;ProjectTasks__Title -->
+<g id="p1_edge3" class="edge">
+<title>ProjectTasks&#45;&#45;ProjectTasks__Title</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1098.95,-566.48C1132.22,-610.71 1195.77,-695.19 1195.77,-695.19 1195.77,-695.19 1517.12,-788.19 1517.12,-788.19 1517.12,-788.19 1578.17,-804.36 1620.62,-815.6"/>
+</g>
+<!-- ProjectTasks&#45;&#45;ProjectTasks__CompletionPercent -->
+<g id="p1_edge4" class="edge">
+<title>ProjectTasks&#45;&#45;ProjectTasks__CompletionPercent</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1107.1,-566.54C1141.6,-599.08 1195.77,-650.19 1195.77,-650.19 1195.77,-650.19 1423.65,-699.22 1560.29,-728.61"/>
+</g>
+<!-- ProjectTasks&#45;&#45;rel_1_0 -->
+<g id="p1_edge17" class="edge">
+<title>ProjectTasks&#45;&#45;rel_1_0</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1093.71,-566.61C1124.96,-623.44 1195.77,-752.19 1195.77,-752.19 1195.77,-752.19 1517.12,-864.19 1517.12,-864.19 1517.12,-864.19 1557.02,-877.82 1594.73,-890.7"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-859.71" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- ProjectTasks&#45;&#45;rel_1_1 -->
+<g id="p1_edge19" class="edge">
+<title>ProjectTasks&#45;&#45;rel_1_1</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1172.91,-540.51C1279.06,-540.88 1451.37,-541.47 1560.2,-541.84"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-546.7" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- ProjectTasks&#45;&#45;rel_1_2 -->
+<g id="p1_edge21" class="edge">
+<title>ProjectTasks&#45;&#45;rel_1_2</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1142.93,-513.72C1170.15,-502.42 1195.77,-491.79 1195.77,-491.79 1195.77,-491.79 1443.79,-441.85 1577.48,-414.92"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-496.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- ProjectTasks&#45;&#45;rel_1_3 -->
+<g id="p1_edge23" class="edge">
+<title>ProjectTasks&#45;&#45;rel_1_3</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1173.02,-561.11C1186.42,-564.1 1195.77,-566.19 1195.77,-566.19 1195.77,-566.19 1442.46,-617.67 1576.4,-645.62"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-631.33" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskDependencies&#45;&#45;TaskDependencies__Id -->
+<g id="p1_edge5" class="edge">
+<title>TaskDependencies&#45;&#45;TaskDependencies__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M216.15,-158.59C280.28,-144.9 359.47,-127.99 411.33,-116.91"/>
+</g>
+<!-- TaskDependencies&#45;&#45;TaskDependencies__TaskId -->
+<g id="p1_edge6" class="edge">
+<title>TaskDependencies&#45;&#45;TaskDependencies__TaskId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M154.69,-154.75C211.2,-121.07 301.61,-67.19 301.61,-67.19 301.61,-67.19 348.76,-56.31 392.59,-46.19"/>
+</g>
+<!-- TaskDependencies&#45;&#45;TaskDependencies__DependsOnTaskId -->
+<g id="p1_edge7" class="edge">
+<title>TaskDependencies&#45;&#45;TaskDependencies__DependsOnTaskId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M147.66,-207.73C203.33,-247.31 301.61,-317.19 301.61,-317.19 301.61,-317.19 330.37,-323.83 363.85,-331.56"/>
+</g>
+<!-- TaskDependencies&#45;&#45;TaskDependencies__DependencyType -->
+<g id="p1_edge8" class="edge">
+<title>TaskDependencies&#45;&#45;TaskDependencies__DependencyType</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M216.15,-181.19C254.77,-181.19 298.86,-181.19 339.14,-181.19"/>
+</g>
+<!-- TaskDependencies&#45;&#45;rel_1_4 -->
+<g id="p1_edge25" class="edge">
+<title>TaskDependencies&#45;&#45;rel_1_4</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M134.17,-207.61C185.44,-264.44 301.61,-393.19 301.61,-393.19 301.61,-393.19 347.39,-406.82 390.67,-419.7"/>
+<text xml:space="preserve" text-anchor="middle" x="260.13" y="-367.52" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskDependencies&#45;&#45;rel_1_5 -->
+<g id="p1_edge27" class="edge">
+<title>TaskDependencies&#45;&#45;rel_1_5</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M216.15,-207.06C274.34,-221.28 344.92,-238.54 396.25,-251.08"/>
+<text xml:space="preserve" text-anchor="middle" x="260.13" y="-224.58" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskAssignments&#45;&#45;TaskAssignments__Id -->
+<g id="p1_edge9" class="edge">
+<title>TaskAssignments&#45;&#45;TaskAssignments__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M154.69,-1268.63C211.2,-1302.31 301.61,-1356.19 301.61,-1356.19 301.61,-1356.19 363.92,-1370.57 411.88,-1381.64"/>
+</g>
+<!-- TaskAssignments&#45;&#45;TaskAssignments__TaskId -->
+<g id="p1_edge10" class="edge">
+<title>TaskAssignments&#45;&#45;TaskAssignments__TaskId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M209,-1263.26C266.39,-1275.51 337.62,-1290.72 390.56,-1302.03"/>
+</g>
+<!-- TaskAssignments&#45;&#45;TaskAssignments__UserId -->
+<g id="p1_edge11" class="edge">
+<title>TaskAssignments&#45;&#45;TaskAssignments__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M209,-1242.19C261.66,-1242.19 325.97,-1242.19 377.11,-1242.19"/>
+</g>
+<!-- TaskAssignments&#45;&#45;TaskAssignments__IsPrimary -->
+<g id="p1_edge12" class="edge">
+<title>TaskAssignments&#45;&#45;TaskAssignments__IsPrimary</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M209,-1221.12C269.68,-1208.16 345.84,-1191.9 399.48,-1180.44"/>
+</g>
+<!-- TaskAssignments&#45;&#45;rel_1_6 -->
+<g id="p1_edge29" class="edge">
+<title>TaskAssignments&#45;&#45;rel_1_6</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M154.69,-1215.75C211.2,-1182.07 301.61,-1128.19 301.61,-1128.19 301.61,-1128.19 632.86,-1128.19 632.86,-1128.19 632.86,-1128.19 664.71,-1132.01 701.22,-1136.4"/>
+<text xml:space="preserve" text-anchor="middle" x="260.13" y="-1166.53" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskAssignments&#45;&#45;rel_1_7 -->
+<g id="p1_edge31" class="edge">
+<title>TaskAssignments&#45;&#45;rel_1_7</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M126.29,-1215.85C161.48,-1157.76 242.66,-1023.79 242.66,-1023.79 242.66,-1023.79 314.14,-1015.6 376.26,-1008.49"/>
+<text xml:space="preserve" text-anchor="middle" x="260.13" y="-1028.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskAssignments&#45;&#45;rel_1_8 -->
+<g id="p1_edge33" class="edge">
+<title>TaskAssignments&#45;&#45;rel_1_8</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M138.72,-1215.72C177.6,-1179.46 242.66,-1118.79 242.66,-1118.79 242.66,-1118.79 591,-1070.95 740.68,-1050.4"/>
+<text xml:space="preserve" text-anchor="middle" x="260.13" y="-1123.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskStatusHistories&#45;&#45;TaskStatusHistories__Id -->
+<g id="p1_edge13" class="edge">
+<title>TaskStatusHistories&#45;&#45;TaskStatusHistories__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M176.96,-767.66C232.16,-789.6 301.61,-817.19 301.61,-817.19 301.61,-817.19 363.92,-831.57 411.88,-842.64"/>
+</g>
+<!-- TaskStatusHistories&#45;&#45;TaskStatusHistories__TaskId -->
+<g id="p1_edge14" class="edge">
+<title>TaskStatusHistories&#45;&#45;TaskStatusHistories__TaskId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M219.53,-752.85C271.23,-758.37 332.07,-764.86 380.4,-770.02"/>
+</g>
+<!-- TaskStatusHistories&#45;&#45;TaskStatusHistories__FromStatus -->
+<g id="p1_edge15" class="edge">
+<title>TaskStatusHistories&#45;&#45;TaskStatusHistories__FromStatus</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M219.53,-729.53C271.53,-723.98 332.8,-717.44 381.26,-712.26"/>
+</g>
+<!-- TaskStatusHistories&#45;&#45;TaskStatusHistories__ToStatus -->
+<g id="p1_edge16" class="edge">
+<title>TaskStatusHistories&#45;&#45;TaskStatusHistories__ToStatus</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M176.96,-714.71C232.16,-692.78 301.61,-665.19 301.61,-665.19 301.61,-665.19 356.63,-652.49 403.06,-641.77"/>
+</g>
+<!-- TaskStatusHistories&#45;&#45;rel_1_9 -->
+<g id="p1_edge35" class="edge">
+<title>TaskStatusHistories&#45;&#45;rel_1_9</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M143.65,-767.67C198.45,-811.21 301.61,-893.19 301.61,-893.19 301.61,-893.19 960.57,-934.19 960.57,-934.19 960.57,-934.19 1111.78,-945.25 1224.14,-953.46"/>
+<text xml:space="preserve" text-anchor="middle" x="467.24" y="-918.79" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskStatusHistories&#45;&#45;rel_1_10 -->
+<g id="p1_edge37" class="edge">
+<title>TaskStatusHistories&#45;&#45;rel_1_10</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M143.65,-714.71C198.45,-671.16 301.61,-589.19 301.61,-589.19 301.61,-589.19 355.89,-573.03 402.12,-559.27"/>
+<text xml:space="preserve" text-anchor="middle" x="260.13" y="-639.2" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- rel_1_0&#45;&#45;AspNetUsers -->
+<g id="p1_edge18" class="edge">
+<title>rel_1_0&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1747.83,-930.47C1804.21,-941.9 1867.8,-954.79 1867.8,-954.79 1867.8,-954.79 1877.29,-957.36 1891.07,-961.1"/>
+<text xml:space="preserve" text-anchor="middle" x="1848.92" y="-959.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_1&#45;&#45;ProjectTasks -->
+<g id="p1_edge20" class="edge">
+<title>rel_1_1&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1579.79,-529.45C1536.97,-522.7 1493.12,-515.79 1493.12,-515.79 1493.12,-515.79 1195.77,-515.79 1195.77,-515.79 1195.77,-515.79 1186.42,-517.75 1173.02,-520.55"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-520.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_2&#45;&#45;Projects -->
+<g id="p1_edge22" class="edge">
+<title>rel_1_2&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1775.46,-398.19C1812.88,-398.19 1854.32,-398.19 1891.01,-398.19"/>
+<text xml:space="preserve" text-anchor="middle" x="1848.92" y="-403.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_3&#45;&#45;AspNetUsers -->
+<g id="p1_edge24" class="edge">
+<title>rel_1_3&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1728.42,-685.68C1766.13,-698.56 1806.03,-712.19 1806.03,-712.19 1806.03,-712.19 1919.43,-878.73 1970.37,-953.54"/>
+<text xml:space="preserve" text-anchor="middle" x="1848.92" y="-806.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_4&#45;&#45;ProjectTasks -->
+<g id="p1_edge26" class="edge">
+<title>rel_1_4&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M572.35,-457.75C716.83,-479.35 960.57,-515.79 960.57,-515.79 960.57,-515.79 969.93,-517.75 983.33,-520.55"/>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-520.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_5&#45;&#45;ProjectTasks -->
+<g id="p1_edge28" class="edge">
+<title>rel_1_5&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M532.36,-287.27C578.58,-301.03 632.86,-317.19 632.86,-317.19 632.86,-317.19 960.57,-447.79 960.57,-447.79 960.57,-447.79 1009.31,-486.41 1043.76,-513.71"/>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-452.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_6&#45;&#45;AspNetUsers -->
+<g id="p1_edge30" class="edge">
+<title>rel_1_6&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M914.93,-1136.1C1171.03,-1104.22 1806.03,-1025.19 1806.03,-1025.19 1806.03,-1025.19 1867.8,-1016.19 1867.8,-1016.19 1867.8,-1016.19 1877.29,-1014.17 1891.07,-1011.24"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-1105.72" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_7&#45;&#45;ProjectTasks -->
+<g id="p1_edge32" class="edge">
+<title>rel_1_7&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M529.07,-978.24C575.97,-962.85 632.86,-944.19 632.86,-944.19 632.86,-944.19 949.17,-656.58 1048.02,-566.7"/>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-921.57" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_8&#45;&#45;AspNetUsers -->
+<g id="p1_edge34" class="edge">
+<title>rel_1_8&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M885.01,-1038.54C1117.12,-1030.39 1806.03,-1006.19 1806.03,-1006.19 1806.03,-1006.19 1847.3,-1002.47 1891.23,-998.51"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-1032.58" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_9&#45;&#45;AspNetUsers -->
+<g id="p1_edge36" class="edge">
+<title>rel_1_9&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1476.82,-967.65C1599.09,-972.74 1778.86,-980.21 1891.22,-984.89"/>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-986.42" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_1_10&#45;&#45;ProjectTasks -->
+<g id="p1_edge38" class="edge">
+<title>rel_1_10&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M588.54,-540.19C704.48,-540.19 877.49,-540.19 983.52,-540.19"/>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-545.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- ProjectTasks -->
+<g id="p1_node1" class="node">
+<title>ProjectTasks</title>
+<g id="p1_a_node1"><a xlink:title="ProjectTask | Id, ActualEnd?, ActualHours?, ActualStart?, BoardColumnId?, CompletionPercent?, CreatedAt, CreatedBy, DeletedAt?, DeletedBy?, Description?, EstimatedHours?, IsDeleted, MilestoneId?, ParentTaskId?, PlannedEnd?, PlannedStart?, Priority, ProjectId, RiskLevel?, Status, Title, Type, UpdatedAt?, UpdatedBy">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1171.77,-565.39 984.57,-565.39 984.57,-514.99 1171.77,-514.99 1171.77,-565.39"/>
+<text xml:space="preserve" text-anchor="middle" x="1078.17" y="-533.59" font-family="Arial" font-size="22.00" fill="#172033">ProjectTasks</text>
+</a>
+</g>
+</g>
+<!-- ProjectTasks__Id -->
+<g id="p1_node2" class="node">
+<title>ProjectTasks__Id</title>
+<g id="p1_a_node2"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1661.58" cy="-288.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1630.46" y="-283.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectTasks__ProjectId -->
+<g id="p1_node3" class="node">
+<title>ProjectTasks__ProjectId</title>
+<g id="p1_a_node3"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1661.58" cy="-212.19" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1599.9" y="-204.19" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectTasks__Title -->
+<g id="p1_node4" class="node">
+<title>ProjectTasks__Title</title>
+<g id="p1_a_node4"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1661.58" cy="-826.19" rx="43.01" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1642.68" y="-818.19" font-family="Arial" font-size="20.00">Title</text>
+</a>
+</g>
+</g>
+<!-- ProjectTasks__CompletionPercent -->
+<g id="p1_node5" class="node">
+<title>ProjectTasks__CompletionPercent</title>
+<g id="p1_a_node5"><a xlink:title="Int32 nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1661.58" cy="-750.19" rx="144.43" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1570.97" y="-742.19" font-family="Arial" font-size="20.00">CompletionPercent?</text>
+</a>
+</g>
+</g>
+<!-- TaskDependencies -->
+<g id="p1_node6" class="node">
+<title>TaskDependencies</title>
+<g id="p1_a_node6"><a xlink:title="TaskDependency | Id, CreatedAt, DependencyType, DependsOnTaskId, LagDays?, Notes?, TaskId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="215.01,-206.39 3.64,-206.39 3.64,-155.99 215.01,-155.99 215.01,-206.39"/>
+<text xml:space="preserve" text-anchor="middle" x="109.33" y="-174.59" font-family="Arial" font-size="22.00" fill="#172033">TaskDependencies</text>
+</a>
+</g>
+</g>
+<!-- TaskDependencies__Id -->
+<g id="p1_node7" class="node">
+<title>TaskDependencies__Id</title>
+<g id="p1_a_node7"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="467.24" cy="-105.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="436.12" y="-100.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- TaskDependencies__TaskId -->
+<g id="p1_node8" class="node">
+<title>TaskDependencies__TaskId</title>
+<g id="p1_a_node8"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="467.24" cy="-29.19" rx="90.15" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="415.01" y="-21.19" font-family="Arial" font-size="20.00">TaskId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskDependencies__DependsOnTaskId -->
+<g id="p1_node9" class="node">
+<title>TaskDependencies__DependsOnTaskId</title>
+<g id="p1_a_node9"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="467.24" cy="-355.19" rx="165.63" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="361.64" y="-347.19" font-family="Arial" font-size="20.00">DependsOnTaskId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskDependencies__DependencyType -->
+<g id="p1_node10" class="node">
+<title>TaskDependencies__DependencyType</title>
+<g id="p1_a_node10"><a xlink:title="DependencyType">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="467.24" cy="-181.19" rx="127.14" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="388.85" y="-173.19" font-family="Arial" font-size="20.00">DependencyType</text>
+</a>
+</g>
+</g>
+<!-- TaskAssignments -->
+<g id="p1_node11" class="node">
+<title>TaskAssignments</title>
+<g id="p1_a_node11"><a xlink:title="TaskAssignment | Id, AssignedAt, AssignedBy, IsPrimary, TaskId, UserId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="207.66,-1267.39 11,-1267.39 11,-1216.99 207.66,-1216.99 207.66,-1267.39"/>
+<text xml:space="preserve" text-anchor="middle" x="109.33" y="-1235.59" font-family="Arial" font-size="22.00" fill="#172033">TaskAssignments</text>
+</a>
+</g>
+</g>
+<!-- TaskAssignments__Id -->
+<g id="p1_node12" class="node">
+<title>TaskAssignments__Id</title>
+<g id="p1_a_node12"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="467.24" cy="-1394.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="436.12" y="-1389.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- TaskAssignments__TaskId -->
+<g id="p1_node13" class="node">
+<title>TaskAssignments__TaskId</title>
+<g id="p1_a_node13"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="467.24" cy="-1318.19" rx="90.15" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="415.01" y="-1310.19" font-family="Arial" font-size="20.00">TaskId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskAssignments__UserId -->
+<g id="p1_node14" class="node">
+<title>TaskAssignments__UserId</title>
+<g id="p1_a_node14"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="467.24" cy="-1242.19" rx="89.36" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="415.57" y="-1234.19" font-family="Arial" font-size="20.00">UserId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskAssignments__IsPrimary -->
+<g id="p1_node15" class="node">
+<title>TaskAssignments__IsPrimary</title>
+<g id="p1_a_node15"><a xlink:title="Boolean">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="467.24" cy="-1166.19" rx="76" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="425.01" y="-1158.19" font-family="Arial" font-size="20.00">IsPrimary</text>
+</a>
+</g>
+</g>
+<!-- TaskStatusHistories -->
+<g id="p1_node16" class="node">
+<title>TaskStatusHistories</title>
+<g id="p1_a_node16"><a xlink:title="TaskStatusHistory | Id, ChangedAt, ChangedBy, Comment?, FromStatus, TaskId, ToStatus">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="218.66,-766.39 0,-766.39 0,-715.99 218.66,-715.99 218.66,-766.39"/>
+<text xml:space="preserve" text-anchor="middle" x="109.33" y="-734.59" font-family="Arial" font-size="22.00" fill="#172033">TaskStatusHistories</text>
+</a>
+</g>
+</g>
+<!-- TaskStatusHistories__Id -->
+<g id="p1_node17" class="node">
+<title>TaskStatusHistories__Id</title>
+<g id="p1_a_node17"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="467.24" cy="-855.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="436.12" y="-850.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- TaskStatusHistories__TaskId -->
+<g id="p1_node18" class="node">
+<title>TaskStatusHistories__TaskId</title>
+<g id="p1_a_node18"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="467.24" cy="-779.19" rx="90.15" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="415.01" y="-771.19" font-family="Arial" font-size="20.00">TaskId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskStatusHistories__FromStatus -->
+<g id="p1_node19" class="node">
+<title>TaskStatusHistories__FromStatus</title>
+<g id="p1_a_node19"><a xlink:title="TaskStatus">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="467.24" cy="-703.19" rx="89.38" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="415.56" y="-695.19" font-family="Arial" font-size="20.00">FromStatus</text>
+</a>
+</g>
+</g>
+<!-- TaskStatusHistories__ToStatus -->
+<g id="p1_node20" class="node">
+<title>TaskStatusHistories__ToStatus</title>
+<g id="p1_a_node20"><a xlink:title="TaskStatus">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="467.24" cy="-627.19" rx="72.89" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="427.22" y="-619.19" font-family="Arial" font-size="20.00">ToStatus</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers -->
+<g id="p1_node21" class="node">
+<title>AspNetUsers</title>
+<g id="p1_a_node21"><a xlink:title="User | Id, AccessFailedCount, AvatarUrl?, ConcurrencyStamp?, CreatedAt, DeletedAt?, DeletedBy?, Email?, EmailConfirmed, EmailVerifiedAt?, FullName, IsActive, IsDeleted, JobTitle?, LastLoginAt?, LockoutEnabled, LockoutEnd?, NormalizedEmail?, NormalizedUserName?, OrganizationId, PasswordHash?, Phone?, PhoneNumber?, PhoneNumberConfirmed, SecurityStamp?, TwoFactorEnabled, UpdatedAt?, UserName?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="2099.48,-1024.23 1891.8,-1024.23 1891.8,-954.15 2099.48,-954.15 2099.48,-1024.23"/>
+<text xml:space="preserve" text-anchor="middle" x="1995.64" y="-995.79" font-family="Arial" font-size="22.00" fill="#172033">AspNetUsers</text>
+<text xml:space="preserve" text-anchor="middle" x="1995.64" y="-969.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- Projects -->
+<g id="p1_node22" class="node">
+<title>Projects</title>
+<g id="p1_a_node22"><a xlink:title="Project | Id, Budget?, CreatedAt, DeletedAt?, DeletedBy?, Description?, EndDate?, IsArchived, IsDeleted, Name, OrganizationId, OwnerId, Priority, StartDate?, Status, UpdatedAt?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="2099.48,-433.23 1891.8,-433.23 1891.8,-363.15 2099.48,-363.15 2099.48,-433.23"/>
+<text xml:space="preserve" text-anchor="middle" x="1995.64" y="-404.79" font-family="Arial" font-size="22.00" fill="#172033">Projects</text>
+<text xml:space="preserve" text-anchor="middle" x="1995.64" y="-378.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- rel_1_0 -->
+<g id="p1_node23" class="node">
+<title>rel_1_0</title>
+<g id="p1_a_node23"><a xlink:title="ProjectTasks.CreatedBy &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1661.58,-953.27 1517.12,-913.19 1661.58,-873.11 1806.03,-913.19 1661.58,-953.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-907.49" font-family="Arial" font-size="19.00" fill="#125779">CREATED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_1_1 -->
+<g id="p1_node24" class="node">
+<title>rel_1_1</title>
+<g id="p1_a_node24"><a xlink:title="ProjectTasks.ParentTaskId &#45;&gt; ProjectTasks | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1661.58,-605.07 1561.47,-542.19 1661.58,-479.31 1761.68,-542.19 1661.58,-605.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-547.89" font-family="Arial" font-size="19.00" fill="#125779">PARENT</text>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-525.09" font-family="Arial" font-size="19.00" fill="#125779">TASK</text>
+</a>
+</g>
+</g>
+<!-- rel_1_2 -->
+<g id="p1_node25" class="node">
+<title>rel_1_2</title>
+<g id="p1_a_node25"><a xlink:title="ProjectTasks.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1661.58,-461.07 1549.86,-398.19 1661.58,-335.31 1773.29,-398.19 1661.58,-461.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-403.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-381.09" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_1_3 -->
+<g id="p1_node26" class="node">
+<title>rel_1_3</title>
+<g id="p1_a_node26"><a xlink:title="ProjectTasks.UpdatedBy &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1661.58,-703.27 1517.12,-663.19 1661.58,-623.11 1806.03,-663.19 1661.58,-703.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1661.58" y="-657.49" font-family="Arial" font-size="19.00" fill="#125779">UPDATED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_1_4 -->
+<g id="p1_node27" class="node">
+<title>rel_1_4</title>
+<g id="p1_a_node27"><a xlink:title="TaskDependencies.DependsOnTaskId &#45;&gt; ProjectTasks | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="467.24,-482.27 302.73,-442.19 467.24,-402.11 631.75,-442.19 467.24,-482.27"/>
+<text xml:space="preserve" text-anchor="middle" x="467.24" y="-436.49" font-family="Arial" font-size="19.00" fill="#125779">PREREQUISITE</text>
+</a>
+</g>
+</g>
+<!-- rel_1_5 -->
+<g id="p1_node28" class="node">
+<title>rel_1_5</title>
+<g id="p1_a_node28"><a xlink:title="TaskDependencies.TaskId &#45;&gt; ProjectTasks | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="467.24,-308.27 349.19,-268.19 467.24,-228.11 585.29,-268.19 467.24,-308.27"/>
+<text xml:space="preserve" text-anchor="middle" x="467.24" y="-262.49" font-family="Arial" font-size="19.00" fill="#125779">FOR TASK</text>
+</a>
+</g>
+</g>
+<!-- rel_1_6 -->
+<g id="p1_node29" class="node">
+<title>rel_1_6</title>
+<g id="p1_a_node29"><a xlink:title="TaskAssignments.AssignedBy &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="808.72,-1189.27 656.86,-1149.19 808.72,-1109.11 960.57,-1149.19 808.72,-1189.27"/>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-1143.49" font-family="Arial" font-size="19.00" fill="#125779">ASSIGNED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_1_7 -->
+<g id="p1_node30" class="node">
+<title>rel_1_7</title>
+<g id="p1_a_node30"><a xlink:title="TaskAssignments.TaskId &#45;&gt; ProjectTasks | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="467.24,-1038.27 349.19,-998.19 467.24,-958.11 585.29,-998.19 467.24,-1038.27"/>
+<text xml:space="preserve" text-anchor="middle" x="467.24" y="-992.49" font-family="Arial" font-size="19.00" fill="#125779">FOR TASK</text>
+</a>
+</g>
+</g>
+<!-- rel_1_8 -->
+<g id="p1_node31" class="node">
+<title>rel_1_8</title>
+<g id="p1_a_node31"><a xlink:title="TaskAssignments.UserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="808.72,-1104.07 730.77,-1041.19 808.72,-978.31 886.67,-1041.19 808.72,-1104.07"/>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-1046.89" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="808.72" y="-1024.09" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+<!-- rel_1_9 -->
+<g id="p1_node32" class="node">
+<title>rel_1_9</title>
+<g id="p1_a_node32"><a xlink:title="TaskStatusHistories.ChangedBy &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1344.45,-1002.27 1195.77,-962.19 1344.45,-922.11 1493.12,-962.19 1344.45,-1002.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1344.45" y="-956.49" font-family="Arial" font-size="19.00" fill="#125779">CHANGED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_1_10 -->
+<g id="p1_node33" class="node">
+<title>rel_1_10</title>
+<g id="p1_a_node33"><a xlink:title="TaskStatusHistories.TaskId &#45;&gt; ProjectTasks | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="467.24,-580.27 349.19,-540.19 467.24,-500.11 585.29,-540.19 467.24,-580.27"/>
+<text xml:space="preserve" text-anchor="middle" x="467.24" y="-534.49" font-family="Arial" font-size="19.00" fill="#125779">FOR TASK</text>
+</a>
+</g>
+</g>
+</g>
+</svg><rect x="70" y="1957" width="4001" height="1263" rx="12" fill="#ffffff" stroke="#d9e2ee" stroke-width="1.5"/><text x="100" y="2000" font-size="30" font-weight="700">03  Planning &amp; task collaboration</text><text x="100" y="2037" font-size="21" fill="#64748b">Boards, milestones, comments and attachments</text><svg x="594.5" y="2062" width="2952" height="1123" viewBox="0 0 2952 1123">
+<g id="p2_graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 1101.76)">
+<title>ERD</title>
+<!-- Boards&#45;&#45;Boards__Id -->
+<g id="p2_edge1" class="edge">
+<title>Boards&#45;&#45;Boards__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2271.66,-776.56C2323.68,-752.93 2391.63,-722.08 2391.63,-722.08 2391.63,-722.08 2423.34,-711.2 2452.81,-701.08"/>
+</g>
+<!-- Boards&#45;&#45;Boards__ProjectId -->
+<g id="p2_edge2" class="edge">
+<title>Boards&#45;&#45;Boards__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2243.11,-776.8C2293.89,-732.11 2391.63,-646.08 2391.63,-646.08 2391.63,-646.08 2412.26,-639 2435.7,-630.95"/>
+</g>
+<!-- Boards&#45;&#45;Boards__Name -->
+<g id="p2_edge3" class="edge">
+<title>Boards&#45;&#45;Boards__Name</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2247.22,-829.55C2298.98,-869.88 2391.63,-942.08 2391.63,-942.08 2391.63,-942.08 2426.17,-953.94 2456.67,-964.4"/>
+</g>
+<!-- Boards&#45;&#45;Boards__Type -->
+<g id="p2_edge4" class="edge">
+<title>Boards&#45;&#45;Boards__Type</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M2288.38,-829.62C2337.13,-846.83 2391.63,-866.08 2391.63,-866.08 2391.63,-866.08 2429.13,-878.95 2460.49,-889.71"/>
+</g>
+<!-- Boards&#45;&#45;rel_2_0 -->
+<g id="p2_edge21" class="edge">
+<title>Boards&#45;&#45;rel_2_0</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2307.11,-800.16C2335.3,-799.28 2366.44,-798.31 2395.41,-797.41"/>
+<text xml:space="preserve" text-anchor="middle" x="2348.74" y="-804.49" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- BoardColumns&#45;&#45;BoardColumns__Id -->
+<g id="p2_edge5" class="edge">
+<title>BoardColumns&#45;&#45;BoardColumns__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1502.81,-645.45C1553.51,-667.4 1617.46,-695.08 1617.46,-695.08 1617.46,-695.08 1650.79,-706.2 1681.39,-716.41"/>
+</g>
+<!-- BoardColumns&#45;&#45;BoardColumns__BoardId -->
+<g id="p2_edge6" class="edge">
+<title>BoardColumns&#45;&#45;BoardColumns__BoardId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1535.47,-631.37C1569.66,-635.85 1608.22,-640.92 1642.03,-645.35"/>
+</g>
+<!-- BoardColumns&#45;&#45;BoardColumns__Name -->
+<g id="p2_edge7" class="edge">
+<title>BoardColumns&#45;&#45;BoardColumns__Name</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1535.47,-606.79C1583.04,-600.55 1639.07,-593.19 1678.99,-587.95"/>
+</g>
+<!-- BoardColumns&#45;&#45;BoardColumns__WipLimit -->
+<g id="p2_edge8" class="edge">
+<title>BoardColumns&#45;&#45;BoardColumns__WipLimit</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1502.81,-592.71C1553.51,-570.76 1617.46,-543.08 1617.46,-543.08 1617.46,-543.08 1644.61,-534.02 1672.4,-524.75"/>
+</g>
+<!-- BoardColumns&#45;&#45;rel_2_1 -->
+<g id="p2_edge23" class="edge">
+<title>BoardColumns&#45;&#45;rel_2_1</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1472.48,-645.56C1522.78,-689.11 1617.46,-771.08 1617.46,-771.08 1617.46,-771.08 1649.13,-784.71 1679.06,-797.59"/>
+<text xml:space="preserve" text-anchor="middle" x="1575.98" y="-754.12" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- Milestones&#45;&#45;Milestones__Id -->
+<g id="p2_edge9" class="edge">
+<title>Milestones&#45;&#45;Milestones__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1535.47,-315.08C1580.07,-315.08 1632.1,-315.08 1671.32,-315.08"/>
+</g>
+<!-- Milestones&#45;&#45;Milestones__ProjectId -->
+<g id="p2_edge10" class="edge">
+<title>Milestones&#45;&#45;Milestones__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1535.47,-290.51C1574.12,-280.36 1618.36,-268.75 1655,-259.13"/>
+</g>
+<!-- Milestones&#45;&#45;Milestones__Title -->
+<g id="p2_edge11" class="edge">
+<title>Milestones&#45;&#45;Milestones__Title</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1482.62,-288.64C1534.48,-254.96 1617.46,-201.08 1617.46,-201.08 1617.46,-201.08 1659.75,-186.97 1692.78,-175.95"/>
+</g>
+<!-- Milestones&#45;&#45;Milestones__TargetDate -->
+<g id="p2_edge12" class="edge">
+<title>Milestones&#45;&#45;Milestones__TargetDate</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1480.08,-341.6C1514.09,-365.23 1558.5,-396.08 1558.5,-396.08 1558.5,-396.08 1605.33,-405.02 1650.23,-413.59"/>
+</g>
+<!-- Milestones&#45;&#45;rel_2_2 -->
+<g id="p2_edge25" class="edge">
+<title>Milestones&#45;&#45;rel_2_2</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1535.85,-335.41C1577.58,-344.45 1617.46,-353.08 1617.46,-353.08 1617.46,-353.08 1847.23,-391.08 1847.23,-391.08 1847.23,-391.08 1890.74,-417.89 1928.31,-441.04"/>
+<text xml:space="preserve" text-anchor="middle" x="1575.98" y="-352.54" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskComments&#45;&#45;TaskComments__Id -->
+<g id="p2_edge13" class="edge">
+<title>TaskComments&#45;&#45;TaskComments__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M160.64,-865.55C212.96,-887.49 278.77,-915.08 278.77,-915.08 278.77,-915.08 344.09,-929.74 393.59,-940.85"/>
+</g>
+<!-- TaskComments&#45;&#45;TaskComments__TaskId -->
+<g id="p2_edge14" class="edge">
+<title>TaskComments&#45;&#45;TaskComments__TaskId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M190.99,-849.21C244.24,-854.98 310.47,-862.16 362.38,-867.79"/>
+</g>
+<!-- TaskComments&#45;&#45;TaskComments__ParentCommentId -->
+<g id="p2_edge15" class="edge">
+<title>TaskComments&#45;&#45;TaskComments__ParentCommentId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M190.99,-828.95C225.38,-825.22 265.17,-820.91 303.03,-816.8"/>
+</g>
+<!-- TaskComments&#45;&#45;TaskComments__Content -->
+<g id="p2_edge16" class="edge">
+<title>TaskComments&#45;&#45;TaskComments__Content</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M125.03,-812.65C175.74,-763.98 278.77,-665.08 278.77,-665.08 278.77,-665.08 340.45,-651.24 389.35,-640.26"/>
+</g>
+<!-- TaskComments&#45;&#45;rel_2_3 -->
+<g id="p2_edge27" class="edge">
+<title>TaskComments&#45;&#45;rel_2_3</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M115.64,-812.74C149.07,-764.24 216.99,-665.68 216.99,-665.68 216.99,-665.68 278.77,-589.08 278.77,-589.08 278.77,-589.08 327.27,-575.05 372.35,-562"/>
+<text xml:space="preserve" text-anchor="middle" x="235.88" y="-670.78" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskComments&#45;&#45;rel_2_4 -->
+<g id="p2_edge29" class="edge">
+<title>TaskComments&#45;&#45;rel_2_4</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M129.07,-865.56C181.01,-909.11 278.77,-991.08 278.77,-991.08 278.77,-991.08 335.75,-1007.57 383.6,-1021.42"/>
+<text xml:space="preserve" text-anchor="middle" x="235.88" y="-974.12" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- TaskComments&#45;&#45;rel_2_5 -->
+<g id="p2_edge31" class="edge">
+<title>TaskComments&#45;&#45;rel_2_5</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M160.64,-812.61C212.96,-790.67 278.77,-763.08 278.77,-763.08 278.77,-763.08 335.37,-746.7 383.12,-732.88"/>
+<text xml:space="preserve" text-anchor="middle" x="235.88" y="-792.76" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskAttachments&#45;&#45;TaskAttachments__Id -->
+<g id="p2_edge17" class="edge">
+<title>TaskAttachments&#45;&#45;TaskAttachments__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M194.23,-251.56C256.76,-258.34 336.11,-266.94 389.3,-272.71"/>
+</g>
+<!-- TaskAttachments&#45;&#45;TaskAttachments__TaskId -->
+<g id="p2_edge18" class="edge">
+<title>TaskAttachments&#45;&#45;TaskAttachments__TaskId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M194.23,-230.6C246.93,-224.88 311.57,-217.88 362.44,-212.36"/>
+</g>
+<!-- TaskAttachments&#45;&#45;TaskAttachments__UploaderId -->
+<g id="p2_edge19" class="edge">
+<title>TaskAttachments&#45;&#45;TaskAttachments__UploaderId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M160.64,-214.61C212.96,-192.67 278.77,-165.08 278.77,-165.08 278.77,-165.08 319.14,-156.02 360.46,-146.75"/>
+</g>
+<!-- TaskAttachments&#45;&#45;TaskAttachments__FileName -->
+<g id="p2_edge20" class="edge">
+<title>TaskAttachments&#45;&#45;TaskAttachments__FileName</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M160.64,-267.55C212.96,-289.49 278.77,-317.08 278.77,-317.08 278.77,-317.08 334.22,-329.52 381.66,-340.17"/>
+</g>
+<!-- TaskAttachments&#45;&#45;rel_2_6 -->
+<g id="p2_edge33" class="edge">
+<title>TaskAttachments&#45;&#45;rel_2_6</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M129.07,-267.56C181.01,-311.11 278.77,-393.08 278.77,-393.08 278.77,-393.08 335.37,-409.46 383.12,-423.28"/>
+<text xml:space="preserve" text-anchor="middle" x="235.88" y="-376.12" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- TaskAttachments&#45;&#45;rel_2_7 -->
+<g id="p2_edge35" class="edge">
+<title>TaskAttachments&#45;&#45;rel_2_7</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M129.07,-214.6C181.01,-171.05 278.77,-89.08 278.77,-89.08 278.77,-89.08 327.62,-74.94 372.85,-61.86"/>
+<text xml:space="preserve" text-anchor="middle" x="235.88" y="-143.35" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- ProjectTasks&#45;&#45;rel_2_8 -->
+<g id="p2_edge37" class="edge">
+<title>ProjectTasks&#45;&#45;rel_2_8</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M913.62,-517.23C958.07,-527.16 1009.1,-538.57 1050.2,-547.76"/>
+<text xml:space="preserve" text-anchor="middle" x="954.37" y="-534.68" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- ProjectTasks&#45;&#45;rel_2_9 -->
+<g id="p2_edge39" class="edge">
+<title>ProjectTasks&#45;&#45;rel_2_9</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M913.62,-465.39C955.53,-453.78 1003.3,-440.54 1043.07,-429.52"/>
+<text xml:space="preserve" text-anchor="middle" x="954.37" y="-463.06" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- rel_2_0&#45;&#45;Projects -->
+<g id="p2_edge22" class="edge">
+<title>rel_2_0&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2556.46,-760.19C2585.17,-741.51 2615.06,-722.08 2615.06,-722.08 2615.06,-722.08 2711.44,-629.59 2766.41,-576.84"/>
+<text xml:space="preserve" text-anchor="middle" x="2657.94" y="-700.91" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_1&#45;&#45;Boards -->
+<g id="p2_edge24" class="edge">
+<title>rel_2_1&#45;&#45;Boards</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1839.7,-816.3C1922.9,-813.34 2037.49,-809.26 2117.33,-806.42"/>
+<text xml:space="preserve" text-anchor="middle" x="1982.94" y="-820.16" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_2&#45;&#45;Projects -->
+<g id="p2_edge26" class="edge">
+<title>rel_2_2&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2082.41,-482.13C2238.43,-494.88 2541.01,-519.61 2700.13,-532.62"/>
+<text xml:space="preserve" text-anchor="middle" x="2348.74" y="-509.94" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_3&#45;&#45;AspNetUsers -->
+<g id="p2_edge28" class="edge">
+<title>rel_2_3&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M545.78,-523.11C609.36,-511.83 681.22,-499.08 681.22,-499.08 681.22,-499.08 705.22,-450.08 705.22,-450.08 705.22,-450.08 720.91,-441.84 740.03,-431.8"/>
+<text xml:space="preserve" text-anchor="middle" x="662.33" y="-510.13" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_4&#45;&#45;TaskComments -->
+<g id="p2_edge30" class="edge">
+<title>rel_2_4&#45;&#45;TaskComments</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M373.39,-1024.89C305.87,-1011.15 216.99,-993.08 216.99,-993.08 216.99,-993.08 152.2,-909.58 118.04,-865.55"/>
+<text xml:space="preserve" text-anchor="middle" x="235.88" y="-1005" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_5&#45;&#45;ProjectTasks -->
+<g id="p2_edge32" class="edge">
+<title>rel_2_5&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M515.09,-695.28C562.84,-681.46 619.44,-665.08 619.44,-665.08 619.44,-665.08 713.73,-579.6 768.98,-529.51"/>
+<text xml:space="preserve" text-anchor="middle" x="662.33" y="-645.36" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_6&#45;&#45;ProjectTasks -->
+<g id="p2_edge34" class="edge">
+<title>rel_2_6&#45;&#45;ProjectTasks</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M534.03,-454.27C584.97,-461.67 650.37,-471.17 704.51,-479.04"/>
+<text xml:space="preserve" text-anchor="middle" x="662.33" y="-479.37" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_7&#45;&#45;AspNetUsers -->
+<g id="p2_edge36" class="edge">
+<title>rel_2_7&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M525.36,-61.86C570.59,-74.94 619.44,-89.08 619.44,-89.08 619.44,-89.08 736.3,-279.28 786.05,-360.26"/>
+<text xml:space="preserve" text-anchor="middle" x="662.33" y="-193.48" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_8&#45;&#45;BoardColumns -->
+<g id="p2_edge38" class="edge">
+<title>rel_2_8&#45;&#45;BoardColumns</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1212,-579.41C1253.29,-586.6 1303.47,-595.33 1346.22,-602.77"/>
+<text xml:space="preserve" text-anchor="middle" x="1304.41" y="-603.6" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_2_9&#45;&#45;Milestones -->
+<g id="p2_edge40" class="edge">
+<title>rel_2_9&#45;&#45;Milestones</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1212.41,-381.81C1254.68,-369.41 1306.19,-354.3 1349.5,-341.6"/>
+<text xml:space="preserve" text-anchor="middle" x="1304.41" y="-362.95" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- Boards -->
+<g id="p2_node1" class="node">
+<title>Boards</title>
+<g id="p2_a_node1"><a xlink:title="Board | Id, CreatedAt, IsDefault, Name, ProjectId, Type, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="2305.85,-828.28 2118.65,-828.28 2118.65,-777.88 2305.85,-777.88 2305.85,-828.28"/>
+<text xml:space="preserve" text-anchor="middle" x="2212.25" y="-796.48" font-family="Arial" font-size="22.00" fill="#172033">Boards</text>
+</a>
+</g>
+</g>
+<!-- Boards__Id -->
+<g id="p2_node2" class="node">
+<title>Boards__Id</title>
+<g id="p2_a_node2"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="2503.34" cy="-684.08" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="2472.22" y="-679.08" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- Boards__ProjectId -->
+<g id="p2_node3" class="node">
+<title>Boards__ProjectId</title>
+<g id="p2_a_node3"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="2503.34" cy="-608.08" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="2441.66" y="-600.08" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- Boards__Name -->
+<g id="p2_node4" class="node">
+<title>Boards__Name</title>
+<g id="p2_a_node4"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="2503.34" cy="-980.08" rx="54.02" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="2476.67" y="-972.08" font-family="Arial" font-size="20.00">Name</text>
+</a>
+</g>
+</g>
+<!-- Boards__Type -->
+<g id="p2_node5" class="node">
+<title>Boards__Type</title>
+<g id="p2_a_node5"><a xlink:title="BoardType">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="2503.34" cy="-904.08" rx="47.73" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="2481.11" y="-896.08" font-family="Arial" font-size="20.00">Type</text>
+</a>
+</g>
+</g>
+<!-- BoardColumns -->
+<g id="p2_node6" class="node">
+<title>BoardColumns</title>
+<g id="p2_a_node6"><a xlink:title="BoardColumn | Id, BoardId, CreatedAt, IsArchived, Name, Position, UpdatedAt?, WipLimit?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1534.5,-644.28 1347.3,-644.28 1347.3,-593.88 1534.5,-593.88 1534.5,-644.28"/>
+<text xml:space="preserve" text-anchor="middle" x="1440.9" y="-612.48" font-family="Arial" font-size="22.00" fill="#172033">BoardColumns</text>
+</a>
+</g>
+</g>
+<!-- BoardColumns__Id -->
+<g id="p2_node7" class="node">
+<title>BoardColumns__Id</title>
+<g id="p2_a_node7"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1732.34" cy="-733.08" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1701.22" y="-728.08" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- BoardColumns__BoardId -->
+<g id="p2_node8" class="node">
+<title>BoardColumns__BoardId</title>
+<g id="p2_a_node8"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1732.34" cy="-657.08" rx="97.24" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1675.1" y="-649.08" font-family="Arial" font-size="20.00">BoardId (FK)</text>
+</a>
+</g>
+</g>
+<!-- BoardColumns__Name -->
+<g id="p2_node9" class="node">
+<title>BoardColumns__Name</title>
+<g id="p2_a_node9"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1732.34" cy="-581.08" rx="54.02" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1705.67" y="-573.08" font-family="Arial" font-size="20.00">Name</text>
+</a>
+</g>
+</g>
+<!-- BoardColumns__WipLimit -->
+<g id="p2_node10" class="node">
+<title>BoardColumns__WipLimit</title>
+<g id="p2_a_node10"><a xlink:title="Int32 nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1732.34" cy="-505.08" rx="78.37" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1688.44" y="-497.08" font-family="Arial" font-size="20.00">WipLimit?</text>
+</a>
+</g>
+</g>
+<!-- Milestones -->
+<g id="p2_node11" class="node">
+<title>Milestones</title>
+<g id="p2_a_node11"><a xlink:title="Milestone | Id, CreatedAt, OrderIndex, ProjectId, Status, TargetDate?, Title, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1534.5,-340.28 1347.3,-340.28 1347.3,-289.88 1534.5,-289.88 1534.5,-340.28"/>
+<text xml:space="preserve" text-anchor="middle" x="1440.9" y="-308.48" font-family="Arial" font-size="22.00" fill="#172033">Milestones</text>
+</a>
+</g>
+</g>
+<!-- Milestones__Id -->
+<g id="p2_node12" class="node">
+<title>Milestones__Id</title>
+<g id="p2_a_node12"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1732.34" cy="-315.08" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1701.22" y="-310.08" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- Milestones__ProjectId -->
+<g id="p2_node13" class="node">
+<title>Milestones__ProjectId</title>
+<g id="p2_a_node13"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1732.34" cy="-239.08" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1670.66" y="-231.08" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- Milestones__Title -->
+<g id="p2_node14" class="node">
+<title>Milestones__Title</title>
+<g id="p2_a_node14"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1732.34" cy="-163.08" rx="43.01" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1713.45" y="-155.08" font-family="Arial" font-size="20.00">Title</text>
+</a>
+</g>
+</g>
+<!-- Milestones__TargetDate -->
+<g id="p2_node15" class="node">
+<title>Milestones__TargetDate</title>
+<g id="p2_a_node15"><a xlink:title="DateTimeOffset nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1732.34" cy="-429.08" rx="94.9" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1676.76" y="-421.08" font-family="Arial" font-size="20.00">TargetDate?</text>
+</a>
+</g>
+</g>
+<!-- TaskComments -->
+<g id="p2_node16" class="node">
+<title>TaskComments</title>
+<g id="p2_a_node16"><a xlink:title="TaskComment | Id, AuthorId, Content, CreatedAt, ParentCommentId?, TaskId, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="190.1,-864.28 2.9,-864.28 2.9,-813.88 190.1,-813.88 190.1,-864.28"/>
+<text xml:space="preserve" text-anchor="middle" x="96.5" y="-832.48" font-family="Arial" font-size="22.00" fill="#172033">TaskComments</text>
+</a>
+</g>
+</g>
+<!-- TaskComments__Id -->
+<g id="p2_node17" class="node">
+<title>TaskComments__Id</title>
+<g id="p2_a_node17"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="449.11" cy="-953.08" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="417.99" y="-948.08" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- TaskComments__TaskId -->
+<g id="p2_node18" class="node">
+<title>TaskComments__TaskId</title>
+<g id="p2_a_node18"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.11" cy="-877.08" rx="90.15" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="396.88" y="-869.08" font-family="Arial" font-size="20.00">TaskId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskComments__ParentCommentId -->
+<g id="p2_node19" class="node">
+<title>TaskComments__ParentCommentId</title>
+<g id="p2_a_node19"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.11" cy="-801.08" rx="170.34" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="340.18" y="-793.08" font-family="Arial" font-size="20.00">ParentCommentId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskComments__Content -->
+<g id="p2_node20" class="node">
+<title>TaskComments__Content</title>
+<g id="p2_a_node20"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="449.11" cy="-627.08" rx="65.82" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="414.08" y="-619.08" font-family="Arial" font-size="20.00">Content</text>
+</a>
+</g>
+</g>
+<!-- TaskAttachments -->
+<g id="p2_node21" class="node">
+<title>TaskAttachments</title>
+<g id="p2_a_node21"><a xlink:title="TaskAttachment | Id, CreatedAt, FileName, FileType?, FileUrl, SizeBytes?, TaskId, UploaderId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="192.99,-266.28 0,-266.28 0,-215.88 192.99,-215.88 192.99,-266.28"/>
+<text xml:space="preserve" text-anchor="middle" x="96.5" y="-234.48" font-family="Arial" font-size="22.00" fill="#172033">TaskAttachments</text>
+</a>
+</g>
+</g>
+<!-- TaskAttachments__Id -->
+<g id="p2_node22" class="node">
+<title>TaskAttachments__Id</title>
+<g id="p2_a_node22"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="449.11" cy="-279.08" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="417.99" y="-274.08" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- TaskAttachments__TaskId -->
+<g id="p2_node23" class="node">
+<title>TaskAttachments__TaskId</title>
+<g id="p2_a_node23"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.11" cy="-203.08" rx="90.15" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="396.88" y="-195.08" font-family="Arial" font-size="20.00">TaskId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskAttachments__UploaderId -->
+<g id="p2_node24" class="node">
+<title>TaskAttachments__UploaderId</title>
+<g id="p2_a_node24"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.11" cy="-127.08" rx="116.9" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="377.97" y="-119.08" font-family="Arial" font-size="20.00">UploaderId (FK)</text>
+</a>
+</g>
+</g>
+<!-- TaskAttachments__FileName -->
+<g id="p2_node25" class="node">
+<title>TaskAttachments__FileName</title>
+<g id="p2_a_node25"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="449.11" cy="-355.08" rx="76.8" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="406.32" y="-347.08" font-family="Arial" font-size="20.00">FileName</text>
+</a>
+</g>
+</g>
+<!-- Projects -->
+<g id="p2_node26" class="node">
+<title>Projects</title>
+<g id="p2_a_node26"><a xlink:title="Project | Id, Budget?, CreatedAt, DeletedAt?, DeletedBy?, Description?, EndDate?, IsArchived, IsDeleted, Name, OrganizationId, OwnerId, Priority, StartDate?, Status, UpdatedAt?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="2908.51,-576.12 2700.83,-576.12 2700.83,-506.04 2908.51,-506.04 2908.51,-576.12"/>
+<text xml:space="preserve" text-anchor="middle" x="2804.67" y="-547.68" font-family="Arial" font-size="22.00" fill="#172033">Projects</text>
+<text xml:space="preserve" text-anchor="middle" x="2804.67" y="-521.28" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers -->
+<g id="p2_node27" class="node">
+<title>AspNetUsers</title>
+<g id="p2_a_node27"><a xlink:title="User | Id, AccessFailedCount, AvatarUrl?, ConcurrencyStamp?, CreatedAt, DeletedAt?, DeletedBy?, Email?, EmailConfirmed, EmailVerifiedAt?, FullName, IsActive, IsDeleted, JobTitle?, LastLoginAt?, LockoutEnabled, LockoutEnd?, NormalizedEmail?, NormalizedUserName?, OrganizationId, PasswordHash?, Phone?, PhoneNumber?, PhoneNumberConfirmed, SecurityStamp?, TwoFactorEnabled, UpdatedAt?, UserName?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="912.89,-431.12 705.22,-431.12 705.22,-361.04 912.89,-361.04 912.89,-431.12"/>
+<text xml:space="preserve" text-anchor="middle" x="809.06" y="-402.68" font-family="Arial" font-size="22.00" fill="#172033">AspNetUsers</text>
+<text xml:space="preserve" text-anchor="middle" x="809.06" y="-376.28" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- ProjectTasks -->
+<g id="p2_node28" class="node">
+<title>ProjectTasks</title>
+<g id="p2_a_node28"><a xlink:title="ProjectTask | Id, ActualEnd?, ActualHours?, ActualStart?, BoardColumnId?, CompletionPercent?, CreatedAt, CreatedBy, DeletedAt?, DeletedBy?, Description?, EstimatedHours?, IsDeleted, MilestoneId?, ParentTaskId?, PlannedEnd?, PlannedStart?, Priority, ProjectId, RiskLevel?, Status, Title, Type, UpdatedAt?, UpdatedBy">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="912.89,-529.12 705.22,-529.12 705.22,-459.04 912.89,-459.04 912.89,-529.12"/>
+<text xml:space="preserve" text-anchor="middle" x="809.06" y="-500.68" font-family="Arial" font-size="22.00" fill="#172033">ProjectTasks</text>
+<text xml:space="preserve" text-anchor="middle" x="809.06" y="-474.28" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- rel_2_0 -->
+<g id="p2_node29" class="node">
+<title>rel_2_0</title>
+<g id="p2_a_node29"><a xlink:title="Boards.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="2503.34,-856.96 2391.63,-794.08 2503.34,-731.2 2615.06,-794.08 2503.34,-856.96"/>
+<text xml:space="preserve" text-anchor="middle" x="2503.34" y="-799.78" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="2503.34" y="-776.98" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_2_1 -->
+<g id="p2_node30" class="node">
+<title>rel_2_1</title>
+<g id="p2_a_node30"><a xlink:title="BoardColumns.BoardId &#45;&gt; Boards | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1732.34,-860.16 1617.46,-820.08 1732.34,-780 1847.23,-820.08 1732.34,-860.16"/>
+<text xml:space="preserve" text-anchor="middle" x="1732.34" y="-814.38" font-family="Arial" font-size="19.00" fill="#125779">IN BOARD</text>
+</a>
+</g>
+</g>
+<!-- rel_2_2 -->
+<g id="p2_node31" class="node">
+<title>rel_2_2</title>
+<g id="p2_a_node31"><a xlink:title="Milestones.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1982.94,-536.96 1871.23,-474.08 1982.94,-411.2 2094.65,-474.08 1982.94,-536.96"/>
+<text xml:space="preserve" text-anchor="middle" x="1982.94" y="-479.78" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1982.94" y="-456.98" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_2_3 -->
+<g id="p2_node32" class="node">
+<title>rel_2_3</title>
+<g id="p2_a_node32"><a xlink:title="TaskComments.AuthorId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.11,-580.16 288.83,-540.08 449.11,-500 609.38,-540.08 449.11,-580.16"/>
+<text xml:space="preserve" text-anchor="middle" x="449.11" y="-534.38" font-family="Arial" font-size="19.00" fill="#125779">AUTHORED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_2_4 -->
+<g id="p2_node33" class="node">
+<title>rel_2_4</title>
+<g id="p2_a_node33"><a xlink:title="TaskComments.ParentCommentId &#45;&gt; TaskComments | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.11,-1080.16 332.09,-1040.08 449.11,-1000 566.12,-1040.08 449.11,-1080.16"/>
+<text xml:space="preserve" text-anchor="middle" x="449.11" y="-1034.38" font-family="Arial" font-size="19.00" fill="#125779">REPLY TO</text>
+</a>
+</g>
+</g>
+<!-- rel_2_5 -->
+<g id="p2_node34" class="node">
+<title>rel_2_5</title>
+<g id="p2_a_node34"><a xlink:title="TaskComments.TaskId &#45;&gt; ProjectTasks | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.11,-754.16 331.06,-714.08 449.11,-674 567.15,-714.08 449.11,-754.16"/>
+<text xml:space="preserve" text-anchor="middle" x="449.11" y="-708.38" font-family="Arial" font-size="19.00" fill="#125779">FOR TASK</text>
+</a>
+</g>
+</g>
+<!-- rel_2_6 -->
+<g id="p2_node35" class="node">
+<title>rel_2_6</title>
+<g id="p2_a_node35"><a xlink:title="TaskAttachments.TaskId &#45;&gt; ProjectTasks | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.11,-482.16 331.06,-442.08 449.11,-402 567.15,-442.08 449.11,-482.16"/>
+<text xml:space="preserve" text-anchor="middle" x="449.11" y="-436.38" font-family="Arial" font-size="19.00" fill="#125779">FOR TASK</text>
+</a>
+</g>
+</g>
+<!-- rel_2_7 -->
+<g id="p2_node36" class="node">
+<title>rel_2_7</title>
+<g id="p2_a_node36"><a xlink:title="TaskAttachments.UploaderId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.11,-80.16 290.91,-40.08 449.11,0 607.3,-40.08 449.11,-80.16"/>
+<text xml:space="preserve" text-anchor="middle" x="449.11" y="-34.38" font-family="Arial" font-size="19.00" fill="#125779">UPLOADED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_2_8 -->
+<g id="p2_node37" class="node">
+<title>rel_2_8</title>
+<g id="p2_a_node37"><a xlink:title="ProjectTasks.BoardColumnId &#45;&gt; BoardColumns | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1128.69,-627.96 1023.31,-565.08 1128.69,-502.2 1234.06,-565.08 1128.69,-627.96"/>
+<text xml:space="preserve" text-anchor="middle" x="1128.69" y="-570.78" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1128.69" y="-547.98" font-family="Arial" font-size="19.00" fill="#125779">COLUMN</text>
+</a>
+</g>
+</g>
+<!-- rel_2_9 -->
+<g id="p2_node38" class="node">
+<title>rel_2_9</title>
+<g id="p2_a_node38"><a xlink:title="ProjectTasks.MilestoneId &#45;&gt; Milestones | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1128.69,-468.96 995.85,-406.08 1128.69,-343.2 1261.52,-406.08 1128.69,-468.96"/>
+<text xml:space="preserve" text-anchor="middle" x="1128.69" y="-411.78" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1128.69" y="-388.98" font-family="Arial" font-size="19.00" fill="#125779">MILESTONE</text>
+</a>
+</g>
+</g>
+</g>
+</svg><rect x="4136" y="1957" width="4001" height="1263" rx="12" fill="#ffffff" stroke="#d9e2ee" stroke-width="1.5"/><text x="4166" y="2000" font-size="30" font-weight="700">04  AI &amp; analytical snapshots</text><text x="4166" y="2037" font-size="21" fill="#64748b">Schema prepared for future persistence; ML adapter is not connected</text><svg x="4915" y="2069.5" width="2443" height="1108" viewBox="0 0 2443 1108">
+<g id="p3_graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 1086.67)">
+<title>ERD</title>
+<!-- AiRuns&#45;&#45;AiRuns__Id -->
+<g id="p3_edge1" class="edge">
+<title>AiRuns&#45;&#45;AiRuns__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1667.65,-800.63C1730.13,-834.31 1830.09,-888.19 1830.09,-888.19 1830.09,-888.19 1875.92,-900.89 1914.6,-911.61"/>
+</g>
+<!-- AiRuns&#45;&#45;AiRuns__ProjectId -->
+<g id="p3_edge2" class="edge">
+<title>AiRuns&#45;&#45;AiRuns__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1712.48,-794.66C1766.13,-806.35 1832.79,-820.88 1884.46,-832.15"/>
+</g>
+<!-- AiRuns&#45;&#45;AiRuns__Status -->
+<g id="p3_edge3" class="edge">
+<title>AiRuns&#45;&#45;AiRuns__Status</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1712.48,-774.19C1775.91,-774.19 1857.53,-774.19 1911.06,-774.19"/>
+</g>
+<!-- AiRuns&#45;&#45;AiRuns__InputWindowDays -->
+<g id="p3_edge4" class="edge">
+<title>AiRuns&#45;&#45;AiRuns__InputWindowDays</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1712.48,-753.72C1761.19,-743.11 1820.62,-730.15 1869.83,-719.42"/>
+</g>
+<!-- AiRuns&#45;&#45;rel_3_0 -->
+<g id="p3_edge21" class="edge">
+<title>AiRuns&#45;&#45;rel_3_0</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1667.65,-747.75C1730.13,-714.07 1830.09,-660.19 1830.09,-660.19 1830.09,-660.19 1871.69,-638.35 1909.07,-618.72"/>
+<text xml:space="preserve" text-anchor="middle" x="1788.61" y="-695.86" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- AiPredictions&#45;&#45;AiPredictions__Id -->
+<g id="p3_edge5" class="edge">
+<title>AiPredictions&#45;&#45;AiPredictions__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1059.58,-468.61C1110.41,-469.92 1171.67,-471.5 1216,-472.65"/>
+</g>
+<!-- AiPredictions&#45;&#45;AiPredictions__AiRunId -->
+<g id="p3_edge6" class="edge">
+<title>AiPredictions&#45;&#45;AiPredictions__AiRunId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1059.58,-445.6C1103.18,-436.05 1154.47,-424.8 1196.15,-415.67"/>
+</g>
+<!-- AiPredictions&#45;&#45;AiPredictions__RiskScore -->
+<g id="p3_edge7" class="edge">
+<title>AiPredictions&#45;&#45;AiPredictions__RiskScore</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1012.07,-439.71C1067.1,-408.32 1151.46,-360.19 1151.46,-360.19 1151.46,-360.19 1180.42,-351.35 1210.39,-342.19"/>
+</g>
+<!-- AiPredictions&#45;&#45;AiPredictions__Confidence -->
+<g id="p3_edge8" class="edge">
+<title>AiPredictions&#45;&#45;AiPredictions__Confidence</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1059.58,-491.62C1105.77,-504.13 1160.58,-518.97 1203.46,-530.58"/>
+</g>
+<!-- AiPredictions&#45;&#45;rel_3_1 -->
+<g id="p3_edge23" class="edge">
+<title>AiPredictions&#45;&#45;rel_3_1</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1019.2,-492.74C1044.18,-505.13 1068.51,-517.19 1068.51,-517.19 1068.51,-517.19 1151.46,-588.19 1151.46,-588.19 1151.46,-588.19 1187.88,-603.7 1221.31,-617.94"/>
+<text xml:space="preserve" text-anchor="middle" x="1109.98" y="-572.31" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- AiRecommendations&#45;&#45;AiRecommendations__Id -->
+<g id="p3_edge9" class="edge">
+<title>AiRecommendations&#45;&#45;AiRecommendations__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M227.15,-181.19C281.12,-181.19 343.49,-181.19 388.19,-181.19"/>
+</g>
+<!-- AiRecommendations&#45;&#45;AiRecommendations__AiPredictionId -->
+<g id="p3_edge10" class="edge">
+<title>AiRecommendations&#45;&#45;AiRecommendations__AiPredictionId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M227.15,-155.46C268.33,-146.09 314.42,-135.61 353.8,-126.66"/>
+</g>
+<!-- AiRecommendations&#45;&#45;AiRecommendations__OwnerUserId -->
+<g id="p3_edge11" class="edge">
+<title>AiRecommendations&#45;&#45;AiRecommendations__OwnerUserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M159.23,-154.75C216.83,-121.07 308.98,-67.19 308.98,-67.19 308.98,-67.19 333.53,-60.49 362.01,-52.71"/>
+</g>
+<!-- AiRecommendations&#45;&#45;AiRecommendations__Status -->
+<g id="p3_edge12" class="edge">
+<title>AiRecommendations&#45;&#45;AiRecommendations__Status</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M227.15,-206.92C284.52,-219.97 351.4,-235.18 396.45,-245.42"/>
+</g>
+<!-- AiRecommendations&#45;&#45;rel_3_2 -->
+<g id="p3_edge25" class="edge">
+<title>AiRecommendations&#45;&#45;rel_3_2</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M159.23,-207.63C216.83,-241.31 308.98,-295.19 308.98,-295.19 308.98,-295.19 346.55,-314.62 382.66,-333.3"/>
+<text xml:space="preserve" text-anchor="middle" x="267.5" y="-286.16" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- AiRecommendations&#45;&#45;rel_3_3 -->
+<g id="p3_edge27" class="edge">
+<title>AiRecommendations&#45;&#45;rel_3_3</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M133.78,-207.35C183.35,-272.94 308.98,-439.19 308.98,-439.19 308.98,-439.19 349.73,-453.53 387.13,-466.7"/>
+<text xml:space="preserve" text-anchor="middle" x="267.5" y="-412.32" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__Id -->
+<g id="p3_edge13" class="edge">
+<title>ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1748.42,-258.19C1802.81,-258.19 1863.41,-258.19 1907.01,-258.19"/>
+</g>
+<!-- ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__ProjectId -->
+<g id="p3_edge14" class="edge">
+<title>ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1740.04,-231.71C1787.79,-221.31 1841.39,-209.62 1884.53,-200.22"/>
+</g>
+<!-- ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__HealthScore -->
+<g id="p3_edge15" class="edge">
+<title>ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__HealthScore</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1667.65,-231.75C1730.13,-198.07 1830.09,-144.19 1830.09,-144.19 1830.09,-144.19 1860.73,-135.7 1893.04,-126.75"/>
+</g>
+<!-- ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__SnapshotDate -->
+<g id="p3_edge16" class="edge">
+<title>ProjectHealthSnapshots&#45;&#45;ProjectHealthSnapshots__SnapshotDate</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1740.04,-284.66C1787.4,-294.99 1840.51,-306.57 1883.46,-315.93"/>
+</g>
+<!-- ProjectHealthSnapshots&#45;&#45;rel_3_4 -->
+<g id="p3_edge29" class="edge">
+<title>ProjectHealthSnapshots&#45;&#45;rel_3_4</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1667.65,-284.63C1730.13,-318.31 1830.09,-372.19 1830.09,-372.19 1830.09,-372.19 1871.69,-394.03 1909.07,-413.65"/>
+<text xml:space="preserve" text-anchor="middle" x="1788.61" y="-363.16" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- WorkloadSnapshots&#45;&#45;WorkloadSnapshots__Id -->
+<g id="p3_edge17" class="edge">
+<title>WorkloadSnapshots&#45;&#45;WorkloadSnapshots__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M181.93,-859.66C238.2,-881.6 308.98,-909.19 308.98,-909.19 308.98,-909.19 356.14,-922.06 395.56,-932.82"/>
+</g>
+<!-- WorkloadSnapshots&#45;&#45;WorkloadSnapshots__ProjectId -->
+<g id="p3_edge18" class="edge">
+<title>WorkloadSnapshots&#45;&#45;WorkloadSnapshots__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M223.9,-845.68C265.27,-850.39 311.97,-855.7 352,-860.25"/>
+</g>
+<!-- WorkloadSnapshots&#45;&#45;WorkloadSnapshots__UserId -->
+<g id="p3_edge19" class="edge">
+<title>WorkloadSnapshots&#45;&#45;WorkloadSnapshots__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M223.9,-820.69C269.36,-815.52 321.26,-809.62 363.67,-804.8"/>
+</g>
+<!-- WorkloadSnapshots&#45;&#45;WorkloadSnapshots__UtilizationRatio -->
+<g id="p3_edge20" class="edge">
+<title>WorkloadSnapshots&#45;&#45;WorkloadSnapshots__UtilizationRatio</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M181.93,-806.71C238.2,-784.78 308.98,-757.19 308.98,-757.19 308.98,-757.19 336.83,-749.59 367.61,-741.18"/>
+</g>
+<!-- WorkloadSnapshots&#45;&#45;rel_3_5 -->
+<g id="p3_edge31" class="edge">
+<title>WorkloadSnapshots&#45;&#45;rel_3_5</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M147.97,-859.67C203.83,-903.21 308.98,-985.19 308.98,-985.19 308.98,-985.19 495.83,-992.84 618.82,-997.88"/>
+<text xml:space="preserve" text-anchor="middle" x="267.5" y="-970.1" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- WorkloadSnapshots&#45;&#45;rel_3_6 -->
+<g id="p3_edge33" class="edge">
+<title>WorkloadSnapshots&#45;&#45;rel_3_6</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M147.97,-806.71C203.83,-763.16 308.98,-681.19 308.98,-681.19 308.98,-681.19 360.01,-654.79 400.28,-633.97"/>
+<text xml:space="preserve" text-anchor="middle" x="267.5" y="-731.2" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- rel_3_0&#45;&#45;Projects -->
+<g id="p3_edge22" class="edge">
+<title>rel_3_0&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2081.78,-588.19C2117.36,-588.19 2156.5,-588.19 2191.42,-588.19"/>
+<text xml:space="preserve" text-anchor="middle" x="2149.24" y="-593.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_3_1&#45;&#45;AiRuns -->
+<g id="p3_edge24" class="edge">
+<title>rel_3_1&#45;&#45;AiRuns</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1334.95,-663.6C1394.06,-686.81 1486.38,-723.06 1549.08,-747.68"/>
+<text xml:space="preserve" text-anchor="middle" x="1445.18" y="-716.78" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_3_2&#45;&#45;AiPredictions -->
+<g id="p3_edge26" class="edge">
+<title>rel_3_2&#45;&#45;AiPredictions</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M549.2,-386.28C641.72,-404.12 778.88,-430.56 869.73,-448.08"/>
+<text xml:space="preserve" text-anchor="middle" x="725.12" y="-444.74" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_3_3&#45;&#45;AspNetUsers -->
+<g id="p3_edge28" class="edge">
+<title>rel_3_3&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M539.05,-500.82C628.46,-513.53 766.25,-533.12 860.45,-546.52"/>
+<text xml:space="preserve" text-anchor="middle" x="725.12" y="-546.71" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_3_4&#45;&#45;Projects -->
+<g id="p3_edge30" class="edge">
+<title>rel_3_4&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M2032.41,-472.12C2084.22,-495.03 2157.88,-527.59 2214.01,-552.4"/>
+<text xml:space="preserve" text-anchor="middle" x="2149.24" y="-534.19" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_3_5&#45;&#45;Projects -->
+<g id="p3_edge32" class="edge">
+<title>rel_3_5&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M830.74,-997.54C944.1,-992.51 1108.98,-985.19 1108.98,-985.19 1108.98,-985.19 1108.98,-985.19 1969.22,-985.19 1969.22,-985.19 2106.35,-964.19 2106.35,-964.19 2106.35,-964.19 2229.97,-717.76 2277.05,-623.9"/>
+<text xml:space="preserve" text-anchor="middle" x="1445.18" y="-990.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_3_6&#45;&#45;AspNetUsers -->
+<g id="p3_edge34" class="edge">
+<title>rel_3_6&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M520.51,-602.62C608.27,-594.41 759.07,-580.32 860.06,-570.88"/>
+<text xml:space="preserve" text-anchor="middle" x="725.12" y="-598.76" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- AiRuns -->
+<g id="p3_node1" class="node">
+<title>AiRuns</title>
+<g id="p3_a_node1"><a xlink:title="AiRun | Id, CreatedAt, FinishedAt?, InputWindowDays?, MetadataJson?, ModelName?, ProjectId, StartedAt?, Status, TriggerType">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1711.2,-799.39 1524,-799.39 1524,-748.99 1711.2,-748.99 1711.2,-799.39"/>
+<text xml:space="preserve" text-anchor="middle" x="1617.6" y="-767.59" font-family="Arial" font-size="22.00" fill="#172033">AiRuns</text>
+</a>
+</g>
+</g>
+<!-- AiRuns__Id -->
+<g id="p3_node2" class="node">
+<title>AiRuns__Id</title>
+<g id="p3_a_node2"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1968.22" cy="-926.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1937.1" y="-921.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- AiRuns__ProjectId -->
+<g id="p3_node3" class="node">
+<title>AiRuns__ProjectId</title>
+<g id="p3_a_node3"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1968.22" cy="-850.19" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1906.54" y="-842.19" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- AiRuns__Status -->
+<g id="p3_node4" class="node">
+<title>AiRuns__Status</title>
+<g id="p3_a_node4"><a xlink:title="AiRunStatus">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1968.22" cy="-774.19" rx="56.38" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1939.87" y="-766.19" font-family="Arial" font-size="20.00">Status</text>
+</a>
+</g>
+</g>
+<!-- AiRuns__InputWindowDays -->
+<g id="p3_node5" class="node">
+<title>AiRuns__InputWindowDays</title>
+<g id="p3_a_node5"><a xlink:title="Int32 nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1968.22" cy="-698.19" rx="138.13" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1882.07" y="-690.19" font-family="Arial" font-size="20.00">InputWindowDays?</text>
+</a>
+</g>
+</g>
+<!-- AiPredictions -->
+<g id="p3_node6" class="node">
+<title>AiPredictions</title>
+<g id="p3_a_node6"><a xlink:title="AiPrediction | Id, AiRunId, Confidence?, CreatedAt, DelayProbability?, EntityId?, EntityType, Explanation?, PredictedDelayDays?, PredictionType, RiskScore?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1058.27,-491.39 871.07,-491.39 871.07,-440.99 1058.27,-440.99 1058.27,-491.39"/>
+<text xml:space="preserve" text-anchor="middle" x="964.67" y="-459.59" font-family="Arial" font-size="22.00" fill="#172033">AiPredictions</text>
+</a>
+</g>
+</g>
+<!-- AiPredictions__Id -->
+<g id="p3_node7" class="node">
+<title>AiPredictions__Id</title>
+<g id="p3_a_node7"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1276.88" cy="-474.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1245.76" y="-469.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- AiPredictions__AiRunId -->
+<g id="p3_node8" class="node">
+<title>AiPredictions__AiRunId</title>
+<g id="p3_a_node8"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1276.88" cy="-398.19" rx="98.02" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1219.08" y="-390.19" font-family="Arial" font-size="20.00">AiRunId (FK)</text>
+</a>
+</g>
+</g>
+<!-- AiPredictions__RiskScore -->
+<g id="p3_node9" class="node">
+<title>AiPredictions__RiskScore</title>
+<g id="p3_a_node9"><a xlink:title="Decimal nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1276.88" cy="-322.19" rx="88.6" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1225.75" y="-314.19" font-family="Arial" font-size="20.00">RiskScore?</text>
+</a>
+</g>
+</g>
+<!-- AiPredictions__Confidence -->
+<g id="p3_node10" class="node">
+<title>AiPredictions__Confidence</title>
+<g id="p3_a_node10"><a xlink:title="Decimal nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1276.88" cy="-550.19" rx="95.7" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1220.72" y="-542.19" font-family="Arial" font-size="20.00">Confidence?</text>
+</a>
+</g>
+</g>
+<!-- AiRecommendations -->
+<g id="p3_node11" class="node">
+<title>AiRecommendations</title>
+<g id="p3_a_node11"><a xlink:title="AiRecommendation | Id, AiPredictionId, CreatedAt, Details, DueBy?, OwnerUserId?, Priority, Status, Title, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="226.02,-206.39 0,-206.39 0,-155.99 226.02,-155.99 226.02,-206.39"/>
+<text xml:space="preserve" text-anchor="middle" x="113.01" y="-174.59" font-family="Arial" font-size="22.00" fill="#172033">AiRecommendations</text>
+</a>
+</g>
+</g>
+<!-- AiRecommendations__Id -->
+<g id="p3_node12" class="node">
+<title>AiRecommendations__Id</title>
+<g id="p3_a_node12"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="449.19" cy="-181.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="418.07" y="-176.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- AiRecommendations__AiPredictionId -->
+<g id="p3_node13" class="node">
+<title>AiRecommendations__AiPredictionId</title>
+<g id="p3_a_node13"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.19" cy="-105.19" rx="134.97" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="365.28" y="-97.19" font-family="Arial" font-size="20.00">AiPredictionId (FK)</text>
+</a>
+</g>
+</g>
+<!-- AiRecommendations__OwnerUserId -->
+<g id="p3_node14" class="node">
+<title>AiRecommendations__OwnerUserId</title>
+<g id="p3_a_node14"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.19" cy="-29.19" rx="138.88" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="362.51" y="-21.19" font-family="Arial" font-size="20.00">OwnerUserId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- AiRecommendations__Status -->
+<g id="p3_node15" class="node">
+<title>AiRecommendations__Status</title>
+<g id="p3_a_node15"><a xlink:title="RecommendationStatus">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="449.19" cy="-257.19" rx="56.38" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="420.84" y="-249.19" font-family="Arial" font-size="20.00">Status</text>
+</a>
+</g>
+</g>
+<!-- ProjectHealthSnapshots -->
+<g id="p3_node16" class="node">
+<title>ProjectHealthSnapshots</title>
+<g id="p3_a_node16"><a xlink:title="ProjectHealthSnapshot | Id, CreatedAt, HealthScore?, OpenRiskRatio?, OverdueTasksCount, ProjectId, RiskCount, SnapshotDate, TeamUtilizationAvg?, Throughput?, Velocity?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1747.14,-283.39 1488.07,-283.39 1488.07,-232.99 1747.14,-232.99 1747.14,-283.39"/>
+<text xml:space="preserve" text-anchor="middle" x="1617.6" y="-251.59" font-family="Arial" font-size="22.00" fill="#172033">ProjectHealthSnapshots</text>
+</a>
+</g>
+</g>
+<!-- ProjectHealthSnapshots__Id -->
+<g id="p3_node17" class="node">
+<title>ProjectHealthSnapshots__Id</title>
+<g id="p3_a_node17"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1968.22" cy="-258.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1937.1" y="-253.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectHealthSnapshots__ProjectId -->
+<g id="p3_node18" class="node">
+<title>ProjectHealthSnapshots__ProjectId</title>
+<g id="p3_a_node18"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1968.22" cy="-182.19" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1906.54" y="-174.19" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- ProjectHealthSnapshots__HealthScore -->
+<g id="p3_node19" class="node">
+<title>ProjectHealthSnapshots__HealthScore</title>
+<g id="p3_a_node19"><a xlink:title="Decimal nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1968.22" cy="-106.19" rx="101.98" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1907.63" y="-98.19" font-family="Arial" font-size="20.00">HealthScore?</text>
+</a>
+</g>
+</g>
+<!-- ProjectHealthSnapshots__SnapshotDate -->
+<g id="p3_node20" class="node">
+<title>ProjectHealthSnapshots__SnapshotDate</title>
+<g id="p3_a_node20"><a xlink:title="DateTimeOffset">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1968.22" cy="-334.19" rx="105.92" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1904.84" y="-326.19" font-family="Arial" font-size="20.00">SnapshotDate</text>
+</a>
+</g>
+</g>
+<!-- WorkloadSnapshots -->
+<g id="p3_node21" class="node">
+<title>WorkloadSnapshots</title>
+<g id="p3_a_node21"><a xlink:title="WorkloadSnapshot | Id, ActualHours?, OverloadScore?, PeriodEnd, PeriodStart, PlannedHours?, ProjectId, UserId, UtilizationRatio?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="222.97,-858.39 3.05,-858.39 3.05,-807.99 222.97,-807.99 222.97,-858.39"/>
+<text xml:space="preserve" text-anchor="middle" x="113.01" y="-826.59" font-family="Arial" font-size="22.00" fill="#172033">WorkloadSnapshots</text>
+</a>
+</g>
+</g>
+<!-- WorkloadSnapshots__Id -->
+<g id="p3_node22" class="node">
+<title>WorkloadSnapshots__Id</title>
+<g id="p3_a_node22"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="449.19" cy="-947.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="418.07" y="-942.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- WorkloadSnapshots__ProjectId -->
+<g id="p3_node23" class="node">
+<title>WorkloadSnapshots__ProjectId</title>
+<g id="p3_a_node23"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.19" cy="-871.19" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="387.51" y="-863.19" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- WorkloadSnapshots__UserId -->
+<g id="p3_node24" class="node">
+<title>WorkloadSnapshots__UserId</title>
+<g id="p3_a_node24"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="449.19" cy="-795.19" rx="89.36" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="397.52" y="-787.19" font-family="Arial" font-size="20.00">UserId (FK)</text>
+</a>
+</g>
+</g>
+<!-- WorkloadSnapshots__UtilizationRatio -->
+<g id="p3_node25" class="node">
+<title>WorkloadSnapshots__UtilizationRatio</title>
+<g id="p3_a_node25"><a xlink:title="Decimal nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="449.19" cy="-719.19" rx="118.48" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="376.94" y="-711.19" font-family="Arial" font-size="20.00">UtilizationRatio?</text>
+</a>
+</g>
+</g>
+<!-- Projects -->
+<g id="p3_node26" class="node">
+<title>Projects</title>
+<g id="p3_a_node26"><a xlink:title="Project | Id, Budget?, CreatedAt, DeletedAt?, DeletedBy?, Description?, EndDate?, IsArchived, IsDeleted, Name, OrganizationId, OwnerId, Priority, StartDate?, Status, UpdatedAt?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="2399.8,-623.23 2192.13,-623.23 2192.13,-553.15 2399.8,-553.15 2399.8,-623.23"/>
+<text xml:space="preserve" text-anchor="middle" x="2295.97" y="-594.79" font-family="Arial" font-size="22.00" fill="#172033">Projects</text>
+<text xml:space="preserve" text-anchor="middle" x="2295.97" y="-568.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers -->
+<g id="p3_node27" class="node">
+<title>AspNetUsers</title>
+<g id="p3_a_node27"><a xlink:title="User | Id, AccessFailedCount, AvatarUrl?, ConcurrencyStamp?, CreatedAt, DeletedAt?, DeletedBy?, Email?, EmailConfirmed, EmailVerifiedAt?, FullName, IsActive, IsDeleted, JobTitle?, LastLoginAt?, LockoutEnabled, LockoutEnd?, NormalizedEmail?, NormalizedUserName?, OrganizationId, PasswordHash?, Phone?, PhoneNumber?, PhoneNumberConfirmed, SecurityStamp?, TwoFactorEnabled, UpdatedAt?, UserName?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="1068.51,-596.23 860.83,-596.23 860.83,-526.15 1068.51,-526.15 1068.51,-596.23"/>
+<text xml:space="preserve" text-anchor="middle" x="964.67" y="-567.79" font-family="Arial" font-size="22.00" fill="#172033">AspNetUsers</text>
+<text xml:space="preserve" text-anchor="middle" x="964.67" y="-541.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- rel_3_0 -->
+<g id="p3_node28" class="node">
+<title>rel_3_0</title>
+<g id="p3_a_node28"><a xlink:title="AiRuns.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1968.22,-651.07 1856.51,-588.19 1968.22,-525.31 2079.93,-588.19 1968.22,-651.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1968.22" y="-593.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1968.22" y="-571.09" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_3_1 -->
+<g id="p3_node29" class="node">
+<title>rel_3_1</title>
+<g id="p3_a_node29"><a xlink:title="AiPredictions.AiRunId &#45;&gt; AiRuns | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1276.88,-681.27 1151.46,-641.19 1276.88,-601.11 1402.29,-641.19 1276.88,-681.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1276.88" y="-635.49" font-family="Arial" font-size="19.00" fill="#125779">FROM RUN</text>
+</a>
+</g>
+</g>
+<!-- rel_3_2 -->
+<g id="p3_node30" class="node">
+<title>rel_3_2</title>
+<g id="p3_a_node30"><a xlink:title="AiRecommendations.AiPredictionId &#45;&gt; AiPredictions | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.19,-430.07 308.98,-367.19 449.19,-304.31 589.4,-367.19 449.19,-430.07"/>
+<text xml:space="preserve" text-anchor="middle" x="449.19" y="-372.89" font-family="Arial" font-size="19.00" fill="#125779">FROM</text>
+<text xml:space="preserve" text-anchor="middle" x="449.19" y="-350.09" font-family="Arial" font-size="19.00" fill="#125779">PREDICTION</text>
+</a>
+</g>
+</g>
+<!-- rel_3_3 -->
+<g id="p3_node31" class="node">
+<title>rel_3_3</title>
+<g id="p3_a_node31"><a xlink:title="AiRecommendations.OwnerUserId &#45;&gt; AspNetUsers | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.19,-528.27 322.7,-488.19 449.19,-448.11 575.68,-488.19 449.19,-528.27"/>
+<text xml:space="preserve" text-anchor="middle" x="449.19" y="-482.49" font-family="Arial" font-size="19.00" fill="#125779">OWNED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_3_4 -->
+<g id="p3_node32" class="node">
+<title>rel_3_4</title>
+<g id="p3_a_node32"><a xlink:title="ProjectHealthSnapshots.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1968.22,-507.07 1856.51,-444.19 1968.22,-381.31 2079.93,-444.19 1968.22,-507.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1968.22" y="-449.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1968.22" y="-427.09" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_3_5 -->
+<g id="p3_node33" class="node">
+<title>rel_3_5</title>
+<g id="p3_a_node33"><a xlink:title="WorkloadSnapshots.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="725.12,-1065.07 613.4,-1002.19 725.12,-939.31 836.83,-1002.19 725.12,-1065.07"/>
+<text xml:space="preserve" text-anchor="middle" x="725.12" y="-1007.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="725.12" y="-985.09" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_3_6 -->
+<g id="p3_node34" class="node">
+<title>rel_3_6</title>
+<g id="p3_a_node34"><a xlink:title="WorkloadSnapshots.UserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="449.19,-672.07 371.24,-609.19 449.19,-546.31 527.14,-609.19 449.19,-672.07"/>
+<text xml:space="preserve" text-anchor="middle" x="449.19" y="-614.89" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="449.19" y="-592.09" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+</g>
+</svg><rect x="70" y="3285" width="4001" height="1618" rx="12" fill="#ffffff" stroke="#d9e2ee" stroke-width="1.5"/><text x="100" y="3328" font-size="30" font-weight="700">05  Reports &amp; notifications</text><text x="100" y="3365" font-size="21" fill="#64748b">Templates, generated reports and recipient links</text><svg x="1236" y="3390" width="1669" height="1478" viewBox="0 0 1669 1478">
+<g id="p4_graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 1455.98)">
+<title>ERD</title>
+<!-- ReportTemplates&#45;&#45;ReportTemplates__Id -->
+<g id="p4_edge1" class="edge">
+<title>ReportTemplates&#45;&#45;ReportTemplates__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M853.93,-1279.63C908.81,-1313.31 996.63,-1367.19 996.63,-1367.19 996.63,-1367.19 1060.11,-1381.66 1108.72,-1392.75"/>
+</g>
+<!-- ReportTemplates&#45;&#45;ReportTemplates__OrganizationId -->
+<g id="p4_edge2" class="edge">
+<title>ReportTemplates&#45;&#45;ReportTemplates__OrganizationId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M906.68,-1273.86C955.7,-1284.43 1015.29,-1297.28 1064.7,-1307.93"/>
+</g>
+<!-- ReportTemplates&#45;&#45;ReportTemplates__Name -->
+<g id="p4_edge3" class="edge">
+<title>ReportTemplates&#45;&#45;ReportTemplates__Name</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M906.68,-1253.19C971.81,-1253.19 1055.58,-1253.19 1109.36,-1253.19"/>
+</g>
+<!-- ReportTemplates&#45;&#45;ReportTemplates__Category -->
+<g id="p4_edge4" class="edge">
+<title>ReportTemplates&#45;&#45;ReportTemplates__Category</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M906.68,-1232.52C965.59,-1219.82 1039.75,-1203.83 1093.18,-1192.31"/>
+</g>
+<!-- ReportTemplates&#45;&#45;rel_4_0 -->
+<g id="p4_edge13" class="edge">
+<title>ReportTemplates&#45;&#45;rel_4_0</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M853.93,-1226.75C908.81,-1193.07 996.63,-1139.19 996.63,-1139.19 996.63,-1139.19 1041.61,-1119.76 1084.84,-1101.08"/>
+<text xml:space="preserve" text-anchor="middle" x="955.15" y="-1177.97" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- GeneratedReports&#45;&#45;GeneratedReports__Id -->
+<g id="p4_edge5" class="edge">
+<title>GeneratedReports&#45;&#45;GeneratedReports__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M145.69,-1017.63C200.03,-1051.31 286.99,-1105.19 286.99,-1105.19 286.99,-1105.19 349.68,-1119.57 397.92,-1130.64"/>
+</g>
+<!-- GeneratedReports&#45;&#45;GeneratedReports__ProjectId -->
+<g id="p4_edge6" class="edge">
+<title>GeneratedReports&#45;&#45;GeneratedReports__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M205.07,-1013.38C257.47,-1024.77 320.49,-1038.47 369.82,-1049.19"/>
+</g>
+<!-- GeneratedReports&#45;&#45;GeneratedReports__TemplateId -->
+<g id="p4_edge7" class="edge">
+<title>GeneratedReports&#45;&#45;GeneratedReports__TemplateId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M205.07,-991.19C243.06,-991.19 286.63,-991.19 326.52,-991.19"/>
+</g>
+<!-- GeneratedReports&#45;&#45;GeneratedReports__Title -->
+<g id="p4_edge8" class="edge">
+<title>GeneratedReports&#45;&#45;GeneratedReports__Title</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M205.07,-969C274,-954.02 361.29,-935.04 411.66,-924.09"/>
+</g>
+<!-- GeneratedReports&#45;&#45;rel_4_1 -->
+<g id="p4_edge15" class="edge">
+<title>GeneratedReports&#45;&#45;rel_4_1</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M121.67,-965.03C168.44,-899.44 286.99,-733.19 286.99,-733.19 286.99,-733.19 336.52,-718.53 381.41,-705.25"/>
+<text xml:space="preserve" text-anchor="middle" x="245.51" y="-814.53" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- GeneratedReports&#45;&#45;rel_4_2 -->
+<g id="p4_edge17" class="edge">
+<title>GeneratedReports&#45;&#45;rel_4_2</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M145.69,-964.75C200.03,-931.07 286.99,-877.19 286.99,-877.19 286.99,-877.19 342.34,-853.12 389.05,-832.82"/>
+<text xml:space="preserve" text-anchor="middle" x="245.51" y="-915.97" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- GeneratedReports&#45;&#45;rel_4_3 -->
+<g id="p4_edge19" class="edge">
+<title>GeneratedReports&#45;&#45;rel_4_3</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M128.6,-1017.61C179.15,-1069.81 286.99,-1181.19 286.99,-1181.19 286.99,-1181.19 339.76,-1204.13 385.72,-1224.11"/>
+<text xml:space="preserve" text-anchor="middle" x="245.51" y="-1158.71" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- Notifications&#45;&#45;Notifications__Id -->
+<g id="p4_edge9" class="edge">
+<title>Notifications&#45;&#45;Notifications__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M196.7,-201.56C260.81,-215.49 343.63,-233.5 397.42,-245.19"/>
+</g>
+<!-- Notifications&#45;&#45;Notifications__RecipientUserId -->
+<g id="p4_edge10" class="edge">
+<title>Notifications&#45;&#45;Notifications__RecipientUserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M196.7,-181.19C229.87,-181.19 268.05,-181.19 304.62,-181.19"/>
+</g>
+<!-- Notifications&#45;&#45;Notifications__ProjectId -->
+<g id="p4_edge11" class="edge">
+<title>Notifications&#45;&#45;Notifications__ProjectId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M196.7,-160.82C249.29,-149.39 314.46,-135.22 365.87,-124.05"/>
+</g>
+<!-- Notifications&#45;&#45;Notifications__Title -->
+<g id="p4_edge12" class="edge">
+<title>Notifications&#45;&#45;Notifications__Title</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M145.69,-154.75C200.03,-121.07 286.99,-67.19 286.99,-67.19 286.99,-67.19 363.06,-49.74 412.09,-38.49"/>
+</g>
+<!-- Notifications&#45;&#45;rel_4_4 -->
+<g id="p4_edge21" class="edge">
+<title>Notifications&#45;&#45;rel_4_4</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M145.69,-207.63C200.03,-241.31 286.99,-295.19 286.99,-295.19 286.99,-295.19 333.05,-308.82 376.58,-321.7"/>
+<text xml:space="preserve" text-anchor="middle" x="245.51" y="-283.74" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- Notifications&#45;&#45;rel_4_5 -->
+<g id="p4_edge23" class="edge">
+<title>Notifications&#45;&#45;rel_4_5</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M118.7,-207.62C163.19,-282.59 286.99,-491.19 286.99,-491.19 286.99,-491.19 342.34,-515.25 389.05,-535.56"/>
+<text xml:space="preserve" text-anchor="middle" x="245.51" y="-451.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- Notifications&#45;&#45;rel_4_6 -->
+<g id="p4_edge25" class="edge">
+<title>Notifications&#45;&#45;rel_4_6</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M125.95,-207.61C175.26,-264.44 286.99,-393.19 286.99,-393.19 286.99,-393.19 344.99,-410.35 392.35,-424.36"/>
+<text xml:space="preserve" text-anchor="middle" x="245.51" y="-367.52" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- rel_4_0&#45;&#45;Organizations -->
+<g id="p4_edge14" class="edge">
+<title>rel_4_0&#45;&#45;Organizations</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1334.86,-1067.19C1362.89,-1067.19 1391.19,-1067.19 1416.96,-1067.19"/>
+<text xml:space="preserve" text-anchor="middle" x="1374.83" y="-1072.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_4_1&#45;&#45;AspNetUsers -->
+<g id="p4_edge16" class="edge">
+<title>rel_4_1&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M529.38,-664.13C595.65,-646.35 682,-623.19 682,-623.19 682,-623.19 746.81,-530.7 783.78,-477.95"/>
+<text xml:space="preserve" text-anchor="middle" x="663.11" y="-637.14" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_4_2&#45;&#45;Projects -->
+<g id="p4_edge18" class="edge">
+<title>rel_4_2&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M518.75,-778.03C576.37,-753.63 661.37,-717.64 724.48,-690.91"/>
+<text xml:space="preserve" text-anchor="middle" x="663.11" y="-726.31" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_4_3&#45;&#45;ReportTemplates -->
+<g id="p4_edge20" class="edge">
+<title>rel_4_3&#45;&#45;ReportTemplates</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M579,-1253.19C622.85,-1253.19 671.46,-1253.19 712.63,-1253.19"/>
+<text xml:space="preserve" text-anchor="middle" x="663.11" y="-1258.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_4_4&#45;&#45;AspNetUsers -->
+<g id="p4_edge22" class="edge">
+<title>rel_4_4&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M533.66,-366.06C584.33,-380.08 650.64,-398.42 705.47,-413.59"/>
+<text xml:space="preserve" text-anchor="middle" x="663.11" y="-409.95" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_4_5&#45;&#45;Projects -->
+<g id="p4_edge24" class="edge">
+<title>rel_4_5&#45;&#45;Projects</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M540.57,-578.16C604.97,-589.37 682,-602.79 682,-602.79 682,-602.79 699.84,-610.16 722.13,-619.37"/>
+<text xml:space="preserve" text-anchor="middle" x="663.11" y="-607.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_4_6&#45;&#45;AspNetUsers -->
+<g id="p4_edge26" class="edge">
+<title>rel_4_6&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M561.85,-442.19C607.36,-442.19 660.2,-442.19 705.3,-442.19"/>
+<text xml:space="preserve" text-anchor="middle" x="663.11" y="-447.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- ReportTemplates -->
+<g id="p4_node1" class="node">
+<title>ReportTemplates</title>
+<g id="p4_a_node1"><a xlink:title="ReportTemplate | Id, Category?, CreatedAt, Name, OrganizationId, TemplatePayloadJson?, UpdatedAt?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="905.73,-1278.39 713.95,-1278.39 713.95,-1227.99 905.73,-1227.99 905.73,-1278.39"/>
+<text xml:space="preserve" text-anchor="middle" x="809.84" y="-1246.59" font-family="Arial" font-size="22.00" fill="#172033">ReportTemplates</text>
+</a>
+</g>
+</g>
+<!-- ReportTemplates__Id -->
+<g id="p4_node2" class="node">
+<title>ReportTemplates__Id</title>
+<g id="p4_a_node2"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1164.29" cy="-1405.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1133.17" y="-1400.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- ReportTemplates__OrganizationId -->
+<g id="p4_node3" class="node">
+<title>ReportTemplates__OrganizationId</title>
+<g id="p4_a_node3"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1164.29" cy="-1329.19" rx="139.69" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1077.03" y="-1321.19" font-family="Arial" font-size="20.00">OrganizationId (FK)</text>
+</a>
+</g>
+</g>
+<!-- ReportTemplates__Name -->
+<g id="p4_node4" class="node">
+<title>ReportTemplates__Name</title>
+<g id="p4_a_node4"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1164.29" cy="-1253.19" rx="54.02" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1137.61" y="-1245.19" font-family="Arial" font-size="20.00">Name</text>
+</a>
+</g>
+</g>
+<!-- ReportTemplates__Category -->
+<g id="p4_node5" class="node">
+<title>ReportTemplates__Category</title>
+<g id="p4_a_node5"><a xlink:title="String nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1164.29" cy="-1177.19" rx="81.54" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1118.15" y="-1169.19" font-family="Arial" font-size="20.00">Category?</text>
+</a>
+</g>
+</g>
+<!-- GeneratedReports -->
+<g id="p4_node6" class="node">
+<title>GeneratedReports</title>
+<g id="p4_a_node6"><a xlink:title="GeneratedReport | Id, CreatedAt, CreatedBy?, FileUrl?, PeriodFrom?, PeriodTo?, ProjectId, ReportJson?, SummaryText?, TemplateId?, Title">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="204.04,-1016.39 0,-1016.39 0,-965.99 204.04,-965.99 204.04,-1016.39"/>
+<text xml:space="preserve" text-anchor="middle" x="102.02" y="-984.59" font-family="Arial" font-size="22.00" fill="#172033">GeneratedReports</text>
+</a>
+</g>
+</g>
+<!-- GeneratedReports__Id -->
+<g id="p4_node7" class="node">
+<title>GeneratedReports__Id</title>
+<g id="p4_a_node7"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="453.61" cy="-1143.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="422.49" y="-1138.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- GeneratedReports__ProjectId -->
+<g id="p4_node8" class="node">
+<title>GeneratedReports__ProjectId</title>
+<g id="p4_a_node8"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="453.61" cy="-1067.19" rx="103.52" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="391.93" y="-1059.19" font-family="Arial" font-size="20.00">ProjectId (FK)</text>
+</a>
+</g>
+</g>
+<!-- GeneratedReports__TemplateId -->
+<g id="p4_node9" class="node">
+<title>GeneratedReports__TemplateId</title>
+<g id="p4_a_node9"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="453.61" cy="-991.19" rx="126.32" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="375.8" y="-983.19" font-family="Arial" font-size="20.00">TemplateId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- GeneratedReports__Title -->
+<g id="p4_node10" class="node">
+<title>GeneratedReports__Title</title>
+<g id="p4_a_node10"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="453.61" cy="-915.19" rx="43.01" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="434.71" y="-907.19" font-family="Arial" font-size="20.00">Title</text>
+</a>
+</g>
+</g>
+<!-- Notifications -->
+<g id="p4_node11" class="node">
+<title>Notifications</title>
+<g id="p4_a_node11"><a xlink:title="Notification | Id, ActorUserId?, CreatedAt, Message, ProjectId?, ReadAt?, RecipientUserId, TargetId, TargetType, Title, Type">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="195.62,-206.39 8.42,-206.39 8.42,-155.99 195.62,-155.99 195.62,-206.39"/>
+<text xml:space="preserve" text-anchor="middle" x="102.02" y="-174.59" font-family="Arial" font-size="22.00" fill="#172033">Notifications</text>
+</a>
+</g>
+</g>
+<!-- Notifications__Id -->
+<g id="p4_node12" class="node">
+<title>Notifications__Id</title>
+<g id="p4_a_node12"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="453.61" cy="-257.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="422.49" y="-252.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- Notifications__RecipientUserId -->
+<g id="p4_node13" class="node">
+<title>Notifications__RecipientUserId</title>
+<g id="p4_a_node13"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="453.61" cy="-181.19" rx="148.32" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="360.25" y="-173.19" font-family="Arial" font-size="20.00">RecipientUserId (FK)</text>
+</a>
+</g>
+</g>
+<!-- Notifications__ProjectId -->
+<g id="p4_node14" class="node">
+<title>Notifications__ProjectId</title>
+<g id="p4_a_node14"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="453.61" cy="-105.19" rx="111.39" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="386.36" y="-97.19" font-family="Arial" font-size="20.00">ProjectId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- Notifications__Title -->
+<g id="p4_node15" class="node">
+<title>Notifications__Title</title>
+<g id="p4_a_node15"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="453.61" cy="-29.19" rx="43.01" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="434.71" y="-21.19" font-family="Arial" font-size="20.00">Title</text>
+</a>
+</g>
+</g>
+<!-- Organizations -->
+<g id="p4_node16" class="node">
+<title>Organizations</title>
+<g id="p4_a_node16"><a xlink:title="Organization | Id, Code, CreatedAt, DeletedAt?, DeletedBy?, Industry?, IsDeleted, Name, Slug, Timezone?, UpdatedAt?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="1625.39,-1102.23 1417.72,-1102.23 1417.72,-1032.15 1625.39,-1032.15 1625.39,-1102.23"/>
+<text xml:space="preserve" text-anchor="middle" x="1521.56" y="-1073.79" font-family="Arial" font-size="22.00" fill="#172033">Organizations</text>
+<text xml:space="preserve" text-anchor="middle" x="1521.56" y="-1047.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers -->
+<g id="p4_node17" class="node">
+<title>AspNetUsers</title>
+<g id="p4_a_node17"><a xlink:title="User | Id, AccessFailedCount, AvatarUrl?, ConcurrencyStamp?, CreatedAt, DeletedAt?, DeletedBy?, Email?, EmailConfirmed, EmailVerifiedAt?, FullName, IsActive, IsDeleted, JobTitle?, LastLoginAt?, LockoutEnabled, LockoutEnd?, NormalizedEmail?, NormalizedUserName?, OrganizationId, PasswordHash?, Phone?, PhoneNumber?, PhoneNumberConfirmed, SecurityStamp?, TwoFactorEnabled, UpdatedAt?, UserName?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="913.68,-477.23 706,-477.23 706,-407.15 913.68,-407.15 913.68,-477.23"/>
+<text xml:space="preserve" text-anchor="middle" x="809.84" y="-448.79" font-family="Arial" font-size="22.00" fill="#172033">AspNetUsers</text>
+<text xml:space="preserve" text-anchor="middle" x="809.84" y="-422.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- Projects -->
+<g id="p4_node18" class="node">
+<title>Projects</title>
+<g id="p4_a_node18"><a xlink:title="Project | Id, Budget?, CreatedAt, DeletedAt?, DeletedBy?, Description?, EndDate?, IsArchived, IsDeleted, Name, OrganizationId, OwnerId, Priority, StartDate?, Status, UpdatedAt?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="913.68,-690.23 706,-690.23 706,-620.15 913.68,-620.15 913.68,-690.23"/>
+<text xml:space="preserve" text-anchor="middle" x="809.84" y="-661.79" font-family="Arial" font-size="22.00" fill="#172033">Projects</text>
+<text xml:space="preserve" text-anchor="middle" x="809.84" y="-635.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- rel_4_0 -->
+<g id="p4_node19" class="node">
+<title>rel_4_0</title>
+<g id="p4_a_node19"><a xlink:title="ReportTemplates.OrganizationId &#45;&gt; Organizations | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1164.29,-1130.07 996.63,-1067.19 1164.29,-1004.31 1331.94,-1067.19 1164.29,-1130.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1164.29" y="-1072.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1164.29" y="-1050.09" font-family="Arial" font-size="19.00" fill="#125779">ORGANIZATION</text>
+</a>
+</g>
+</g>
+<!-- rel_4_1 -->
+<g id="p4_node20" class="node">
+<title>rel_4_1</title>
+<g id="p4_a_node20"><a xlink:title="GeneratedReports.CreatedBy &#45;&gt; AspNetUsers | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="453.61,-724.27 309.15,-684.19 453.61,-644.11 598.06,-684.19 453.61,-724.27"/>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-678.49" font-family="Arial" font-size="19.00" fill="#125779">CREATED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_4_2 -->
+<g id="p4_node21" class="node">
+<title>rel_4_2</title>
+<g id="p4_a_node21"><a xlink:title="GeneratedReports.ProjectId &#45;&gt; Projects | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="453.61,-868.07 341.89,-805.19 453.61,-742.31 565.32,-805.19 453.61,-868.07"/>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-810.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-788.09" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_4_3 -->
+<g id="p4_node22" class="node">
+<title>rel_4_3</title>
+<g id="p4_a_node22"><a xlink:title="GeneratedReports.TemplateId &#45;&gt; ReportTemplates | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="453.61,-1316.07 330.27,-1253.19 453.61,-1190.31 576.94,-1253.19 453.61,-1316.07"/>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-1258.89" font-family="Arial" font-size="19.00" fill="#125779">USES</text>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-1236.09" font-family="Arial" font-size="19.00" fill="#125779">TEMPLATE</text>
+</a>
+</g>
+</g>
+<!-- rel_4_4 -->
+<g id="p4_node23" class="node">
+<title>rel_4_4</title>
+<g id="p4_a_node23"><a xlink:title="Notifications.ActorUserId &#45;&gt; AspNetUsers | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="453.61,-384.27 286.99,-344.19 453.61,-304.11 620.22,-344.19 453.61,-384.27"/>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-338.49" font-family="Arial" font-size="19.00" fill="#125779">TRIGGERED BY</text>
+</a>
+</g>
+</g>
+<!-- rel_4_5 -->
+<g id="p4_node24" class="node">
+<title>rel_4_5</title>
+<g id="p4_a_node24"><a xlink:title="Notifications.ProjectId &#45;&gt; Projects | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="453.61,-626.07 341.89,-563.19 453.61,-500.31 565.32,-563.19 453.61,-626.07"/>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-568.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-546.09" font-family="Arial" font-size="19.00" fill="#125779">PROJECT</text>
+</a>
+</g>
+</g>
+<!-- rel_4_6 -->
+<g id="p4_node25" class="node">
+<title>rel_4_6</title>
+<g id="p4_a_node25"><a xlink:title="Notifications.RecipientUserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="453.61,-482.27 348.23,-442.19 453.61,-402.11 558.98,-442.19 453.61,-482.27"/>
+<text xml:space="preserve" text-anchor="middle" x="453.61" y="-436.49" font-family="Arial" font-size="19.00" fill="#125779">SENT TO</text>
+</a>
+</g>
+</g>
+</g>
+</svg><rect x="4136" y="3285" width="4001" height="1618" rx="12" fill="#ffffff" stroke="#d9e2ee" stroke-width="1.5"/><text x="4166" y="3328" font-size="30" font-weight="700">06  Identity, audit logs &amp; refresh tokens</text><text x="4166" y="3365" font-size="21" fill="#64748b">Standard Identity role membership and retained security models</text><svg x="5182" y="3429" width="1909" height="1400" viewBox="0 0 1909 1400">
+<g id="p5_graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 1377.98)">
+<title>ERD</title>
+<!-- AspNetRoles&#45;&#45;AspNetRoles__Id -->
+<g id="p5_edge1" class="edge">
+<title>AspNetRoles&#45;&#45;AspNetRoles__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1142.17,-687.68C1206,-690.73 1288.57,-694.68 1343.68,-697.32"/>
+</g>
+<!-- AspNetRoles&#45;&#45;AspNetRoles__OrganizationId -->
+<g id="p5_edge2" class="edge">
+<title>AspNetRoles&#45;&#45;AspNetRoles__OrganizationId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1142.17,-667.61C1187.3,-660.12 1241.78,-651.07 1289.32,-643.17"/>
+</g>
+<!-- AspNetRoles&#45;&#45;AspNetRoles__Name -->
+<g id="p5_edge3" class="edge">
+<title>AspNetRoles&#45;&#45;AspNetRoles__Name</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1099.9,-656.68C1155.75,-627.96 1236.98,-586.19 1236.98,-586.19 1236.98,-586.19 1299.26,-571.99 1347.68,-560.95"/>
+</g>
+<!-- AspNetRoles&#45;&#45;AspNetRoles__Scope -->
+<g id="p5_edge4" class="edge">
+<title>AspNetRoles&#45;&#45;AspNetRoles__Scope</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M1082.32,-709.61C1112.28,-732.91 1151.2,-763.19 1151.2,-763.19 1151.2,-763.19 1236.98,-882.19 1236.98,-882.19 1236.98,-882.19 1303.3,-897.31 1352.27,-908.48"/>
+</g>
+<!-- AspNetRoles&#45;&#45;rel_5_0 -->
+<g id="p5_edge15" class="edge">
+<title>AspNetRoles&#45;&#45;rel_5_0</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1122.41,-709.66C1179.04,-729.9 1257.27,-757.87 1316.85,-779.17"/>
+<text xml:space="preserve" text-anchor="middle" x="1194.09" y="-744.19" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- AspNetUserRoles&#45;&#45;AspNetUserRoles__UserId -->
+<g id="p5_edge5" class="edge">
+<title>AspNetUserRoles&#45;&#45;AspNetUserRoles__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M198.87,-647.43C235.44,-643.08 277.01,-638.13 314.14,-633.72"/>
+</g>
+<!-- AspNetUserRoles&#45;&#45;AspNetUserRoles__RoleId -->
+<g id="p5_edge6" class="edge">
+<title>AspNetUserRoles&#45;&#45;AspNetUserRoles__RoleId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M198.87,-670.95C235.63,-675.32 277.43,-680.29 314.7,-684.72"/>
+</g>
+<!-- AspNetUserRoles&#45;&#45;rel_5_1 -->
+<g id="p5_edge17" class="edge">
+<title>AspNetUserRoles&#45;&#45;rel_5_1</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M157.08,-632.73C214.53,-606.12 302.68,-565.3 360.72,-538.42"/>
+<text xml:space="preserve" text-anchor="middle" x="239.36" y="-603.55" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- AspNetUserRoles&#45;&#45;rel_5_2 -->
+<g id="p5_edge19" class="edge">
+<title>AspNetUserRoles&#45;&#45;rel_5_2</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M157.08,-685.65C217.58,-713.67 312.14,-757.46 369.71,-784.12"/>
+<text xml:space="preserve" text-anchor="middle" x="239.36" y="-733.85" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- AuditLogs&#45;&#45;AuditLogs__Id -->
+<g id="p5_edge7" class="edge">
+<title>AuditLogs&#45;&#45;AuditLogs__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M193.67,-1156.98C247.63,-1152.25 313.8,-1146.45 360.53,-1142.36"/>
+</g>
+<!-- AuditLogs&#45;&#45;AuditLogs__OrganizationId -->
+<g id="p5_edge8" class="edge">
+<title>AuditLogs&#45;&#45;AuditLogs__OrganizationId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M172.47,-1138.72C222.8,-1120.36 280.83,-1099.19 280.83,-1099.19 280.83,-1099.19 305.06,-1092.55 333.27,-1084.82"/>
+</g>
+<!-- AuditLogs&#45;&#45;AuditLogs__UserId -->
+<g id="p5_edge9" class="edge">
+<title>AuditLogs&#45;&#45;AuditLogs__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M138.3,-1191.49C191.4,-1227.89 280.83,-1289.19 280.83,-1289.19 280.83,-1289.19 313.37,-1298.1 346.93,-1307.3"/>
+</g>
+<!-- AuditLogs&#45;&#45;AuditLogs__Action -->
+<g id="p5_edge10" class="edge">
+<title>AuditLogs&#45;&#45;AuditLogs__Action</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M160.91,-1191.69C191.39,-1204.94 221.88,-1218.19 221.88,-1218.19 221.88,-1218.19 308.01,-1232.57 366.56,-1242.35"/>
+</g>
+<!-- AuditLogs&#45;&#45;rel_5_3 -->
+<g id="p5_edge21" class="edge">
+<title>AuditLogs&#45;&#45;rel_5_3</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M193.83,-1170.38C237.88,-1172.81 280.83,-1175.19 280.83,-1175.19 280.83,-1175.19 560.21,-1175.19 560.21,-1175.19 560.21,-1175.19 641.35,-1108.38 697.76,-1061.92"/>
+<text xml:space="preserve" text-anchor="middle" x="239.36" y="-1178.96" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- AuditLogs&#45;&#45;rel_5_4 -->
+<g id="p5_edge23" class="edge">
+<title>AuditLogs&#45;&#45;rel_5_4</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M133.54,-1138.81C185.85,-1097.75 280.83,-1023.19 280.83,-1023.19 280.83,-1023.19 331.68,-996.79 371.8,-975.97"/>
+<text xml:space="preserve" text-anchor="middle" x="239.36" y="-1074.22" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,1)</text>
+</g>
+<!-- RefreshTokens&#45;&#45;RefreshTokens__Id -->
+<g id="p5_edge11" class="edge">
+<title>RefreshTokens&#45;&#45;RefreshTokens__Id</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M193.67,-181.19C247.26,-181.19 312.89,-181.19 359.57,-181.19"/>
+</g>
+<!-- RefreshTokens&#45;&#45;RefreshTokens__UserId -->
+<g id="p5_edge12" class="edge">
+<title>RefreshTokens&#45;&#45;RefreshTokens__UserId</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M193.67,-158.9C242.47,-147.29 301.26,-133.31 346.63,-122.53"/>
+</g>
+<!-- RefreshTokens&#45;&#45;RefreshTokens__ExpiresAt -->
+<g id="p5_edge13" class="edge">
+<title>RefreshTokens&#45;&#45;RefreshTokens__ExpiresAt</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M141.9,-154.75C195.33,-121.07 280.83,-67.19 280.83,-67.19 280.83,-67.19 319.98,-56.46 356.67,-46.41"/>
+</g>
+<!-- RefreshTokens&#45;&#45;RefreshTokens__IsRevoked -->
+<g id="p5_edge14" class="edge">
+<title>RefreshTokens&#45;&#45;RefreshTokens__IsRevoked</title>
+<path fill="none" stroke="#9aacc5" stroke-width="1.4" d="M193.67,-203.48C243.76,-215.39 304.38,-229.81 350.19,-240.7"/>
+</g>
+<!-- RefreshTokens&#45;&#45;rel_5_5 -->
+<g id="p5_edge25" class="edge">
+<title>RefreshTokens&#45;&#45;rel_5_5</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M141.9,-207.63C195.33,-241.31 280.83,-295.19 280.83,-295.19 280.83,-295.19 331.68,-321.58 371.8,-342.41"/>
+<text xml:space="preserve" text-anchor="middle" x="239.36" y="-283.74" font-family="Arial" font-size="17.00" fill="#b43b0c">(1,1)</text>
+</g>
+<!-- rel_5_0&#45;&#45;Organizations -->
+<g id="p5_edge16" class="edge">
+<title>rel_5_0&#45;&#45;Organizations</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M1502.24,-837.38C1550.32,-850.92 1608.49,-867.29 1657.47,-881.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1615.18" y="-877.19" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_5_1&#45;&#45;AspNetRoles -->
+<g id="p5_edge18" class="edge">
+<title>rel_5_1&#45;&#45;AspNetRoles</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M492.9,-530.84C606.09,-562 826.81,-622.75 952.62,-657.39"/>
+<text xml:space="preserve" text-anchor="middle" x="751.87" y="-651.14" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_5_2&#45;&#45;AspNetUsers -->
+<g id="p5_edge20" class="edge">
+<title>rel_5_2&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M500.03,-807.19C612.13,-807.19 818.23,-807.19 942.74,-807.19"/>
+<text xml:space="preserve" text-anchor="middle" x="751.87" y="-812.29" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_5_3&#45;&#45;Organizations -->
+<g id="p5_edge22" class="edge">
+<title>rel_5_3&#45;&#45;Organizations</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M894.67,-1007.81C1129.19,-990.63 1572.29,-958.19 1572.29,-958.19 1572.29,-958.19 1613.56,-947.69 1657.49,-936.51"/>
+<text xml:space="preserve" text-anchor="middle" x="1194.09" y="-991.65" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_5_4&#45;&#45;AspNetUsers -->
+<g id="p5_edge24" class="edge">
+<title>rel_5_4&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M482.57,-937.12C589.44,-912.49 811.49,-861.32 942.78,-831.06"/>
+<text xml:space="preserve" text-anchor="middle" x="751.87" y="-917.67" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- rel_5_5&#45;&#45;AspNetUsers -->
+<g id="p5_edge26" class="edge">
+<title>rel_5_5&#45;&#45;AspNetUsers</title>
+<path fill="none" stroke="#263244" stroke-width="2.1" d="M477.2,-385.7C607.15,-428.92 919.53,-532.79 919.53,-532.79 919.53,-532.79 943.53,-717.19 943.53,-717.19 943.53,-717.19 976.75,-746.26 1005.42,-771.36"/>
+<text xml:space="preserve" text-anchor="middle" x="751.87" y="-537.89" font-family="Arial" font-size="17.00" fill="#b43b0c">(0,N)</text>
+</g>
+<!-- AspNetRoles -->
+<g id="p5_node1" class="node">
+<title>AspNetRoles</title>
+<g id="p5_a_node1"><a xlink:title="Role | Id, Code, ConcurrencyStamp?, DeletedAt?, DeletedBy?, Description?, IsDeleted, IsSystem, Name?, NormalizedName?, OrganizationId?, Scope">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="1140.96,-708.39 953.76,-708.39 953.76,-657.99 1140.96,-657.99 1140.96,-708.39"/>
+<text xml:space="preserve" text-anchor="middle" x="1047.36" y="-676.59" font-family="Arial" font-size="22.00" fill="#172033">AspNetRoles</text>
+</a>
+</g>
+</g>
+<!-- AspNetRoles__Id -->
+<g id="p5_node2" class="node">
+<title>AspNetRoles__Id</title>
+<g id="p5_a_node2"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="1404.63" cy="-700.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1373.52" y="-695.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- AspNetRoles__OrganizationId -->
+<g id="p5_node3" class="node">
+<title>AspNetRoles__OrganizationId</title>
+<g id="p5_a_node3"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="1404.63" cy="-624.19" rx="147.56" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1311.82" y="-616.19" font-family="Arial" font-size="20.00">OrganizationId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- AspNetRoles__Name -->
+<g id="p5_node4" class="node">
+<title>AspNetRoles__Name</title>
+<g id="p5_a_node4"><a xlink:title="String nullable">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1404.63" cy="-548.19" rx="61.88" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1372.4" y="-540.19" font-family="Arial" font-size="20.00">Name?</text>
+</a>
+</g>
+</g>
+<!-- AspNetRoles__Scope -->
+<g id="p5_node5" class="node">
+<title>AspNetRoles__Scope</title>
+<g id="p5_a_node5"><a xlink:title="RoleScope">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="1404.63" cy="-920.19" rx="56.39" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="1376.28" y="-912.19" font-family="Arial" font-size="20.00">Scope</text>
+</a>
+</g>
+</g>
+<!-- AspNetUserRoles -->
+<g id="p5_node6" class="node">
+<title>AspNetUserRoles</title>
+<g id="p5_a_node6"><a xlink:title="IdentityUserRole`1 | UserId, RoleId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="197.88,-684.39 0,-684.39 0,-633.99 197.88,-633.99 197.88,-684.39"/>
+<text xml:space="preserve" text-anchor="middle" x="98.94" y="-652.59" font-family="Arial" font-size="22.00" fill="#172033">AspNetUserRoles</text>
+</a>
+</g>
+</g>
+<!-- AspNetUserRoles__UserId -->
+<g id="p5_node7" class="node">
+<title>AspNetUserRoles__UserId</title>
+<g id="p5_a_node7"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="420.52" cy="-621.19" rx="116.09" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="349.96" y="-616.19" font-family="Arial" text-decoration="underline" font-size="20.00">UserId (PK, FK)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUserRoles__RoleId -->
+<g id="p5_node8" class="node">
+<title>AspNetUserRoles__RoleId</title>
+<g id="p5_a_node8"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="420.52" cy="-697.19" rx="115.31" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="350.51" y="-692.19" font-family="Arial" text-decoration="underline" font-size="20.00">RoleId (PK, FK)</text>
+</a>
+</g>
+</g>
+<!-- AuditLogs -->
+<g id="p5_node9" class="node">
+<title>AuditLogs</title>
+<g id="p5_a_node9"><a xlink:title="AuditLog | Id, Action, ChangesJson?, CreatedAt, EntityId?, EntityType, IpAddress?, OrganizationId, UserAgent?, UserId?">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="192.54,-1190.39 5.34,-1190.39 5.34,-1139.99 192.54,-1139.99 192.54,-1190.39"/>
+<text xml:space="preserve" text-anchor="middle" x="98.94" y="-1158.59" font-family="Arial" font-size="22.00" fill="#172033">AuditLogs</text>
+</a>
+</g>
+</g>
+<!-- AuditLogs__Id -->
+<g id="p5_node10" class="node">
+<title>AuditLogs__Id</title>
+<g id="p5_a_node10"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="420.52" cy="-1137.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="389.41" y="-1132.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- AuditLogs__OrganizationId -->
+<g id="p5_node11" class="node">
+<title>AuditLogs__OrganizationId</title>
+<g id="p5_a_node11"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="420.52" cy="-1061.19" rx="139.69" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="333.27" y="-1053.19" font-family="Arial" font-size="20.00">OrganizationId (FK)</text>
+</a>
+</g>
+</g>
+<!-- AuditLogs__UserId -->
+<g id="p5_node12" class="node">
+<title>AuditLogs__UserId</title>
+<g id="p5_a_node12"><a xlink:title="Int32 nullable | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="420.52" cy="-1327.19" rx="97.23" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="363.29" y="-1319.19" font-family="Arial" font-size="20.00">UserId? (FK)</text>
+</a>
+</g>
+</g>
+<!-- AuditLogs__Action -->
+<g id="p5_node13" class="node">
+<title>AuditLogs__Action</title>
+<g id="p5_a_node13"><a xlink:title="String">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="420.52" cy="-1251.19" rx="55.6" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="392.73" y="-1243.19" font-family="Arial" font-size="20.00">Action</text>
+</a>
+</g>
+</g>
+<!-- RefreshTokens -->
+<g id="p5_node14" class="node">
+<title>RefreshTokens</title>
+<g id="p5_a_node14"><a xlink:title="RefreshToken | Id, CreatedAt, ExpiresAt, IsRevoked, TokenHash, UserId">
+<polygon fill="#ffffff" stroke="#263244" stroke-width="2.7" points="192.54,-206.39 5.34,-206.39 5.34,-155.99 192.54,-155.99 192.54,-206.39"/>
+<text xml:space="preserve" text-anchor="middle" x="98.94" y="-174.59" font-family="Arial" font-size="22.00" fill="#172033">RefreshTokens</text>
+</a>
+</g>
+</g>
+<!-- RefreshTokens__Id -->
+<g id="p5_node15" class="node">
+<title>RefreshTokens__Id</title>
+<g id="p5_a_node15"><a xlink:title="Int32">
+<ellipse fill="#fff7ed" stroke="#df4d08" stroke-width="2" cx="420.52" cy="-181.19" rx="60.3" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="389.41" y="-176.19" font-family="Arial" text-decoration="underline" font-size="20.00">Id (PK)</text>
+</a>
+</g>
+</g>
+<!-- RefreshTokens__UserId -->
+<g id="p5_node16" class="node">
+<title>RefreshTokens__UserId</title>
+<g id="p5_a_node16"><a xlink:title="Int32 | foreign key">
+<ellipse fill="#edf7ff" stroke="#007cb8" stroke-width="2" cx="420.52" cy="-105.19" rx="89.36" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="368.85" y="-97.19" font-family="Arial" font-size="20.00">UserId (FK)</text>
+</a>
+</g>
+</g>
+<!-- RefreshTokens__ExpiresAt -->
+<g id="p5_node17" class="node">
+<title>RefreshTokens__ExpiresAt</title>
+<g id="p5_a_node17"><a xlink:title="DateTimeOffset">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="420.52" cy="-29.19" rx="76.81" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="377.73" y="-21.19" font-family="Arial" font-size="20.00">ExpiresAt</text>
+</a>
+</g>
+</g>
+<!-- RefreshTokens__IsRevoked -->
+<g id="p5_node18" class="node">
+<title>RefreshTokens__IsRevoked</title>
+<g id="p5_a_node18"><a xlink:title="Boolean">
+<ellipse fill="#ffffff" stroke="#475569" stroke-width="2" cx="420.52" cy="-257.19" rx="83.11" ry="29.19"/>
+<text xml:space="preserve" text-anchor="start" x="373.28" y="-249.19" font-family="Arial" font-size="20.00">IsRevoked</text>
+</a>
+</g>
+</g>
+<!-- Organizations -->
+<g id="p5_node19" class="node">
+<title>Organizations</title>
+<g id="p5_a_node19"><a xlink:title="Organization | Id, Code, CreatedAt, DeletedAt?, DeletedBy?, Industry?, IsDeleted, Name, Slug, Timezone?, UpdatedAt?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="1865.74,-945.23 1658.07,-945.23 1658.07,-875.15 1865.74,-875.15 1865.74,-945.23"/>
+<text xml:space="preserve" text-anchor="middle" x="1761.9" y="-916.79" font-family="Arial" font-size="22.00" fill="#172033">Organizations</text>
+<text xml:space="preserve" text-anchor="middle" x="1761.9" y="-890.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- AspNetUsers -->
+<g id="p5_node20" class="node">
+<title>AspNetUsers</title>
+<g id="p5_a_node20"><a xlink:title="User | Id, AccessFailedCount, AvatarUrl?, ConcurrencyStamp?, CreatedAt, DeletedAt?, DeletedBy?, Email?, EmailConfirmed, EmailVerifiedAt?, FullName, IsActive, IsDeleted, JobTitle?, LastLoginAt?, LockoutEnabled, LockoutEnd?, NormalizedEmail?, NormalizedUserName?, OrganizationId, PasswordHash?, Phone?, PhoneNumber?, PhoneNumberConfirmed, SecurityStamp?, TwoFactorEnabled, UpdatedAt?, UserName?">
+<polygon fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,2" points="1151.2,-842.23 943.53,-842.23 943.53,-772.15 1151.2,-772.15 1151.2,-842.23"/>
+<text xml:space="preserve" text-anchor="middle" x="1047.36" y="-813.79" font-family="Arial" font-size="22.00" fill="#172033">AspNetUsers</text>
+<text xml:space="preserve" text-anchor="middle" x="1047.36" y="-787.39" font-family="Arial" font-size="22.00" fill="#172033">(context reference)</text>
+</a>
+</g>
+</g>
+<!-- rel_5_0 -->
+<g id="p5_node21" class="node">
+<title>rel_5_0</title>
+<g id="p5_a_node21"><a xlink:title="AspNetRoles.OrganizationId &#45;&gt; Organizations | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="1404.63,-873.07 1236.98,-810.19 1404.63,-747.31 1572.29,-810.19 1404.63,-873.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1404.63" y="-815.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="1404.63" y="-793.09" font-family="Arial" font-size="19.00" fill="#125779">ORGANIZATION</text>
+</a>
+</g>
+</g>
+<!-- rel_5_1 -->
+<g id="p5_node22" class="node">
+<title>rel_5_1</title>
+<g id="p5_a_node22"><a xlink:title="AspNetUserRoles.RoleId &#45;&gt; AspNetRoles | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="420.52,-574.07 318.31,-511.19 420.52,-448.31 522.74,-511.19 420.52,-574.07"/>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-516.89" font-family="Arial" font-size="19.00" fill="#125779">GRANTS</text>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-494.09" font-family="Arial" font-size="19.00" fill="#125779">ROLE</text>
+</a>
+</g>
+</g>
+<!-- rel_5_2 -->
+<g id="p5_node23" class="node">
+<title>rel_5_2</title>
+<g id="p5_a_node23"><a xlink:title="AspNetUserRoles.UserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="420.52,-870.07 342.57,-807.19 420.52,-744.31 498.48,-807.19 420.52,-870.07"/>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-812.89" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-790.09" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+<!-- rel_5_3 -->
+<g id="p5_node24" class="node">
+<title>rel_5_3</title>
+<g id="p5_a_node24"><a xlink:title="AuditLogs.OrganizationId &#45;&gt; Organizations | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="751.87,-1081.07 584.21,-1018.19 751.87,-955.31 919.53,-1018.19 751.87,-1081.07"/>
+<text xml:space="preserve" text-anchor="middle" x="751.87" y="-1023.89" font-family="Arial" font-size="19.00" fill="#125779">IN</text>
+<text xml:space="preserve" text-anchor="middle" x="751.87" y="-1001.09" font-family="Arial" font-size="19.00" fill="#125779">ORGANIZATION</text>
+</a>
+</g>
+</g>
+<!-- rel_5_4 -->
+<g id="p5_node25" class="node">
+<title>rel_5_4</title>
+<g id="p5_a_node25"><a xlink:title="AuditLogs.UserId &#45;&gt; AspNetUsers | optional | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="420.52,-1014.07 342.57,-951.19 420.52,-888.31 498.48,-951.19 420.52,-1014.07"/>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-956.89" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-934.09" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+<!-- rel_5_5 -->
+<g id="p5_node26" class="node">
+<title>rel_5_5</title>
+<g id="p5_a_node26"><a xlink:title="RefreshTokens.UserId &#45;&gt; AspNetUsers | required | DeleteBehavior=Restrict">
+<polygon fill="#e0f2fe" stroke="#007cb8" stroke-width="2.2" points="420.52,-430.07 342.57,-367.19 420.52,-304.31 498.48,-367.19 420.52,-430.07"/>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-372.89" font-family="Arial" font-size="19.00" fill="#125779">LINKS</text>
+<text xml:space="preserve" text-anchor="middle" x="420.52" y="-350.09" font-family="Arial" font-size="19.00" fill="#125779">USER</text>
+</a>
+</g>
+</g>
+</g>
+</svg><text x="70" y="4958" font-size="26" font-weight="700">How to read cardinality</text><text x="70" y="5000" font-size="23">(1,1) = exactly one   •   (0,1) = optional, at most one   •   (0,N) = zero or many   •   ? = nullable attribute</text><text x="70" y="5038" font-size="22" fill="#64748b">Each relationship leg shows how many instances a row of its connected entity may participate in.</text><text x="70" y="5077" font-size="22" fill="#64748b">49 application FK links + 2 standard Identity role links. Unshown Identity claims/login/token support tables remain in the database.</text><text x="70" y="5116" font-size="22" fill="#64748b">All mapped FKs use Restrict. Inherited audit/soft-delete attributes are selectively omitted; polymorphic IDs without FKs are not drawn as relationships.</text></g></svg>

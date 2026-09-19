@@ -11,8 +11,6 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
     }
 
     public DbSet<Organization> Organizations => Set<Organization>();
-    public DbSet<Permission> Permissions => Set<Permission>();
-    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<TeamMember> TeamMembers => Set<TeamMember>();
@@ -26,7 +24,6 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
     public DbSet<TaskComment> TaskComments => Set<TaskComment>();
     public DbSet<TaskAttachment> TaskAttachments => Set<TaskAttachment>();
     public DbSet<TaskStatusHistory> TaskStatusHistories => Set<TaskStatusHistory>();
-    public DbSet<TaskProgressSnapshot> TaskProgressSnapshots => Set<TaskProgressSnapshot>();
     public DbSet<AiRun> AiRuns => Set<AiRun>();
     public DbSet<AiPrediction> AiPredictions => Set<AiPrediction>();
     public DbSet<AiRecommendation> AiRecommendations => Set<AiRecommendation>();
@@ -55,8 +52,6 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
         builder.Entity<Notification>().HasOne(x => x.RecipientUser).WithMany(x => x.Notifications).HasForeignKey(x => x.RecipientUserId);
         builder.Entity<Notification>().HasOne(x => x.ActorUser).WithMany(x => x.NotificationsBy).HasForeignKey(x => x.ActorUserId);
         builder.Entity<GeneratedReport>().HasOne(x => x.CreatedByUser).WithMany(x => x.GeneratedReports).HasForeignKey(x => x.CreatedBy);
-        builder.Entity<UserRole>().HasOne(x => x.User).WithMany(x => x.UserRoles).HasForeignKey(x => x.UserId);
-        builder.Entity<UserRole>().HasOne(x => x.AssignedByUser).WithMany().HasForeignKey(x => x.AssignedBy);
         builder.Entity<Project>().Property(x => x.Name).HasMaxLength(200);
         builder.Entity<Project>().Property(x => x.Description).HasMaxLength(4000);
         builder.Entity<ProjectTask>().Property(x => x.Title).HasMaxLength(200);
@@ -78,7 +73,6 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
         builder.Entity<TaskComment>().HasQueryFilter(x => !x.Task.IsDeleted && !x.Task.Project.IsDeleted);
         builder.Entity<TaskDependency>().HasQueryFilter(x => !x.Task!.IsDeleted && !x.Task.Project.IsDeleted &&
             !x.DependsOnTask!.IsDeleted && !x.DependsOnTask.Project.IsDeleted);
-        builder.Entity<TaskProgressSnapshot>().HasQueryFilter(x => !x.Task.IsDeleted && !x.Task.Project.IsDeleted);
         builder.Entity<TaskStatusHistory>().HasQueryFilter(x => !x.Task.IsDeleted && !x.Task.Project.IsDeleted);
         builder.Entity<Project>().ToTable("Projects", table =>
         {
@@ -93,7 +87,6 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
         });
         builder.Entity<ProjectMember>().HasIndex(x => new { x.ProjectId, x.UserId }).IsUnique();
         builder.Entity<TeamMember>().HasIndex(x => new { x.TeamId, x.UserId }).IsUnique();
-        builder.Entity<RolePermission>().HasIndex(x => new { x.RoleId, x.PermissionId }).IsUnique();
         // Preserve audit records and avoid SQL Server multiple cascade paths.
         foreach (var entity in builder.Model.GetEntityTypes())
         {
@@ -150,4 +143,3 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
-

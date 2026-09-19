@@ -36,8 +36,4 @@ public class ProjectTask : SoftDeletableEntity
     public ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
     public ICollection<TaskAttachment> Attachments { get; set; } = new HashSet<TaskAttachment>();
     public ICollection<TaskStatusHistory> StatusHistory { get; set; } = new HashSet<TaskStatusHistory>();
-    public ICollection<TaskProgressSnapshot> ProgressSnapshots { get; set; } = new HashSet<TaskProgressSnapshot>();
 }
-
-
-

@@ -16,6 +16,16 @@ public class ProjectRequestValidator : AbstractValidator<ProjectRequest>
             .WithMessage("EndDate must be on or after StartDate.");
     }
 }
+public class TaskDependencyRequestValidator : AbstractValidator<TaskDependencyRequest>
+{
+    public TaskDependencyRequestValidator()
+    {
+        RuleFor(x => x.DependsOnTaskId).GreaterThan(0);
+        RuleFor(x => x.DependencyType).IsInEnum();
+        RuleFor(x => x.Notes).MaximumLength(4000);
+    }
+}
+
 public class TaskRequestValidator : AbstractValidator<TaskRequest>
 {
     public TaskRequestValidator()
