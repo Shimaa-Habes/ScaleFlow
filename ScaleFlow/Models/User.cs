@@ -22,6 +22,7 @@ public class User : IdentityUser<int>
 
     public Organization Organization { get; set; } = null!;
 
+    public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     public ICollection<ProjectMember> ProjectMemberships { get; set; } = new HashSet<ProjectMember>();
     public ICollection<TeamMember> TeamMemberships { get; set; } = new HashSet<TeamMember>();
     public ICollection<Project> OwnedProjects { get; set; } = new HashSet<Project>();
@@ -39,3 +40,5 @@ public class User : IdentityUser<int>
     public ICollection<AuditLog> AuditLogs { get; set; } = new HashSet<AuditLog>();
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
 }
+
+

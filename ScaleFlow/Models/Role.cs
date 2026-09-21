@@ -16,4 +16,8 @@ public class Role : IdentityRole<int>
     public int? DeletedBy { get; set; }
 
     public Organization? Organization { get; set; }
+    public ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();
+    public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
 }
+
+

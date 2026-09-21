@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"7GQAbt8GzKufqB7tBV0XStjpDG1/8IuLeCArBKpZDDs=","Source":"ScaleFlow","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "wpLJeG6mRSrudqUi9j/iCDVSJFf1X+L1xS8h29MHhPM=",
+  "Source": "ScaleFlow",
+  "BasePath": "_content/ScaleFlow",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

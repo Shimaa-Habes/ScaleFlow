@@ -137,15 +137,15 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("Confidence")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("DelayProbability")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<int?>("EntityId")
                         .HasColumnType("int");
@@ -164,8 +164,8 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("RiskScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.HasKey("Id");
 
@@ -393,6 +393,9 @@ namespace ScaleFlow.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FileUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -420,7 +423,7 @@ namespace ScaleFlow.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("ProjectId");
 
@@ -569,6 +572,40 @@ namespace ScaleFlow.Migrations
                     b.ToTable("Organizations");
                 });
 
+            modelBuilder.Entity("ScaleFlow.Models.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Resource")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
             modelBuilder.Entity("ScaleFlow.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -578,8 +615,8 @@ namespace ScaleFlow.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("Budget")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(19, 4)
+                        .HasColumnType("decimal(19,4)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -591,8 +628,7 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("EndDate")
                         .HasColumnType("datetimeoffset");
@@ -605,8 +641,7 @@ namespace ScaleFlow.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
@@ -632,12 +667,7 @@ namespace ScaleFlow.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Projects", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Projects_Budget", "[Budget] IS NULL OR [Budget] >= 0");
-
-                            t.HasCheckConstraint("CK_Projects_Dates", "[StartDate] IS NULL OR [EndDate] IS NULL OR [EndDate] >= [StartDate]");
-                        });
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.ProjectHealthSnapshot", b =>
@@ -652,12 +682,12 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("HealthScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<decimal?>("OpenRiskRatio")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<int>("OverdueTasksCount")
                         .HasColumnType("int");
@@ -672,16 +702,16 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("TeamUtilizationAvg")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<decimal?>("Throughput")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<decimal?>("Velocity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.HasKey("Id");
 
@@ -702,8 +732,8 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("HourlyRate")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(19, 4)
+                        .HasColumnType("decimal(19,4)");
 
                     b.Property<bool>("IsBlocked")
                         .HasColumnType("bit");
@@ -725,10 +755,9 @@ namespace ScaleFlow.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProjectId", "UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("ProjectMembers");
                 });
@@ -745,8 +774,8 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("ActualHours")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTimeOffset?>("ActualStart")
                         .HasColumnType("datetimeoffset");
@@ -763,22 +792,12 @@ namespace ScaleFlow.Migrations
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int?>("DeletedBy")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("EstimatedHours")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int?>("MilestoneId")
                         .HasColumnType("int");
@@ -806,8 +825,7 @@ namespace ScaleFlow.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -832,14 +850,7 @@ namespace ScaleFlow.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ProjectTasks", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_ProjectTasks_Completion", "[CompletionPercent] IS NULL OR [CompletionPercent] BETWEEN 0 AND 100");
-
-                            t.HasCheckConstraint("CK_ProjectTasks_Dates", "[PlannedStart] IS NULL OR [PlannedEnd] IS NULL OR [PlannedEnd] >= [PlannedStart]");
-
-                            t.HasCheckConstraint("CK_ProjectTasks_Hours", "[EstimatedHours] IS NULL OR [EstimatedHours] >= 0");
-                        });
+                    b.ToTable("ProjectTasks");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.RefreshToken", b =>
@@ -966,6 +977,32 @@ namespace ScaleFlow.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("ScaleFlow.Models.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.TaskAssignment", b =>
@@ -1116,6 +1153,33 @@ namespace ScaleFlow.Migrations
                     b.ToTable("TaskDependencies");
                 });
 
+            modelBuilder.Entity("ScaleFlow.Models.TaskProgressSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProgressPercent")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("RecordedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskProgressSnapshots");
+                });
+
             modelBuilder.Entity("ScaleFlow.Models.TaskStatusHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -1217,10 +1281,9 @@ namespace ScaleFlow.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TeamId");
 
-                    b.HasIndex("TeamId", "UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("TeamMembers");
                 });
@@ -1337,6 +1400,48 @@ namespace ScaleFlow.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ScaleFlow.Models.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("AssignedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("AssignedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedBy");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRole");
+                });
+
             modelBuilder.Entity("ScaleFlow.Models.WorkloadSnapshot", b =>
                 {
                     b.Property<int>("Id")
@@ -1346,12 +1451,12 @@ namespace ScaleFlow.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("ActualHours")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal?>("OverloadScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(8, 4)
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<DateTimeOffset>("PeriodEnd")
                         .HasColumnType("datetimeoffset");
@@ -1360,8 +1465,8 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("PlannedHours")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
@@ -1370,8 +1475,8 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("UtilizationRatio")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.HasKey("Id");
 
@@ -1387,7 +1492,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1396,7 +1501,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1405,7 +1510,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1414,13 +1519,13 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1429,7 +1534,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1438,7 +1543,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.AiRun", "AiRun")
                         .WithMany("Predictions")
                         .HasForeignKey("AiRunId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AiRun");
@@ -1449,13 +1554,12 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.AiPrediction", "AiPrediction")
                         .WithMany("Recommendations")
                         .HasForeignKey("AiPredictionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "OwnerUser")
                         .WithMany("RecommendedTo")
-                        .HasForeignKey("OwnerUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("OwnerUserId");
 
                     b.Navigation("AiPrediction");
 
@@ -1467,7 +1571,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("AiRuns")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1478,13 +1582,12 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Organization", "Organization")
                         .WithMany("AuditLogs")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "User")
                         .WithMany("AuditLogs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Organization");
 
@@ -1496,7 +1599,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("Boards")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1507,7 +1610,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Board", "Board")
                         .WithMany("Columns")
                         .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Board");
@@ -1517,19 +1620,17 @@ namespace ScaleFlow.Migrations
                 {
                     b.HasOne("ScaleFlow.Models.User", "CreatedByUser")
                         .WithMany("GeneratedReports")
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("CreatedByUserId");
 
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("GeneratedReports")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.ReportTemplate", "Template")
                         .WithMany("GeneratedReports")
-                        .HasForeignKey("TemplateId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("TemplateId");
 
                     b.Navigation("CreatedByUser");
 
@@ -1543,7 +1644,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("Milestones")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1558,8 +1659,7 @@ namespace ScaleFlow.Migrations
 
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("Notifications")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ProjectId");
 
                     b.HasOne("ScaleFlow.Models.User", "RecipientUser")
                         .WithMany("Notifications")
@@ -1579,13 +1679,13 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Organization", "Organization")
                         .WithMany("Projects")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "Owner")
                         .WithMany("OwnedProjects")
                         .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -1598,7 +1698,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("HealthSnapshots")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1609,13 +1709,13 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("Members")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "User")
                         .WithMany("ProjectMemberships")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1627,8 +1727,7 @@ namespace ScaleFlow.Migrations
                 {
                     b.HasOne("ScaleFlow.Models.BoardColumn", "BoardColumn")
                         .WithMany("Tasks")
-                        .HasForeignKey("BoardColumnId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("BoardColumnId");
 
                     b.HasOne("ScaleFlow.Models.User", "CreatedByUser")
                         .WithMany("CreatedTasks")
@@ -1638,18 +1737,16 @@ namespace ScaleFlow.Migrations
 
                     b.HasOne("ScaleFlow.Models.Milestone", "Milestone")
                         .WithMany("Tasks")
-                        .HasForeignKey("MilestoneId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("MilestoneId");
 
                     b.HasOne("ScaleFlow.Models.ProjectTask", "ParentTask")
                         .WithMany("SubTasks")
-                        .HasForeignKey("ParentTaskId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ParentTaskId");
 
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("Tasks")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "UpdatedByUser")
@@ -1676,7 +1773,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1687,7 +1784,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Organization", "Organization")
                         .WithMany("ReportTemplates")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -1697,10 +1794,28 @@ namespace ScaleFlow.Migrations
                 {
                     b.HasOne("ScaleFlow.Models.Organization", "Organization")
                         .WithMany("Roles")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("OrganizationId");
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("ScaleFlow.Models.RolePermission", b =>
+                {
+                    b.HasOne("ScaleFlow.Models.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScaleFlow.Models.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.TaskAssignment", b =>
@@ -1714,7 +1829,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.ProjectTask", "Task")
                         .WithMany("Assignments")
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "User")
@@ -1735,13 +1850,13 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.ProjectTask", "Task")
                         .WithMany("Attachments")
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "Uploader")
                         .WithMany("Attachments")
                         .HasForeignKey("UploaderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Task");
@@ -1754,18 +1869,17 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.User", "Author")
                         .WithMany("Comments")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.TaskComment", "ParentComment")
                         .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ParentCommentId");
 
                     b.HasOne("ScaleFlow.Models.ProjectTask", "Task")
                         .WithMany("Comments")
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Author");
@@ -1794,6 +1908,17 @@ namespace ScaleFlow.Migrations
                     b.Navigation("Task");
                 });
 
+            modelBuilder.Entity("ScaleFlow.Models.TaskProgressSnapshot", b =>
+                {
+                    b.HasOne("ScaleFlow.Models.ProjectTask", "Task")
+                        .WithMany("ProgressSnapshots")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+                });
+
             modelBuilder.Entity("ScaleFlow.Models.TaskStatusHistory", b =>
                 {
                     b.HasOne("ScaleFlow.Models.User", "ChangedByUser")
@@ -1805,7 +1930,7 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.ProjectTask", "Task")
                         .WithMany("StatusHistory")
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ChangedByUser");
@@ -1817,19 +1942,17 @@ namespace ScaleFlow.Migrations
                 {
                     b.HasOne("ScaleFlow.Models.User", "LeadUser")
                         .WithMany()
-                        .HasForeignKey("LeadUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("LeadUserId");
 
                     b.HasOne("ScaleFlow.Models.Organization", "Organization")
                         .WithMany("Teams")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("Teams")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ProjectId");
 
                     b.Navigation("LeadUser");
 
@@ -1843,13 +1966,13 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Team", "Team")
                         .WithMany("Members")
                         .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "User")
                         .WithMany("TeamMemberships")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Team");
@@ -1862,10 +1985,42 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Organization", "Organization")
                         .WithMany("Users")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("ScaleFlow.Models.UserRole", b =>
+                {
+                    b.HasOne("ScaleFlow.Models.User", "AssignedByUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ScaleFlow.Models.Project", "Project")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("ScaleFlow.Models.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScaleFlow.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssignedByUser");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.WorkloadSnapshot", b =>
@@ -1873,13 +2028,13 @@ namespace ScaleFlow.Migrations
                     b.HasOne("ScaleFlow.Models.Project", "Project")
                         .WithMany("WorkloadSnapshots")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ScaleFlow.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1927,6 +2082,11 @@ namespace ScaleFlow.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("ScaleFlow.Models.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
             modelBuilder.Entity("ScaleFlow.Models.Project", b =>
                 {
                     b.Navigation("AiRuns");
@@ -1947,6 +2107,8 @@ namespace ScaleFlow.Migrations
 
                     b.Navigation("Teams");
 
+                    b.Navigation("UserRoles");
+
                     b.Navigation("WorkloadSnapshots");
                 });
 
@@ -1962,6 +2124,8 @@ namespace ScaleFlow.Migrations
 
                     b.Navigation("DependentOn");
 
+                    b.Navigation("ProgressSnapshots");
+
                     b.Navigation("StatusHistory");
 
                     b.Navigation("SubTasks");
@@ -1970,6 +2134,13 @@ namespace ScaleFlow.Migrations
             modelBuilder.Entity("ScaleFlow.Models.ReportTemplate", b =>
                 {
                     b.Navigation("GeneratedReports");
+                });
+
+            modelBuilder.Entity("ScaleFlow.Models.Role", b =>
+                {
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("ScaleFlow.Models.TaskComment", b =>
@@ -2015,6 +2186,8 @@ namespace ScaleFlow.Migrations
                     b.Navigation("TeamMemberships");
 
                     b.Navigation("UpdatedTasks");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

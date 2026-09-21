@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ScaleFlow")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e258851fdc182eaa21afb78754262d34c10d71ce")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2908cc2be2b18b35db7d4b77c76e4779abfd221b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ScaleFlow")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ScaleFlow")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
