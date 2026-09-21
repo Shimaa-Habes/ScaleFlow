@@ -24,11 +24,11 @@ public class AuthController : ControllerBase
         try
         {
             var result = await _authService.RegisterAsync(request, cancellationToken);
-            return Ok(result);
+            return Ok(ApiResponse<AuthResponse>.Ok(result));
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(ApiResponse<object>.Fail(ex.Message));
         }
     }
 
@@ -38,11 +38,11 @@ public class AuthController : ControllerBase
         try
         {
             var result = await _authService.LoginAsync(request, cancellationToken);
-            return Ok(result);
+            return Ok(ApiResponse<AuthResponse>.Ok(result));
         }
         catch (InvalidOperationException ex)
         {
-            return Unauthorized(new { message = ex.Message });
+            return Unauthorized(ApiResponse<object>.Fail(ex.Message));
         }
     }
 
@@ -70,27 +70,27 @@ public class AuthController : ControllerBase
     [HttpGet("project-manager-only")]
     public IActionResult ProjectManagerOnly()
     {
-        return Ok(new { message = "Project manager access granted." });
+        return Ok(ApiResponse<object>.Ok(null, "Project manager access granted."));
     }
 
     [Authorize(Roles = RoleConstants.TeamLeader)]
     [HttpGet("team-leader-only")]
     public IActionResult TeamLeaderOnly()
     {
-        return Ok(new { message = "Team leader access granted." });
+        return Ok(ApiResponse<object>.Ok(null, "Team leader access granted."));
     }
 
     [Authorize(Roles = RoleConstants.TeamMember)]
     [HttpGet("team-member-only")]
     public IActionResult TeamMemberOnly()
     {
-        return Ok(new { message = "Team member access granted." });
+        return Ok(ApiResponse<object>.Ok(null, "Team member access granted."));
     }
 
     [Authorize(Roles = RoleConstants.Client)]
     [HttpGet("client-only")]
     public IActionResult ClientOnly()
     {
-        return Ok(new { message = "Client access granted." });
+        return Ok(ApiResponse<object>.Ok(null, "Client access granted."));
     }
 }

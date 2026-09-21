@@ -1,4 +1,9 @@
 using System.Text;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using ScaleFlow.DTOs;
+using ScaleFlow.Middleware;
+using ScaleFlow.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +24,15 @@ public class Program
 
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
-        builder.Services.AddControllers();
+        builder.Services.AddValidatorsFromAssemblyContaining<ProjectRequestValidator>();
+        builder.Services.AddScoped<ApiValidationFilter>();
+        builder.Services.AddScoped<IProjectService, ProjectManagementService>();
+        builder.Services.AddScoped<ITaskService, ProjectManagementService>();
+        builder.Services.AddControllers(options => options.Filters.Add<ApiValidationFilter>())
+            .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context =>
+                new BadRequestObjectResult(ApiResponse<object>.Fail("Validation failed.",
+                    context.ModelState.Where(x => x.Value!.Errors.Count > 0).ToDictionary(x => x.Key,
+                        x => x.Value!.Errors.Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Invalid value." : e.ErrorMessage).ToArray()))));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -80,6 +93,21 @@ public class Program
             })
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = 401;
+                        context.Response.Headers.WWWAuthenticate = "Bearer";
+                        await context.Response.WriteAsJsonAsync(ApiResponse<object>.Fail("Authentication is required."));
+                    },
+                    OnForbidden = context =>
+                    {
+                        context.Response.StatusCode = 403;
+                        return context.Response.WriteAsJsonAsync(ApiResponse<object>.Fail("Access denied."));
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -132,6 +160,10 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseMiddleware<ApiExceptionMiddleware>();
+        app.UseStatusCodePages(async context =>
+            await context.HttpContext.Response.WriteAsJsonAsync(ApiResponse<object>.Fail(
+                "Request failed with status " + context.HttpContext.Response.StatusCode + ".")));
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
