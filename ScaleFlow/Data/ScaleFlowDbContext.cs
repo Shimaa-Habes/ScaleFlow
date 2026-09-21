@@ -130,6 +130,12 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
             .HasForeignKey(x => x.CreatedBy)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Entity<Project>()
+            .HasOne(x => x.Owner)
+            .WithMany(x => x.OwnedProjects)
+            .HasForeignKey(x => x.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Entity<ProjectTask>()
             .HasOne(x => x.UpdatedByUser)
             .WithMany(x => x.UpdatedTasks)
@@ -176,6 +182,36 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
             .HasOne(x => x.User)
             .WithMany(x => x.TaskAssignments)
             .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<ProjectMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.ProjectMemberships)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<WorkloadSnapshot>()
+            .HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TeamMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.TeamMemberships)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskAttachment>()
+            .HasOne(x => x.Uploader)
+            .WithMany(x => x.Attachments)
+            .HasForeignKey(x => x.UploaderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskComment>()
+            .HasOne(x => x.Author)
+            .WithMany(x => x.Comments)
+            .HasForeignKey(x => x.AuthorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<TaskAssignment>()

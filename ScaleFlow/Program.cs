@@ -135,7 +135,7 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ScaleFlowDbContext>();
-            await dbContext.Database.EnsureCreatedAsync();
+            await dbContext.Database.MigrateAsync();
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
             foreach (var roleName in RoleConstants.All)
@@ -157,6 +157,7 @@ public class Program
                     }
                 }
             }
+
         }
 
         if (app.Environment.IsDevelopment())
