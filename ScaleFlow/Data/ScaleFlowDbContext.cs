@@ -86,6 +86,66 @@ public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
             .WithMany(x => x.TaskStatusChanges)
             .HasForeignKey(x => x.ChangedBy)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Notification>()
+            .HasOne(x => x.RecipientUser)
+            .WithMany(x => x.Notifications)
+            .HasForeignKey(x => x.RecipientUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Notification>()
+            .HasOne(x => x.ActorUser)
+            .WithMany(x => x.NotificationsBy)
+            .HasForeignKey(x => x.ActorUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskDependency>()
+            .HasOne(x => x.Task)
+            .WithMany(x => x.Dependencies)
+            .HasForeignKey(x => x.TaskId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskDependency>()
+            .HasOne(x => x.DependsOnTask)
+            .WithMany(x => x.DependentOn)
+            .HasForeignKey(x => x.DependsOnTaskId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskAssignment>()
+            .HasOne(x => x.Task)
+            .WithMany(x => x.Assignments)
+            .HasForeignKey(x => x.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<TaskAssignment>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.TaskAssignments)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TaskAssignment>()
+            .HasOne(x => x.AssignedByUser)
+            .WithMany(x => x.AssignedTasksBy)
+            .HasForeignKey(x => x.AssignedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<UserRole>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.UserRoles)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<UserRole>()
+            .HasOne(x => x.Role)
+            .WithMany(x => x.UserRoles)
+            .HasForeignKey(x => x.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<UserRole>()
+            .HasOne(x => x.AssignedByUser)
+            .WithMany()
+            .HasForeignKey(x => x.AssignedBy)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
 
