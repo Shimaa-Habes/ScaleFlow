@@ -9,8 +9,8 @@ import '../widgets/scaleflow_bottom_nav.dart';
 import 'ai_insights_screen.dart';
 import 'profile_screen.dart';
 import 'projects_screen.dart';
-
 import 'home_screen.dart';
+
 // ============================================================
 // DASHBOARD PAGE
 // ============================================================
@@ -23,23 +23,11 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  // ==========================================================
-  // NOTIFICATION STATE
-  // ==========================================================
-
   bool _notificationsEnabled = true;
-
-  // ==========================================================
-  // BUILD
-  // ==========================================================
 
   @override
   Widget build(BuildContext context) {
     final visibleProjects = scaleFlowProjects;
-
-    // --------------------------------------------------------
-    // TASK CALCULATIONS
-    // --------------------------------------------------------
 
     final totalTasks = visibleProjects.fold<int>(
       0,
@@ -63,10 +51,6 @@ class _DashboardPageState extends State<DashboardPage> {
           (project) => project.status == ProjectStatus.atRisk,
         )
         .length;
-
-    // --------------------------------------------------------
-    // PROJECT CALCULATIONS
-    // --------------------------------------------------------
 
     final onTrackProjects = visibleProjects
         .where(
@@ -94,253 +78,167 @@ class _DashboardPageState extends State<DashboardPage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-
-      // ========================================================
-      // APP BAR
-      // ========================================================
-
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 16,
-
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Dashboard',
-              style: TextStyle(
-                fontSize: 23,
-                fontWeight: FontWeight.w700,
-                color: AppColors.darkCharcoal,
-              ),
+      body: Stack(
+        children: [
+          // الخلفية المخصصة للصورة مع طبقة تدرج شفافة لتوضيح العناصر
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/Dash-Image.jpg', // تأكدي من مسار الصورة في assets
+              fit: BoxFit.cover,
             ),
-            SizedBox(height: 3),
-            Text(
-              'Your projects at a glance',
-              style: TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-              ),
+          ),
+          Positioned.fill(
+            child: Container(
+              color: const Color(0xFFF7F6FB).withOpacity(0.92),
             ),
-          ],
-        ),
-
-        // ======================================================
-        // NOTIFICATIONS
-        // ======================================================
-
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Stack(
+          ),
+          SafeArea(
+            child: Column(
               children: [
-                IconButton(
-                  tooltip: 'Notifications',
-                  onPressed: _openNotifications,
-                  icon: const Icon(
-                    Icons.notifications_none,
-                    color: AppColors.darkCharcoal,
-                    size: 27,
+                // AppBar مخصص متناسق مع الخلفية
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Dashboard',
+                            style: TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.darkCharcoal,
+                            ),
+                          ),
+                          SizedBox(height: 3),
+                          Text(
+                            'Your projects at a glance',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Stack(
+                        children: [
+                          IconButton(
+                            tooltip: 'Notifications',
+                            onPressed: _openNotifications,
+                            icon: const Icon(
+                              Icons.notifications_none,
+                              color: AppColors.darkCharcoal,
+                              size: 27,
+                            ),
+                          ),
+                          if (_notificationsEnabled)
+                            Positioned(
+                              right: 7,
+                              top: 7,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.alertCoral,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                if (_notificationsEnabled)
-                  Positioned(
-                    right: 7,
-                    top: 7,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.alertCoral,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxWidth = constraints.maxWidth < 600
+                          ? constraints.maxWidth
+                          : 460.0;
+
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: maxWidth,
+                          ),
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(16, 4, 16, 30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildSectionTitle('Visual Overview'),
+                                const SizedBox(height: 10),
+                                _buildVisualOverview(
+                                  health: overallHealth,
+                                  progress: overallProgress,
+                                  projectsCount: visibleProjects.length,
+                                ),
+                                const SizedBox(height: 20),
+                                _buildProjectStatus(
+                                  onTrack: onTrackProjects,
+                                  atRisk: atRiskProjects,
+                                ),
+                                const SizedBox(height: 20),
+                                _buildProjectPerformance(visibleProjects),
+                                const SizedBox(height: 20),
+                                _buildSectionTitle('Task Overview'),
+                                const SizedBox(height: 10),
+                                _buildTaskOverview(
+                                  totalTasks: totalTasks,
+                                  dueToday: dueToday,
+                                  overdue: atRiskProjects,
+                                  completedTasks: completedTasks,
+                                ),
+                                const SizedBox(height: 20),
+                                _buildTeamWorkload(),
+                                const SizedBox(height: 20),
+                                _buildSectionTitle('Upcoming Deadlines'),
+                                const SizedBox(height: 10),
+                                _buildUpcomingDeadlines(visibleProjects),
+                                const SizedBox(height: 20),
+                                _buildRecentActivity(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
+                ),
               ],
             ),
           ),
         ],
       ),
-
-      // ========================================================
-      // BODY
-      // ========================================================
-
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final maxWidth =
-                constraints.maxWidth < 600 ? constraints.maxWidth : 460.0;
-
-            return Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: maxWidth,
-                ),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(
-                    16,
-                    4,
-                    16,
-                    90,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ==================================================
-                      // VISUAL OVERVIEW
-                      // ==================================================
-
-                      _buildSectionTitle(
-                        'Visual Overview',
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      _buildVisualOverview(
-                        health: overallHealth,
-                        progress: overallProgress,
-                        projectsCount: visibleProjects.length,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================================
-                      // PROJECT STATUS
-                      // ==================================================
-
-                      _buildProjectStatus(
-                        onTrack: onTrackProjects,
-                        atRisk: atRiskProjects,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================================
-                      // PROJECT PERFORMANCE
-                      // ==================================================
-
-                      _buildProjectPerformance(
-                        visibleProjects,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================================
-                      // TASK OVERVIEW
-                      // ==================================================
-
-                      _buildSectionTitle(
-                        'Task Overview',
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      _buildTaskOverview(
-                        totalTasks: totalTasks,
-                        dueToday: dueToday,
-                        overdue: atRiskProjects,
-                        completedTasks: completedTasks,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================================
-                      // TEAM WORKLOAD
-                      // ==================================================
-
-                      _buildTeamWorkload(),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================================
-                      // UPCOMING DEADLINES
-                      // ==================================================
-
-                      _buildSectionTitle(
-                        'Upcoming Deadlines',
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      _buildUpcomingDeadlines(
-                        visibleProjects,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ==================================================
-                      // RECENT ACTIVITY
-                      // ==================================================
-
-                      _buildRecentActivity(),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-
-      // ==========================================================
-      // BOTTOM NAVIGATION
-      // ==========================================================
-
       bottomNavigationBar: ScaleFlowBottomNav(
         currentIndex: 2,
         onTap: (index) {
-          // Home
           if (index == 0) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => const HomePage(),
-              ),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
-          }
-
-          // Projects
-          else if (index == 1) {
+          } else if (index == 1) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const ProjectsScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const ProjectsScreen()),
             );
-          }
-
-          // Dashboard
-          else if (index == 2) {
+          } else if (index == 2) {
             return;
-          }
-
-          // AI Insights
-          else if (index == 3) {
+          } else if (index == 3) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const AiInsightsPage(),
-              ),
+              MaterialPageRoute(builder: (_) => const AiInsightsPage()),
             );
-          }
-
-          // Profile
-          else if (index == 4) {
+          } else if (index == 4) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const ProfileScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
             );
           }
         },
       ),
     );
   }
-
-  // ============================================================
-  // SECTION TITLE
-  // ============================================================
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -352,10 +250,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
-  // ============================================================
-  // VISUAL OVERVIEW
-  // ============================================================
 
   Widget _buildVisualOverview({
     required int health,
@@ -397,10 +291,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ============================================================
-  // METRIC CARD
-  // ============================================================
-
   Widget _buildMetricCard({
     required String title,
     required String value,
@@ -412,11 +302,10 @@ class _DashboardPageState extends State<DashboardPage> {
       height: 130,
       padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: color.withOpacity(0.18),
-        ),
+        border: Border.all(color: color.withOpacity(0.18)),
+        boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 6)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,9 +332,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     value: progress.clamp(0.0, 1.0),
                     strokeWidth: 5,
                     backgroundColor: Colors.grey.shade200,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      color,
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
                   ),
                   Text(
                     value,
@@ -477,22 +364,13 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ============================================================
-  // PROJECT STATUS
-  // ============================================================
-
-  Widget _buildProjectStatus({
-    required int onTrack,
-    required int atRisk,
-  }) {
+  Widget _buildProjectStatus({required int onTrack, required int atRisk}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceWhite,
+        color: Colors.white.withOpacity(0.92),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.06),
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -539,10 +417,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ============================================================
-  // STATUS ITEM
-  // ============================================================
-
   Widget _buildStatusItem({
     required IconData icon,
     required String label,
@@ -554,9 +428,7 @@ class _DashboardPageState extends State<DashboardPage> {
       decoration: BoxDecoration(
         color: color.withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.16),
-        ),
+        border: Border.all(color: color.withOpacity(0.16)),
       ),
       child: Row(
         children: [
@@ -567,11 +439,7 @@ class _DashboardPageState extends State<DashboardPage> {
               color: color.withOpacity(0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              size: 19,
-              color: color,
-            ),
+            child: Icon(icon, size: 19, color: color),
           ),
           const SizedBox(width: 9),
           Expanded(
@@ -603,21 +471,13 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ============================================================
-  // PROJECT PERFORMANCE
-  // ============================================================
-
-  Widget _buildProjectPerformance(
-    List<Project> projects,
-  ) {
+  Widget _buildProjectPerformance(List<Project> projects) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceWhite,
+        color: Colors.white.withOpacity(0.92),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.06),
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -638,68 +498,58 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(height: 14),
-          ...projects.take(4).map(
-            (project) {
-              final Color color = project.status == ProjectStatus.atRisk
-                  ? AppColors.alertCoral
-                  : AppColors.statusGreen;
+          ...projects.take(4).map((project) {
+            final Color color = project.status == ProjectStatus.atRisk
+                ? AppColors.alertCoral
+                : AppColors.statusGreen;
 
-              return Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 13,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            project.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.darkCharcoal,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '${project.percentComplete}%',
-                          style: TextStyle(
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 13),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          project.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: color,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.darkCharcoal,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: project.percentComplete / 100,
-                        minHeight: 6,
-                        backgroundColor: Colors.grey.shade200,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          color,
                         ),
                       ),
+                      Text(
+                        '${project.percentComplete}%',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: project.percentComplete / 100,
+                      minHeight: 6,
+                      backgroundColor: Colors.grey.shade200,
+                      valueColor: AlwaysStoppedAnimation<Color>(color),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
   }
-
-  // ============================================================
-  // TASK OVERVIEW
-  // ============================================================
 
   Widget _buildTaskOverview({
     required int totalTasks,
@@ -710,58 +560,32 @@ class _DashboardPageState extends State<DashboardPage> {
     return Row(
       children: [
         Expanded(
-          child: _buildTaskStat(
-            '$totalTasks',
-            'Total Tasks',
-            AppColors.dataCyan,
-          ),
-        ),
+            child: _buildTaskStat(
+                '$totalTasks', 'Total Tasks', AppColors.dataCyan)),
         const SizedBox(width: 8),
         Expanded(
-          child: _buildTaskStat(
-            '$dueToday',
-            'Due Today',
-            AppColors.priorityYellow,
-          ),
-        ),
+            child: _buildTaskStat(
+                '$dueToday', 'Due Today', AppColors.priorityYellow)),
         const SizedBox(width: 8),
         Expanded(
-          child: _buildTaskStat(
-            '$overdue',
-            'At Risk',
-            AppColors.alertCoral,
-          ),
-        ),
+            child: _buildTaskStat('$overdue', 'At Risk', AppColors.alertCoral)),
         const SizedBox(width: 8),
         Expanded(
-          child: _buildTaskStat(
-            '$completedTasks',
-            'Completed',
-            AppColors.statusGreen,
-          ),
-        ),
+            child: _buildTaskStat(
+                '$completedTasks', 'Completed', AppColors.statusGreen)),
       ],
     );
   }
 
-  // ============================================================
-  // TASK STAT
-  // ============================================================
-
-  Widget _buildTaskStat(
-    String value,
-    String label,
-    Color color,
-  ) {
+  Widget _buildTaskStat(String value, String label, Color color) {
     return Container(
       height: 82,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
+        color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.16),
-        ),
+        border: Border.all(color: color.withOpacity(0.16)),
+        boxShadow: const [BoxShadow(color: Color(0x06000000), blurRadius: 4)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -790,47 +614,21 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ============================================================
-  // TEAM WORKLOAD
-  // ============================================================
-
   Widget _buildTeamWorkload() {
     final workload = [
-      {
-        'name': 'Sadeel',
-        'percent': 82,
-        'color': AppColors.statusGreen,
-      },
-      {
-        'name': 'Saba',
-        'percent': 74,
-        'color': AppColors.priorityYellow,
-      },
-      {
-        'name': 'Shimaa',
-        'percent': 68,
-        'color': AppColors.usersPink,
-      },
-      {
-        'name': 'Mohammad',
-        'percent': 71,
-        'color': AppColors.dataCyan,
-      },
-      {
-        'name': 'Mostafa',
-        'percent': 64,
-        'color': AppColors.alertCoral,
-      },
+      {'name': 'Sadeel', 'percent': 82, 'color': AppColors.statusGreen},
+      {'name': 'Saba', 'percent': 74, 'color': AppColors.priorityYellow},
+      {'name': 'Shimaa', 'percent': 68, 'color': AppColors.usersPink},
+      {'name': 'Mohammad', 'percent': 71, 'color': AppColors.dataCyan},
+      {'name': 'Mostafa', 'percent': 64, 'color': AppColors.alertCoral},
     ];
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceWhite,
+        color: Colors.white.withOpacity(0.92),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.06),
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -851,60 +649,52 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(height: 14),
-          ...workload.map(
-            (member) {
-              final int percent = member['percent'] as int;
+          ...workload.map((member) {
+            final int percent = member['percent'] as int;
+            final Color color = member['color'] as Color;
+            final String name = member['name'] as String;
 
-              final Color color = member['color'] as Color;
-
-              final String name = member['name'] as String;
-
-              return Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 13,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            name,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.darkCharcoal,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '$percent%',
-                          style: TextStyle(
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 13),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: const TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: color,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.darkCharcoal,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: percent / 100,
-                        minHeight: 6,
-                        backgroundColor: Colors.grey.shade200,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          color,
                         ),
                       ),
+                      Text(
+                        '$percent%',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: percent / 100,
+                      minHeight: 6,
+                      backgroundColor: Colors.grey.shade200,
+                      valueColor: AlwaysStoppedAnimation<Color>(color),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                ],
+              ),
+            );
+          }),
           const SizedBox(height: 2),
           Row(
             children: [
@@ -931,13 +721,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ============================================================
-  // UPCOMING DEADLINES
-  // ============================================================
-
-  Widget _buildUpcomingDeadlines(
-    List<Project> projects,
-  ) {
+  Widget _buildUpcomingDeadlines(List<Project> projects) {
     final List<Map<String, String>> deadlineItems = [];
 
     for (final project in projects) {
@@ -947,15 +731,9 @@ class _DashboardPageState extends State<DashboardPage> {
           'project': project.name,
           'due': task.dueLabel,
         });
-
-        if (deadlineItems.length >= 5) {
-          break;
-        }
+        if (deadlineItems.length >= 5) break;
       }
-
-      if (deadlineItems.length >= 5) {
-        break;
-      }
+      if (deadlineItems.length >= 5) break;
     }
 
     if (deadlineItems.isEmpty) {
@@ -963,18 +741,13 @@ class _DashboardPageState extends State<DashboardPage> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceWhite,
+          color: Colors.white.withOpacity(0.9),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: Colors.black.withOpacity(0.06),
-          ),
+          border: Border.all(color: Colors.black.withOpacity(0.06)),
         ),
         child: const Text(
           'No upcoming deadlines.',
-          style: TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       );
     }
@@ -986,9 +759,7 @@ class _DashboardPageState extends State<DashboardPage> {
         itemCount: deadlineItems.length,
         itemBuilder: (context, index) {
           final item = deadlineItems[index];
-
           final String dueLabel = item['due'] ?? '';
-
           final Color deadlineColor = dueLabel.toLowerCase() == 'due today'
               ? AppColors.alertCoral
               : dueLabel.toLowerCase() == 'due tomorrow'
@@ -997,16 +768,15 @@ class _DashboardPageState extends State<DashboardPage> {
 
           return Container(
             width: 180,
-            margin: const EdgeInsets.only(
-              right: 8,
-            ),
+            margin: const EdgeInsets.only(right: 8),
             padding: const EdgeInsets.all(11),
             decoration: BoxDecoration(
-              color: deadlineColor.withOpacity(0.08),
+              color: Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(11),
-              border: Border.all(
-                color: deadlineColor.withOpacity(0.18),
-              ),
+              border: Border.all(color: deadlineColor.withOpacity(0.3)),
+              boxShadow: const [
+                BoxShadow(color: Color(0x06000000), blurRadius: 4)
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1047,10 +817,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-
-  // ============================================================
-  // RECENT ACTIVITY
-  // ============================================================
 
   Widget _buildRecentActivity() {
     final activities = [
@@ -1094,11 +860,9 @@ class _DashboardPageState extends State<DashboardPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceWhite,
+        color: Colors.white.withOpacity(0.92),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.06),
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -1119,79 +883,66 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(height: 14),
-          ...activities.map(
-            (activity) {
-              final Color color = activity['color'] as Color;
+          ...activities.map((activity) {
+            final Color color = activity['color'] as Color;
+            final IconData icon = activity['icon'] as IconData;
 
-              final IconData icon = activity['icon'] as IconData;
-
-              return Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 14,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.10),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 17,
-                        color: color,
-                      ),
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.10),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            activity['title'] as String,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.darkCharcoal,
-                            ),
+                    child: Icon(icon, size: 17, color: color),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          activity['title'] as String,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.darkCharcoal,
                           ),
-                          const SizedBox(height: 3),
-                          Text(
-                            activity['subtitle'] as String,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: AppColors.textSecondary,
-                            ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          activity['subtitle'] as String,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: AppColors.textSecondary,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      activity['time'] as String,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AppColors.hintTextInactive,
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    activity['time'] as String,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppColors.hintTextInactive,
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
   }
-
-  // ============================================================
-  // NOTIFICATIONS
-  // ============================================================
 
   void _openNotifications() {
     showModalBottomSheet(
@@ -1199,21 +950,14 @@ class _DashboardPageState extends State<DashboardPage> {
       backgroundColor: Colors.white,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(22),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  4,
-                  20,
-                  24,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1259,21 +1003,15 @@ class _DashboardPageState extends State<DashboardPage> {
                         setSheetState(() {
                           _notificationsEnabled = value;
                         });
-
                         setState(() {});
-
-                        ScaffoldMessenger.of(
-                          this.context,
-                        ).showSnackBar(
+                        ScaffoldMessenger.of(this.context).showSnackBar(
                           SnackBar(
                             content: Text(
                               value
                                   ? 'Notifications enabled.'
                                   : 'Notifications disabled.',
                             ),
-                            duration: const Duration(
-                              seconds: 2,
-                            ),
+                            duration: const Duration(seconds: 2),
                           ),
                         );
                       },
@@ -1285,9 +1023,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       decoration: BoxDecoration(
                         color: AppColors.background,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.black.withOpacity(0.05),
-                        ),
+                        border:
+                            Border.all(color: Colors.black.withOpacity(0.05)),
                       ),
                       child: const Row(
                         crossAxisAlignment: CrossAxisAlignment.start,

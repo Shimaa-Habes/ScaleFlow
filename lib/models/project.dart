@@ -64,7 +64,7 @@ class Project {
     required this.name,
     required this.subtitle,
     required this.status,
-    required this.percentComplete,
+    this.percentComplete = 0, // تم تصحيح وضعها هنا بقيمة افتراضية آمنة
     required this.dueDate,
     required this.healthPercent,
     required this.healthNote,

@@ -11,6 +11,7 @@ import 'profile_screen.dart';
 import 'project_details_screen.dart';
 import 'projects_screen.dart';
 import 'dashboard_screen.dart';
+import 'tasks_screen.dart';
 
 // ============================================================
 // APP ENTRY POINT
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
       title: 'ScaleFlow Dashboard',
       theme: ThemeData(
         fontFamily: 'Roboto',
-        scaffoldBackgroundColor: const Color(0xFFF6F7FB),
+        scaffoldBackgroundColor: const Color(0xFFF7F6FB),
       ),
       home: const HomePage(),
     );
@@ -38,20 +39,15 @@ class MyApp extends StatelessWidget {
 }
 
 // ============================================================
-// OVERVIEW MODEL
+// SCALEFLOW COLORS
 // ============================================================
 
-class OverviewStat {
-  final String value;
-  final String label;
-  final Color color;
-
-  OverviewStat(
-    this.value,
-    this.label,
-    this.color,
-  );
-}
+const Color _charcoal = Color(0xFF2C2D30);
+const Color _softText = Color(0xFF666A70);
+const Color _mutedText = Color(0xFF858990);
+const Color _pageBackground = Color(0xFFF7F6FB);
+const Color _purple = Color(0xFF6C5CE7);
+const Color _green = Color(0xFF4F9A5A);
 
 // ============================================================
 // NOTIFICATION MODEL
@@ -73,40 +69,13 @@ class NotificationItem {
   );
 }
 
-// ============================================================
-// OVERVIEW DATA
-// ============================================================
-
-final List<OverviewStat> overviewStats = [
-  OverviewStat(
-    '6',
-    'Active Projects',
-    const Color(0xFFCFE8D2),
-  ),
-  OverviewStat(
-    '18',
-    'Tasks Due',
-    const Color(0xFFC9E2F6),
-  ),
-  OverviewStat(
-    '7',
-    'Overdue',
-    const Color(0xFFF4CACA),
-  ),
-  OverviewStat(
-    '2',
-    'At Risk',
-    const Color(0xFFF2E0B5),
-  ),
-];
-
 const double projectHealthPercent = 0.84;
 
 const String aiInsightText =
     'Website Redesign may be delayed by API Integration.';
 
 // ============================================================
-// PRIORITY TASKS
+// PRIORITY TASKS ("Today's Tasks")
 // ============================================================
 
 final List<TaskItem> priorityTasks = [
@@ -231,7 +200,13 @@ class _HomePageState extends State<HomePage>
 
   final LayerLink _notificationLayerLink = LayerLink();
 
-  // Avatar color is selected once and stays fixed
+  final TextEditingController _searchController = TextEditingController();
+
+  String _searchQuery = '';
+
+  final List<String> _filters = const ['All', 'At Risk'];
+  String _selectedFilter = 'All';
+
   Color _avatarColor = const Color(0xFFD985AE);
 
   final List<Color> _avatarColors = [
@@ -244,16 +219,10 @@ class _HomePageState extends State<HomePage>
     const Color(0xFFD8B84C),
   ];
 
-  // ==========================================================
-  // INIT
-  // ==========================================================
-
   @override
   void initState() {
     super.initState();
 
-    // Choose avatar color only once.
-    // It will not change when setState() is called.
     _avatarColor = _avatarColors[
         DateTime.now().millisecondsSinceEpoch % _avatarColors.length];
 
@@ -263,83 +232,125 @@ class _HomePageState extends State<HomePage>
     )..repeat();
   }
 
-  // ==========================================================
-  // DISPOSE
-  // ==========================================================
-
   @override
   void dispose() {
     _removeNotificationOverlay();
     _aiBorderController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
-  // ==========================================================
-  // BUILD
-  // ==========================================================
+  List<Project> get _visibleProjects {
+    return scaleFlowProjects
+        .where((project) => !ArchiveManager.isArchived(project))
+        .where((project) => project.name
+            .toLowerCase()
+            .contains(_searchQuery.trim().toLowerCase()))
+        .where((project) {
+      if (_selectedFilter == 'All') return true;
+      return project.status.label == _selectedFilter;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            16,
-            10,
-            16,
-            16,
+      backgroundColor: _pageBackground,
+      body: Stack(
+        children: [
+          // خلفية دمج الصورة الاحترافية مع تدرج لوني خفيف وأنيق يعكس بيئة العمل
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 360,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  'assets/images/Home-Image.jpg',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFFE7DEF6),
+                            Color(0xFFF1E9F2),
+                            Color(0xFFF7F6FB),
+                          ],
+                          stops: [0.0, 0.55, 1.0],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                // طبقة تعتيم خفيفة جداً (Overlay) لضمان وضوح النصوص فوق الصورة
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withOpacity(0.75),
+                        Colors.white.withOpacity(0.88),
+                        _pageBackground,
+                      ],
+                      stops: const [0.0, 0.6, 1.0],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 20),
-              _buildOverviewSection(),
-              const SizedBox(height: 20),
-              _buildProjectHealthCard(),
-              const SizedBox(height: 20),
-              _buildMyProjectsSection(),
-              const SizedBox(height: 20),
-              _buildAiInsightCard(),
-              const SizedBox(height: 20),
-              _buildPriorityTasksSection(),
-              const SizedBox(height: 16),
-            ],
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 16),
+                  _buildSearchBar(),
+                  const SizedBox(height: 14),
+                  _buildFilterChips(),
+                  const SizedBox(height: 16),
+                  _buildStatsRow(),
+                  const SizedBox(height: 22),
+                  _buildActiveProjectSection(),
+                  const SizedBox(height: 22),
+                  _buildTodaysTasksSection(),
+                  const SizedBox(height: 20),
+                  _buildProjectHealthCard(),
+                  const SizedBox(height: 20),
+                  _buildAiInsightCard(),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
-
-      // ========================================================
-      // SHARED SCALEFLOW BOTTOM NAVIGATION
-      // Home = index 0
-      // ========================================================
-
       bottomNavigationBar: ScaleFlowBottomNav(
         currentIndex: 0,
         onTap: (index) {
           if (index == 1) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const ProjectsScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const ProjectsScreen()),
             );
           } else if (index == 2) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const DashboardPage(),
-              ),
+              MaterialPageRoute(builder: (_) => const DashboardPage()),
             );
           } else if (index == 3) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const AiInsightsPage(),
-              ),
+              MaterialPageRoute(builder: (_) => const AiInsightsPage()),
             );
           } else if (index == 4) {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const ProfileScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
             );
           }
         },
@@ -347,100 +358,34 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // ============================================================
-  // HEADER
-  // ============================================================
-
   Widget _buildHeader() {
     final String firstLetter =
         userName.trim().isNotEmpty ? userName.trim()[0].toUpperCase() : '?';
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 1),
-              Text(
-                'Good morning, $userName 👋',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2C2D30),
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                "Here's what's happening across your projects today.",
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF666A70),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // ======================================================
-        // NOTIFICATION BUTTON
-        // ======================================================
-
-        CompositedTransformTarget(
-          link: _notificationLayerLink,
-          child: SizedBox(
-            width: 38,
-            height: 38,
-            child: IconButton(
-              onPressed: _toggleNotifications,
-              padding: EdgeInsets.zero,
-              icon: const Icon(
-                Icons.notifications_none,
-                size: 25,
-                color: Color(0xFF2C2D30),
-              ),
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 8),
-
-        // ======================================================
-        // PROFILE AVATAR
-        // ======================================================
-
         Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: _openProfile,
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(26),
             child: Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: const Color.fromARGB(255, 81, 74, 74),
-                  width: 0.5,
-                ),
+                color: Colors.white,
               ),
               child: CircleAvatar(
-                radius: 18,
-
-                // If there is no image, show the fixed avatar color.
-                // If there is an image, no background color is shown.
+                radius: 20,
                 backgroundColor: CurrentUser.profileImage == null
                     ? _avatarColor
                     : Colors.transparent,
-
-                // Show the actual uploaded image.
                 backgroundImage: CurrentUser.profileImage != null
                     ? MemoryImage(CurrentUser.profileImage!)
                     : null,
-
-                // Show the first letter only when there is no image.
                 child: CurrentUser.profileImage == null
                     ? Text(
                         firstLetter,
@@ -455,20 +400,429 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Hello 👋',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _softText,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: _charcoal,
+                ),
+              ),
+            ],
+          ),
+        ),
+        CompositedTransformTarget(
+          link: _notificationLayerLink,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x10000000),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: _toggleNotifications,
+              padding: EdgeInsets.zero,
+              icon: const Icon(
+                Icons.notifications_none,
+                size: 22,
+                color: _charcoal,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  // ============================================================
-  // NOTIFICATIONS
-  // ============================================================
+  Widget _buildSearchBar() {
+    return Container(
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(23),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x10000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search, size: 20, color: _mutedText),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) => setState(() => _searchQuery = value),
+              decoration: const InputDecoration(
+                hintText: 'Search your projects...',
+                hintStyle: TextStyle(fontSize: 13, color: _mutedText),
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              style: const TextStyle(fontSize: 13, color: _charcoal),
+            ),
+          ),
+          if (_searchQuery.isNotEmpty)
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+              onPressed: () {
+                _searchController.clear();
+                setState(() => _searchQuery = '');
+              },
+              icon: const Icon(Icons.close, size: 17, color: _mutedText),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    return SizedBox(
+      height: 34,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: _filters.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final String filter = _filters[index];
+          final bool selected = _selectedFilter == filter;
+
+          return GestureDetector(
+            onTap: () => setState(() => _selectedFilter = filter),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: selected ? _purple : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: selected
+                    ? []
+                    : const [
+                        BoxShadow(
+                          color: Color(0x0C000000),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+              ),
+              child: Text(
+                filter,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? Colors.white : _softText,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStatsRow() {
+    final stats = [
+      (
+        icon: Icons.folder_outlined,
+        color: const Color(0xFF3F82B8),
+        value: '6',
+        label: 'Projects'
+      ),
+      (
+        icon: Icons.task_alt_outlined,
+        color: _purple,
+        value: '24',
+        label: 'Tasks'
+      ),
+      (
+        icon: Icons.check_circle_outline,
+        color: _green,
+        value: '18',
+        label: 'Completed'
+      ),
+    ];
+
+    return Row(
+      children: stats.asMap().entries.map((entry) {
+        final int index = entry.key;
+        final stat = entry.value;
+
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: index == stats.length - 1 ? 0 : 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0C000000),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: stat.color.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(stat.icon, size: 16, color: stat.color),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    stat.value,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: _charcoal,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    stat.label,
+                    style: const TextStyle(fontSize: 10.5, color: _mutedText),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildActiveProjectSection() {
+    final projects = _visibleProjects;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Active Project',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 15, color: _charcoal),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _openProjects,
+                borderRadius: BorderRadius.circular(8),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: Text(
+                    'See All',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _purple),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        if (projects.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              _searchQuery.isEmpty
+                  ? 'No projects match "$_selectedFilter"'
+                  : 'No projects match "$_searchQuery"',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: _mutedText),
+            ),
+          )
+        else
+          _buildActiveProjectCard(projects.first),
+      ],
+    );
+  }
+
+  Widget _buildActiveProjectCard(Project project) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => ProjectDetailsScreen(project: project)),
+        ).then((_) {
+          if (mounted) setState(() {});
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 4)),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 100,
+              width: double.infinity,
+              child: Image.asset(
+                'assets/images/project_cover.jpg',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: _purple.withOpacity(0.85),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.image_outlined,
+                        size: 34, color: Colors.white70),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    project.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: _charcoal),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    project.subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 11.5, color: _mutedText),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${project.percentComplete}%',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: _charcoal),
+                          ),
+                          const Text(
+                            'Progress',
+                            style: TextStyle(fontSize: 10, color: _mutedText),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: LinearProgressIndicator(
+                            value: project.percentComplete / 100,
+                            minHeight: 7,
+                            backgroundColor: const Color(0xFFE8EAED),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                project.status.color),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today_outlined,
+                              size: 13, color: _mutedText),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Due ${project.dueDate}',
+                            style:
+                                const TextStyle(fontSize: 11, color: _softText),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.checklist_outlined,
+                              size: 13, color: _mutedText),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${project.tasksCompleted}/${project.tasksTotal} Tasks',
+                            style:
+                                const TextStyle(fontSize: 11, color: _softText),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _toggleNotifications() {
     if (_notificationOverlay != null) {
       _removeNotificationOverlay();
       return;
     }
-
     _showNotificationOverlay();
   }
 
@@ -489,7 +843,7 @@ class _HomePageState extends State<HomePage>
             CompositedTransformFollower(
               link: _notificationLayerLink,
               showWhenUnlinked: false,
-              offset: const Offset(-272, 43),
+              offset: const Offset(-272, 47),
               child: Material(
                 color: Colors.transparent,
                 child: _buildNotificationDropdown(),
@@ -507,25 +861,14 @@ class _HomePageState extends State<HomePage>
     return Container(
       width: 310,
       height: 390,
-      padding: const EdgeInsets.fromLTRB(
-        14,
-        14,
-        14,
-        10,
-      ),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFD9DCE2),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFFD9DCE2), width: 1),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x22000000),
-            blurRadius: 16,
-            offset: Offset(0, 6),
-          ),
+              color: Color(0x22000000), blurRadius: 16, offset: Offset(0, 6)),
         ],
       ),
       child: Column(
@@ -537,23 +880,15 @@ class _HomePageState extends State<HomePage>
               const Text(
                 'Notifications',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2C2D30),
-                ),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _charcoal),
               ),
               IconButton(
                 onPressed: _removeNotificationOverlay,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 32,
-                  minHeight: 32,
-                ),
-                icon: const Icon(
-                  Icons.close,
-                  size: 19,
-                  color: Color(0xFF666A70),
-                ),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                icon: const Icon(Icons.close, size: 19, color: _softText),
               ),
             ],
           ),
@@ -562,84 +897,67 @@ class _HomePageState extends State<HomePage>
             child: Scrollbar(
               thumbVisibility: true,
               child: ListView.separated(
-                padding: const EdgeInsets.only(
-                  right: 3,
-                  bottom: 2,
-                ),
+                padding: const EdgeInsets.only(right: 3, bottom: 2),
                 itemCount: fakeNotifications.length,
-                separatorBuilder: (_, __) {
-                  return const SizedBox(height: 7);
-                },
+                separatorBuilder: (_, __) => const SizedBox(height: 7),
                 itemBuilder: (context, index) {
                   final NotificationItem notification =
                       fakeNotifications[index];
 
-                  return Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8F9FB),
-                        borderRadius: BorderRadius.circular(11),
-                        border: Border.all(
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8F9FB),
+                      borderRadius: BorderRadius.circular(11),
+                      border: Border.all(
                           color: notification.color.withOpacity(0.30),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: notification.color.withOpacity(0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              notification.icon,
-                              size: 17,
-                              color: notification.color,
-                            ),
+                          width: 1),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: notification.color.withOpacity(0.12),
+                            shape: BoxShape.circle,
                           ),
-                          const SizedBox(width: 9),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  notification.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                          child: Icon(notification.icon,
+                              size: 17, color: notification.color),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                notification.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2C2D30),
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  notification.message,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 10.5,
-                                    color: Color(0xFF50545A),
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  notification.time,
-                                  style: const TextStyle(
-                                    fontSize: 9.5,
-                                    color: Color(0xFF858990),
-                                  ),
-                                ),
-                              ],
-                            ),
+                                    color: _charcoal),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                notification.message,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 10.5, color: Color(0xFF50545A)),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                notification.time,
+                                style: const TextStyle(
+                                    fontSize: 9.5, color: _mutedText),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -656,280 +974,28 @@ class _HomePageState extends State<HomePage>
     _notificationOverlay = null;
   }
 
-  // ============================================================
-  // NAVIGATION
-  // ============================================================
-
   void _openProjects() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const ProjectsScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const ProjectsScreen()),
     ).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
+      if (mounted) setState(() {});
     });
   }
 
   void _openAiInsights() {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const AiInsightsPage(),
-      ),
-    );
+        context, MaterialPageRoute(builder: (_) => const AiInsightsPage()));
   }
 
   void _openProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const ProfileScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const ProfileScreen()),
     ).then((_) {
-      // Rebuild Home after returning from Profile.
-      // This makes the newly uploaded/deleted image appear immediately.
-      if (mounted) {
-        setState(() {});
-      }
+      if (mounted) setState(() {});
     });
   }
-
-  // ============================================================
-  // ARCHIVE
-  // ============================================================
-
-  void _openArchive() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, dialogSetState) {
-            final archivedProjects = ArchiveManager.archivedProjects;
-
-            return AlertDialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: const Text(
-                'Archive',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2C2D30),
-                ),
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: archivedProjects.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.archive_outlined,
-                              size: 45,
-                              color: Color(0xFF858990),
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              'No archived projects',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2C2D30),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: archivedProjects.length,
-                        separatorBuilder: (_, __) {
-                          return const SizedBox(height: 8);
-                        },
-                        itemBuilder: (context, index) {
-                          final Project project = archivedProjects[index];
-
-                          return Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8F9FB),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: const Color(0xFFD9DCE2),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        project.name,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF2C2D30),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        '${project.percentComplete}% Complete',
-                                        style: const TextStyle(
-                                          fontSize: 10.5,
-                                          color: Color(0xFF666A70),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    ArchiveManager.restore(project);
-
-                                    dialogSetState(() {});
-
-                                    setState(() {});
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '${project.name} restored.',
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'Restore',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext);
-                  },
-                  child: const Text('Close'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // ============================================================
-  // TODAY'S OVERVIEW
-  // ============================================================
-
-  Widget _buildOverviewSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Today's Overview",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: Color(0xFF2C2D30),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: overviewStats.asMap().entries.map((entry) {
-            final int index = entry.key;
-            final OverviewStat stat = entry.value;
-
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: index == overviewStats.length - 1 ? 0 : 8,
-                ),
-                child: Container(
-                  height: 84,
-                  padding: const EdgeInsets.fromLTRB(
-                    10,
-                    9,
-                    8,
-                    8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: stat.color,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0x332C2D30),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 25,
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            stat.value,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              height: 1,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2C2D30),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            stat.label,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              height: 1.15,
-                              color: Color(0xFF3F4247),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // PROJECT HEALTH
-  // ============================================================
 
   Widget _buildProjectHealthCard() {
     final int healthValue = (projectHealthPercent * 100).toInt();
@@ -939,16 +1005,10 @@ class _HomePageState extends State<HomePage>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF4F9A5A).withOpacity(0.40),
-          width: 1.2,
-        ),
+        border: Border.all(color: _green.withOpacity(0.40), width: 1.2),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
+              color: Color(0x14000000), blurRadius: 6, offset: Offset(0, 2)),
         ],
       ),
       child: Row(
@@ -960,10 +1020,9 @@ class _HomePageState extends State<HomePage>
                 const Text(
                   'Overall Project Health',
                   style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2C2D30),
-                  ),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _charcoal),
                 ),
                 const SizedBox(height: 5),
                 Row(
@@ -971,29 +1030,24 @@ class _HomePageState extends State<HomePage>
                     Text(
                       '$healthValue%',
                       style: const TextStyle(
-                        fontSize: 27,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2C2D30),
-                      ),
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                          color: _charcoal),
                     ),
                     const SizedBox(width: 7),
                     const Text(
                       'Healthy',
                       style: TextStyle(
-                        color: Color(0xFF3F7F46),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                          color: Color(0xFF3F7F46),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 const Text(
                   '+6% compared with last week',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF666A70),
-                  ),
+                  style: TextStyle(fontSize: 11, color: _softText),
                 ),
               ],
             ),
@@ -1012,18 +1066,15 @@ class _HomePageState extends State<HomePage>
                     value: projectHealthPercent,
                     strokeWidth: 7,
                     backgroundColor: const Color(0xFFE7E9EC),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF4F9A5A),
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(_green),
                   ),
                 ),
                 Text(
                   '$healthValue%',
                   style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2C2D30),
-                  ),
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: _charcoal),
                 ),
               ],
             ),
@@ -1033,210 +1084,12 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // ============================================================
-  // MY PROJECTS
-  // ============================================================
-
-  Widget _buildMyProjectsSection() {
-    final visibleProjects = scaleFlowProjects
-        .where(
-          (project) => !ArchiveManager.isArchived(project),
-        )
-        .toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // My Projects + Archive
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'My Projects',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Color(0xFF2C2D30),
-              ),
-            ),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _openArchive,
-                borderRadius: BorderRadius.circular(8),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(
-                        Icons.archive_outlined,
-                        size: 18,
-                        color: Color(0xFF2C2D30),
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        'Archive',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2C2D30),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 10),
-
-        SizedBox(
-          height: 142,
-          child: visibleProjects.isEmpty
-              ? const Center(
-                  child: Text(
-                    'No active projects',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF858990),
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.only(
-                    bottom: 3,
-                  ),
-                  itemCount: visibleProjects.length,
-                  itemBuilder: (context, index) {
-                    final Project project = visibleProjects[index];
-
-                    final Color projectColor = project.status.color;
-
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ProjectDetailsScreen(
-                              project: project,
-                            ),
-                          ),
-                        ).then((_) {
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        });
-                      },
-                      child: Container(
-                        width: 165,
-                        margin: const EdgeInsets.only(
-                          right: 10,
-                        ),
-                        padding: const EdgeInsets.fromLTRB(
-                          12,
-                          12,
-                          12,
-                          10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: projectColor.withOpacity(0.78),
-                            width: 1.5,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x12000000),
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              project.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2C2D30),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '${project.percentComplete}% Complete',
-                              style: const TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF4F5359),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: project.percentComplete / 100,
-                                minHeight: 6,
-                                backgroundColor: const Color(0xFFE8EAED),
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  projectColor,
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: projectColor.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                project.status.label,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: projectColor,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // AI INSIGHT
-  // ============================================================
-
   Widget _buildAiInsightCard() {
     return AnimatedBuilder(
       animation: _aiBorderController,
       builder: (context, child) {
         return CustomPaint(
-          painter: _GlowingBorderPainter(
-            progress: _aiBorderController.value,
-          ),
+          painter: _GlowingBorderPainter(progress: _aiBorderController.value),
           child: Padding(
             padding: const EdgeInsets.all(2),
             child: AiInsightCard(
@@ -1250,136 +1103,133 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // ============================================================
-  // PRIORITY TASKS
-  // ============================================================
-
-  Widget _buildPriorityTasksSection() {
+  Widget _buildTodaysTasksSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Priority Tasks',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: Color(0xFF2C2D30),
-          ),
-        ),
-        const SizedBox(height: 10),
-        ...priorityTasks.map(
-          (task) {
-            final bool isCompleted = task.isDone;
-            final Color taskColor = task.urgency.color;
-
-            return Container(
-              margin: const EdgeInsets.only(
-                bottom: 8,
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 7,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: taskColor.withOpacity(0.82),
-                  width: 1.5,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Today's Tasks",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 15, color: _charcoal),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TasksScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: Text(
+                    'See All',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _purple),
+                  ),
                 ),
               ),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: isCompleted,
-                    activeColor: taskColor,
-                    side: BorderSide(
-                      color: taskColor.withOpacity(0.90),
-                      width: 1.5,
-                    ),
-                    visualDensity: VisualDensity.compact,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        task.isDone = value ?? false;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            decoration: isCompleted
-                                ? TextDecoration.lineThrough
-                                : TextDecoration.none,
-                            color: isCompleted
-                                ? const Color(0xFF8A8D92)
-                                : const Color(0xFF2C2D30),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          task.dueLabel,
-                          style: const TextStyle(
-                            fontSize: 10.5,
-                            color: Color(0xFF666A70),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 9,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      color: taskColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+            ),
+          ],
         ),
+        const SizedBox(height: 10),
+        ...priorityTasks.map((task) {
+          final bool isCompleted = task.isDone;
+          final Color taskColor = task.urgency.color;
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                    color: Color(0x0C000000),
+                    blurRadius: 5,
+                    offset: Offset(0, 2)),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: taskColor.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.task_alt, size: 17, color: taskColor),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          decoration: isCompleted
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                          color: isCompleted ? _mutedText : _charcoal,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        task.dueLabel,
+                        style:
+                            const TextStyle(fontSize: 10.5, color: _softText),
+                      ),
+                    ],
+                  ),
+                ),
+                Checkbox(
+                  value: isCompleted,
+                  activeColor: taskColor,
+                  side: BorderSide(
+                      color: taskColor.withOpacity(0.90), width: 1.5),
+                  visualDensity: VisualDensity.compact,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      task.isDone = value ?? false;
+                    });
+                  },
+                ),
+              ],
+            ),
+          );
+        }),
       ],
     );
   }
 }
 
-// ============================================================
-// ANIMATED AI BORDER
-// ============================================================
-
 class _GlowingBorderPainter extends CustomPainter {
   final double progress;
 
-  _GlowingBorderPainter({
-    required this.progress,
-  });
+  _GlowingBorderPainter({required this.progress});
 
   @override
-  void paint(
-    Canvas canvas,
-    Size size,
-  ) {
+  void paint(Canvas canvas, Size size) {
     final Rect rect = Offset.zero & size;
-
-    final RRect rrect = RRect.fromRectAndRadius(
-      rect.deflate(1),
-      const Radius.circular(16),
-    );
+    final RRect rrect =
+        RRect.fromRectAndRadius(rect.deflate(1), const Radius.circular(16));
 
     final SweepGradient gradient = SweepGradient(
-      transform: GradientRotation(
-        progress * 2 * 3.14159265359,
-      ),
+      transform: GradientRotation(progress * 2 * 3.14159265359),
       colors: const [
         Color(0xFF6C5CE7),
         Color(0xFFB9B0F2),
@@ -1387,46 +1237,27 @@ class _GlowingBorderPainter extends CustomPainter {
         Color(0xFFD8D2F8),
         Color(0xFF6C5CE7),
       ],
-      stops: const [
-        0.0,
-        0.25,
-        0.5,
-        0.75,
-        1.0,
-      ],
+      stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
     );
 
-    // Soft glow
     final Paint glowPaint = Paint()
       ..shader = gradient.createShader(rect)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.4
-      ..maskFilter = const MaskFilter.blur(
-        BlurStyle.normal,
-        2,
-      );
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
 
-    canvas.drawRRect(
-      rrect,
-      glowPaint,
-    );
+    canvas.drawRRect(rrect, glowPaint);
 
-    // Sharp border
     final Paint borderPaint = Paint()
       ..shader = gradient.createShader(rect)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.3;
 
-    canvas.drawRRect(
-      rrect,
-      borderPaint,
-    );
+    canvas.drawRRect(rrect, borderPaint);
   }
 
   @override
-  bool shouldRepaint(
-    covariant _GlowingBorderPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant _GlowingBorderPainter oldDelegate) {
     return oldDelegate.progress != progress;
   }
 }
