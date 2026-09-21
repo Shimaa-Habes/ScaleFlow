@@ -51,4 +51,40 @@ public class TasksController : ControllerBase
         await _taskService.DeleteTask(User, projectId, id, cancellationToken);
         return Ok(ApiResponse<object>.Ok(null, "Task deleted."));
     }
+
+    [HttpGet("{taskId}/dependencies")]
+    public async Task<IActionResult> GetDependencies(int projectId, int taskId, CancellationToken cancellationToken)
+    {
+        var dependencies = await _taskService.ListDependencies(User, projectId, taskId, cancellationToken);
+        return Ok(ApiResponse<IReadOnlyList<TaskDependencyResponse>>.Ok(dependencies));
+    }
+
+    [HttpGet("{taskId}/dependencies/{id}")]
+    public async Task<IActionResult> GetDependency(int projectId, int taskId, int id, CancellationToken cancellationToken)
+    {
+        var dependency = await _taskService.GetDependency(User, projectId, taskId, id, cancellationToken);
+        return Ok(ApiResponse<TaskDependencyResponse>.Ok(dependency));
+    }
+
+    [HttpPost("{taskId}/dependencies")]
+    public async Task<IActionResult> CreateDependency(int projectId, int taskId, [FromBody] TaskDependencyRequest request, CancellationToken cancellationToken)
+    {
+        var dependency = await _taskService.CreateDependency(User, projectId, taskId, request, cancellationToken);
+        return CreatedAtAction(nameof(GetDependency), new { projectId, taskId, id = dependency.Id },
+            ApiResponse<TaskDependencyResponse>.Ok(dependency, "Dependency created."));
+    }
+
+    [HttpPut("{taskId}/dependencies/{id}")]
+    public async Task<IActionResult> UpdateDependency(int projectId, int taskId, int id, [FromBody] TaskDependencyRequest request, CancellationToken cancellationToken)
+    {
+        var dependency = await _taskService.UpdateDependency(User, projectId, taskId, id, request, cancellationToken);
+        return Ok(ApiResponse<TaskDependencyResponse>.Ok(dependency, "Dependency updated."));
+    }
+
+    [HttpDelete("{taskId}/dependencies/{id}")]
+    public async Task<IActionResult> DeleteDependency(int projectId, int taskId, int id, CancellationToken cancellationToken)
+    {
+        await _taskService.DeleteDependency(User, projectId, taskId, id, cancellationToken);
+        return Ok(ApiResponse<object>.Ok(null, "Dependency deleted."));
+    }
 }
