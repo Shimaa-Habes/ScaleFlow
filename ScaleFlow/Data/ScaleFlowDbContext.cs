@@ -1,22 +1,18 @@
-using ScaleFlow.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ScaleFlow.Models;
 
 namespace ScaleFlow.Models;
 
-public class ScaleFlowDbContext : IdentityDbContext<IdentityUser>
+public class ScaleFlowDbContext : IdentityDbContext<User, Role, int>
 {
     public ScaleFlowDbContext(DbContextOptions<ScaleFlowDbContext> options) : base(options)
     {
     }
 
-    public new DbSet<User> Users => Set<User>();
     public DbSet<Organization> Organizations => Set<Organization>();
-    public new DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-    public new DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<TeamMember> TeamMembers => Set<TeamMember>();
