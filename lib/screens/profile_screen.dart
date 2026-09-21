@@ -59,13 +59,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String get userShortBio => CurrentUser.shortBio;
 
-  String get selectedLanguage => CurrentUser.language;
-
   String get selectedDefaultView => CurrentUser.defaultView;
 
   bool get notificationsEnabled => CurrentUser.notificationsEnabled;
 
-  String selectedAppearance = 'Light Mode';
+  // String selectedAppearance = 'Light Mode';
 
   // A dedicated ImagePicker instance reused by both the avatar's
   // quick upload/remove button and the full Edit Profile sheet.
@@ -140,29 +138,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       },
                     ),
-                    _buildSettingTile(
-                      icon: Icons.palette_outlined,
-                      title: 'Appearance',
-                      subtitle: selectedAppearance,
-                      trailing: const Icon(
-                        Icons.chevron_right,
-                        size: 20,
-                        color: _mutedText,
-                      ),
-                      onTap: _openAppearanceSettings,
-                    ),
+                    // _buildSettingTile(
+                    //   icon: Icons.palette_outlined,
+                    //   title: 'Appearance',
+                    //   subtitle: selectedAppearance,
+                    //   trailing: const Icon(
+                    //     Icons.chevron_right,
+                    //     size: 20,
+                    //     color: _mutedText,
+                    //   ),
+                    //   onTap: _openAppearanceSettings,
+                    // ),
                     const SizedBox(height: 16),
                     _buildSectionTitle('Preferences'),
                     const SizedBox(height: 10),
-                    _buildSettingTile(
-                      icon: Icons.language_outlined,
-                      title: 'Language',
-                      subtitle: 'Choose your preferred language',
-                      trailing: _buildTrailingText(
-                        selectedLanguage,
-                      ),
-                      onTap: _openLanguageSettings,
-                    ),
                     _buildSettingTile(
                       icon: Icons.dashboard_outlined,
                       title: 'Default View',
@@ -769,12 +758,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _buildProfileInfoDivider(),
           _buildProfileInfoRow(
-            icon: Icons.language_outlined,
-            label: 'Language',
-            value: selectedLanguage,
-          ),
-          _buildProfileInfoDivider(),
-          _buildProfileInfoRow(
             icon: Icons.dashboard_outlined,
             label: 'Default View',
             value: selectedDefaultView,
@@ -1110,15 +1093,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   },
                 ),
-                _buildSheetOption(
-                  icon: Icons.palette_outlined,
-                  title: 'Appearance',
-                  subtitle: selectedAppearance,
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _openAppearanceSettings();
-                  },
-                ),
+                // _buildSheetOption(
+                //   icon: Icons.palette_outlined,
+                //   title: 'Appearance',
+                //   subtitle: selectedAppearance,
+                //   onTap: () {
+                //     Navigator.pop(sheetContext);
+                //     _openAppearanceSettings();
+                //   },
+                // ),
                 _buildSheetOption(
                   icon: Icons.privacy_tip_outlined,
                   title: 'Privacy & Data',
@@ -1216,7 +1199,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bioController = TextEditingController(text: CurrentUser.shortBio);
 
     String selectedRole = CurrentUser.role;
-    String selectedLanguageValue = CurrentUser.language;
     String selectedDefaultViewValue = CurrentUser.defaultView;
 
     bool sheetNotifications = CurrentUser.notificationsEnabled;
@@ -1437,22 +1419,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _buildDropdownField(
-                      label: 'Language',
-                      value: selectedLanguageValue,
-                      icon: Icons.language_outlined,
-                      items: const [
-                        'English',
-                        'Arabic',
-                      ],
-                      onChanged: (value) {
-                        if (value == null) return;
-
-                        setSheetState(() {
-                          selectedLanguageValue = value;
-                        });
-                      },
-                    ),
                     const SizedBox(height: 12),
                     _buildDropdownField(
                       label: 'Default View',
@@ -1545,8 +1511,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             CurrentUser.city = cityController.text.trim();
 
                             CurrentUser.shortBio = bioController.text.trim();
-
-                            CurrentUser.language = selectedLanguageValue;
 
                             CurrentUser.defaultView = selectedDefaultViewValue;
 
@@ -1710,41 +1674,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // APPEARANCE
   // ============================================================
 
-  void _openAppearanceSettings() {
-    _showChoiceSheet(
-      title: 'Appearance',
-      options: const [
-        'Light Mode',
-        'System Default',
-      ],
-      selectedValue: selectedAppearance,
-      onSelected: (value) {
-        setState(() {
-          selectedAppearance = value;
-        });
-      },
-    );
-  }
-
-  // ============================================================
-  // LANGUAGE
-  // ============================================================
-
-  void _openLanguageSettings() {
-    _showChoiceSheet(
-      title: 'Language',
-      options: const [
-        'English',
-        'Arabic',
-      ],
-      selectedValue: selectedLanguage,
-      onSelected: (value) {
-        setState(() {
-          CurrentUser.language = value;
-        });
-      },
-    );
-  }
+  // void _openAppearanceSettings() {
+  //   _showChoiceSheet(
+  //     title: 'Appearance',
+  //     options: const [
+  //       'Light Mode',
+  //       'Dark Mode',
+  //     ],
+  //     selectedValue: selectedAppearance,
+  //     onSelected: (value) {
+  //       setState(() {
+  //         selectedAppearance = value;
+  //       });
+  //     },
+  //   );
+  // }
 
   // ============================================================
   // DEFAULT VIEW

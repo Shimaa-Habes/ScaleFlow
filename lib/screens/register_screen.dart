@@ -211,228 +211,217 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // Limit the content width on larger screens.
-              final maxContentWidth =
-                  constraints.maxWidth < 500 ? constraints.maxWidth : 420.0;
+        body: Stack(
+          children: [
+            // 1. خلفية الصورة (Reg-Image.jpg) بملء الشاشة
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/Reg-Image.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
 
-              return Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(
-                    24,
-                    8,
-                    24,
-                    24,
-                  ),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: maxContentWidth,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Display the official ScaleFlow logo.
-                        Center(
-                          child: Image.asset(
-                            'assets/images/Logo.png',
-                            width: 200,
-                            fit: BoxFit.contain,
+            // 2. طبقة تعتيم (Overlay) لضمان تباين الألوان ووضوح النصوص وحقول الإدخال
+            Positioned.fill(
+              child: Container(
+                color: AppColors.background.withOpacity(0.85),
+              ),
+            ),
+
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Limit the content width on larger screens.
+                  final maxContentWidth =
+                      constraints.maxWidth < 500 ? constraints.maxWidth : 420.0;
+
+                  return Stack(
+                    children: [
+                      Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(
+                            24,
+                            48, // ترك مساحة للأعلى لكي لا يتداخل السهم مع المحتوى
+                            24,
+                            24,
                           ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        Text(
-                          'Create your account',
-                          style: AppTextStyles.heading,
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        Text(
-                          'Start managing your projects smarter.',
-                          style: AppTextStyles.subtitle,
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 28),
-
-                        CustomTextField(
-                          label: 'Full Name',
-                          hint: 'Enter your full name',
-                          controller: _nameController,
-                          errorText: _nameError,
-                          onChanged: (value) {
-                            if (_nameError != null && value.trim().isNotEmpty) {
-                              setState(() => _nameError = null);
-                            }
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          label: 'Email Address',
-                          hint: 'Enter your email',
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          errorText: _emailError,
-                          isValid: _emailError == null &&
-                              _emailController.text.isNotEmpty &&
-                              _isValidEmail(_emailController.text),
-                          onChanged: _validateEmail,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          label: 'Password',
-                          hint: 'Create your password',
-                          controller: _passwordController,
-                          isPassword: true,
-                          errorText: _passwordError,
-                          onChanged: _onPasswordChanged,
-                        ),
-
-                        // Show password strength only after the user starts typing.
-                        if (_passwordController.text.isNotEmpty) ...[
-                          const SizedBox(height: 10),
-
-                          Row(
-                            children: [
-                              Text(
-                                _passwordStrengthEmoji,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _passwordStrengthText,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: _passwordStrengthColor,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: maxContentWidth,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Display the official ScaleFlow logo.
+                                Center(
+                                  child: Image.asset(
+                                    'assets/images/Logo.png',
+                                    width: 200,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
 
-                          const SizedBox(height: 6),
+                                const SizedBox(height: 24),
 
-                          // Thin password strength indicator.
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: SizedBox(
-                              height: 3,
-                              child: LinearProgressIndicator(
-                                value: _passwordStrengthValue,
-                                backgroundColor: Colors.grey.shade200,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  _passwordStrengthColor,
+                                Text(
+                                  'Create your account',
+                                  style: AppTextStyles.heading,
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                            ),
-                          ),
-                        ],
 
-                        // const SizedBox(height: 14),
+                                const SizedBox(height: 6),
 
-                        // Password requirements are shown below the password field.
-                        // Container(
-                        //   width: double.infinity,
-                        //   padding: const EdgeInsets.all(14),
-                        //   decoration: BoxDecoration(
-                        //     color: AppColors.hintBoxBackground,
-                        //     borderRadius: BorderRadius.circular(10),
-                        //   ),
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       Text(
-                        //         'Password must contain:',
-                        //         style: AppTextStyles.hintBoxTitle,
-                        //       ),
-                        //       const SizedBox(height: 6),
-                        //       PasswordRequirementItem(
-                        //         text: '8+ characters',
-                        //         isSatisfied: _has8Chars,
-                        //       ),
-                        //       PasswordRequirementItem(
-                        //         text: 'At least one letter',
-                        //         isSatisfied: _hasLetter,
-                        //       ),
-                        //       PasswordRequirementItem(
-                        //         text: 'One special symbol',
-                        //         isSatisfied: _hasSpecialSymbol,
-                        //       ),
-                        //       PasswordRequirementItem(
-                        //         text: 'One number',
-                        //         isSatisfied: _hasNumber,
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          label: 'Confirm Password',
-                          hint: 'Confirm your password',
-                          controller: _confirmPasswordController,
-                          isPassword: true,
-                          errorText: _confirmPasswordError,
-                          isValid: _confirmPasswordController.text.isNotEmpty &&
-                              _confirmPasswordError == null &&
-                              _confirmPasswordController.text ==
-                                  _passwordController.text,
-                          onChanged: _validateConfirmPassword,
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        SizedBox(
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: _handleCreateAccount,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryButton,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              'Create Account',
-                              style: AppTextStyles.buttonText,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        Center(
-                          child: RichText(
-                            text: TextSpan(
-                              style: AppTextStyles.footerText,
-                              children: [
-                                const TextSpan(
-                                  text: 'Already have an account? ',
+                                Text(
+                                  'Start managing your projects smarter.',
+                                  style: AppTextStyles.subtitle,
+                                  textAlign: TextAlign.center,
                                 ),
-                                WidgetSpan(
-                                  alignment: PlaceholderAlignment.middle,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .pushReplacementNamed('/login');
-                                    },
+
+                                const SizedBox(height: 28),
+
+                                CustomTextField(
+                                  label: 'Full Name',
+                                  hint: 'Enter your full name',
+                                  controller: _nameController,
+                                  errorText: _nameError,
+                                  onChanged: (value) {
+                                    if (_nameError != null &&
+                                        value.trim().isNotEmpty) {
+                                      setState(() => _nameError = null);
+                                    }
+                                  },
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                CustomTextField(
+                                  label: 'Email Address',
+                                  hint: 'Enter your email',
+                                  controller: _emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  errorText: _emailError,
+                                  isValid: _emailError == null &&
+                                      _emailController.text.isNotEmpty &&
+                                      _isValidEmail(_emailController.text),
+                                  onChanged: _validateEmail,
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                CustomTextField(
+                                  label: 'Password',
+                                  hint: 'Create your password',
+                                  controller: _passwordController,
+                                  isPassword: true,
+                                  errorText: _passwordError,
+                                  onChanged: _onPasswordChanged,
+                                ),
+
+                                // Show password strength only after the user starts typing.
+                                if (_passwordController.text.isNotEmpty) ...[
+                                  const SizedBox(height: 10),
+
+                                  Row(
+                                    children: [
+                                      Text(
+                                        _passwordStrengthEmoji,
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          _passwordStrengthText,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: _passwordStrengthColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 6),
+
+                                  // Thin password strength indicator.
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: SizedBox(
+                                      height: 3,
+                                      child: LinearProgressIndicator(
+                                        value: _passwordStrengthValue,
+                                        backgroundColor: Colors.grey.shade200,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          _passwordStrengthColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+
+                                const SizedBox(height: 16),
+
+                                CustomTextField(
+                                  label: 'Confirm Password',
+                                  hint: 'Confirm your password',
+                                  controller: _confirmPasswordController,
+                                  isPassword: true,
+                                  errorText: _confirmPasswordError,
+                                  isValid: _confirmPasswordController
+                                          .text.isNotEmpty &&
+                                      _confirmPasswordError == null &&
+                                      _confirmPasswordController.text ==
+                                          _passwordController.text,
+                                  onChanged: _validateConfirmPassword,
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                SizedBox(
+                                  height: 52,
+                                  child: ElevatedButton(
+                                    onPressed: _handleCreateAccount,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primaryButton,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      elevation: 0,
+                                    ),
                                     child: Text(
-                                      'Log in',
-                                      style: AppTextStyles.footerLink,
+                                      'Create Account',
+                                      style: AppTextStyles.buttonText,
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                Center(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: AppTextStyles.footerText,
+                                      children: [
+                                        const TextSpan(
+                                          text: 'Already have an account? ',
+                                        ),
+                                        WidgetSpan(
+                                          alignment:
+                                              PlaceholderAlignment.middle,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context)
+                                                  .pushReplacementNamed(
+                                                      '/login');
+                                            },
+                                            child: Text(
+                                              'Log in',
+                                              style: AppTextStyles.footerLink,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -440,13 +429,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+                      ),
+
+                      // سهم الرجوع في أعلى اليسار للعودة إلى صفحة جلوبال (Global)
+                      Positioned(
+                        top: 8,
+                        left: 16,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                          color: AppColors.primaryButton,
+                          onPressed: () {
+                            if (Navigator.canPop(context)) {
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pushReplacementNamed(
+                                  context, '/global');
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,16 +1,15 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'complete_profile_screen.dart';
 import '../data/mock_data.dart';
+
 // ============================================================
 // SCALEFLOW COLORS
 // ============================================================
 
-const Color _charcoal = Color(0xFF2C2D30);
-const Color _mutedText = Color(0xFF777B81);
+const Color _charcoal = Color(0xFF1A1D26);
+const Color _mutedText = Color(0xFF555963);
 const Color _border = Color(0xFFE2E4E8);
-const Color _background = Color(0xFFF6F7FB);
 const Color _purple = Color(0xFF6C5CE7);
 const Color _error = Color(0xFFE15C3E);
 const Color _success = Color(0xFF61BD4F);
@@ -80,48 +79,107 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _background,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                  ),
-                  child: Column(
-                    children: [
-                      _buildTopBar(),
-                      const SizedBox(height: 52),
-                      _buildVerificationIcon(),
-                      const SizedBox(height: 24),
-                      _buildTitle(),
-                      const SizedBox(height: 10),
-                      _buildDescription(),
-                      const SizedBox(height: 28),
-                      _buildCodeFields(),
-                      if (_hasError) ...[
-                        const SizedBox(height: 10),
-                        _buildErrorMessage(),
-                      ],
-                      const SizedBox(height: 24),
-                      _buildVerifyButton(),
-                      const SizedBox(height: 18),
-                      _buildResendSection(),
-                      const SizedBox(height: 30),
-                      _buildDemoHint(),
-                      const SizedBox(height: 30),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // 1. خلفية تدرج فخمة مع دوائر مضيئة هندسية
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFF3F4F8),
+                      Color(0xFFEAE8FF),
+                      Color(0xFFF8FAFC),
                     ],
                   ),
                 ),
               ),
-            );
-          },
+            ),
+            Positioned(
+              top: -100,
+              right: -100,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _purple.withOpacity(0.08),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -80,
+              left: -80,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _purple.withOpacity(0.06),
+                ),
+              ),
+            ),
+
+            // 2. المحتوى الرئيسي
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildTopBar(),
+                            const SizedBox(height: 20),
+                            Center(
+                              child: ConstrainedBox(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 420),
+                                child: Column(
+                                  children: [
+                                    _buildVerificationIcon(),
+                                    const SizedBox(height: 24),
+                                    _buildTitle(),
+                                    const SizedBox(height: 8),
+                                    _buildDescription(),
+                                    const SizedBox(height: 32),
+                                    _buildCodeFields(),
+                                    if (_hasError) ...[
+                                      const SizedBox(height: 12),
+                                      _buildErrorMessage(),
+                                    ],
+                                    const SizedBox(height: 28),
+                                    _buildVerifyButton(),
+                                    const SizedBox(height: 20),
+                                    _buildResendSection(),
+                                    const SizedBox(height: 24),
+                                    _buildDemoHint(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -132,21 +190,30 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
   // ==========================================================
 
   Widget _buildTopBar() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: SizedBox(
-        width: 42,
-        height: 42,
-        child: IconButton(
-          tooltip: 'Back',
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 18,
-            color: _charcoal,
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
+        ],
+      ),
+      child: IconButton(
+        tooltip: 'Back',
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: const Icon(
+          Icons.arrow_back_ios_new,
+          size: 16,
+          color: _charcoal,
         ),
       ),
     );
@@ -158,15 +225,19 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
   Widget _buildVerificationIcon() {
     return Container(
-      width: 76,
-      height: 76,
+      width: 80,
+      height: 80,
       decoration: BoxDecoration(
-        color: _purple.withOpacity(0.10),
+        color: _purple.withOpacity(0.1),
         shape: BoxShape.circle,
+        border: Border.all(
+          color: _purple.withOpacity(0.2),
+          width: 1.5,
+        ),
       ),
       child: const Icon(
         Icons.mark_email_unread_outlined,
-        size: 34,
+        size: 36,
         color: _purple,
       ),
     );
@@ -181,9 +252,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
       'Verify Your Email',
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 26,
+        fontWeight: FontWeight.w800,
         color: _charcoal,
+        letterSpacing: 0.5,
       ),
     );
   }
@@ -199,16 +271,18 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
           'We sent a 6-digit verification code to',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 14,
             color: _mutedText,
+            fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           widget.email,
           textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: FontWeight.w700,
             color: _charcoal,
           ),
@@ -228,10 +302,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
         6,
         (index) {
           return Container(
-            width: 46,
-            height: 54,
+            width: 48,
+            height: 56,
             margin: EdgeInsets.only(
-              right: index == 5 ? 0 : 7,
+              right: index == 5 ? 0 : 8,
             ),
             child: TextField(
               controller: _controllers[index],
@@ -242,7 +316,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               textAlign: TextAlign.center,
               maxLength: 1,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: _charcoal,
               ),
@@ -252,23 +326,21 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                 fillColor: Colors.white,
                 contentPadding: EdgeInsets.zero,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(11),
-                  borderSide: const BorderSide(
-                    color: _border,
-                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: _border),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(11),
+                  borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(
                     color: _hasError ? _error : _border,
-                    width: _hasError ? 1.3 : 1,
+                    width: _hasError ? 1.5 : 1,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(11),
+                  borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(
                     color: _purple,
-                    width: 1.5,
+                    width: 1.8,
                   ),
                 ),
               ),
@@ -311,15 +383,15 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
       children: [
         Icon(
           Icons.error_outline,
-          size: 15,
+          size: 16,
           color: _error,
         ),
-        SizedBox(width: 5),
+        SizedBox(width: 6),
         Text(
           'Invalid verification code. Please try again.',
           style: TextStyle(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
             color: _error,
           ),
         ),
@@ -338,7 +410,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: 54,
       child: ElevatedButton(
         onPressed: isComplete && !_isLoading ? _verifyCode : null,
         style: ElevatedButton.styleFrom(
@@ -346,15 +418,16 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
           disabledBackgroundColor: const Color(0xFFD9D6F7),
           foregroundColor: Colors.white,
           disabledForegroundColor: Colors.white,
-          elevation: 0,
+          elevation: 4,
+          shadowColor: _purple.withOpacity(0.4),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(11),
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
         child: _isLoading
             ? const SizedBox(
-                width: 19,
-                height: 19,
+                width: 20,
+                height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   color: Colors.white,
@@ -363,8 +436,9 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
             : const Text(
                 'Verify Code',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
                 ),
               ),
       ),
@@ -380,8 +454,8 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
       return Text(
         'Resend code in 00:${_secondsRemaining.toString().padLeft(2, '0')}',
         style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
           color: _mutedText,
         ),
       );
@@ -392,7 +466,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
       child: const Text(
         'Resend Code',
         style: TextStyle(
-          fontSize: 12.5,
+          fontSize: 14,
           fontWeight: FontWeight.w700,
           color: _purple,
         ),
@@ -408,32 +482,37 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
-        horizontal: 13,
-        vertical: 11,
+        horizontal: 16,
+        vertical: 14,
       ),
       decoration: BoxDecoration(
-        color: _purple.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: _purple.withOpacity(0.12),
-        ),
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             Icons.info_outline,
-            size: 17,
+            size: 18,
             color: _purple,
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 10),
           Expanded(
             child: Text(
               'Demo mode: use 123456 to verify the account.',
               style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: _mutedText,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: _charcoal,
               ),
             ),
           ),
@@ -520,7 +599,6 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
       _hasError = false;
     });
 
-    // Fake API delay.
     await Future.delayed(
       const Duration(milliseconds: 700),
     );
@@ -535,8 +613,6 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
       _showSuccessMessage();
 
-      // For now, return to the previous screen.
-      // Later this can navigate to Home after real backend verification.
       await Future.delayed(
         const Duration(milliseconds: 800),
       );

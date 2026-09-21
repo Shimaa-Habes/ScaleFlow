@@ -28,3 +28,10 @@ flutter:
 
   assets:
     - assets/images/Logo.png
+    - assets/images/global.jpg
+    - assets/images/Logo1.png
+    - assets/images/Reg-Image.jpg
+    - assets/images/Login-Image.jpg
+    - assets/images/Dash-Image.jpg
+    - assets/images/Home-Image.jpg
+    - assets/images/Proj-Image.jpg
