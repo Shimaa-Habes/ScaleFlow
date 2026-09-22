@@ -1,0 +1,13 @@
+,before,after
+rows,1193,1192
+missing_cells,2,0
+missing_labels,2,0
+exact_duplicate_rows,0,0
+duplicate_summary_and_created,0,0
+status_values,Done,Done
+resolved_before_created,0,0
+resolved_within_15_min,17,17
+created_before_2019-01-01,1,0
+text_cells_with_extra_whitespace,306,0
+description_equals_summary,133,137
+descriptions_over_3000_chars,19,19

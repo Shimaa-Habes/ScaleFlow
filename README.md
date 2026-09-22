@@ -1,138 +1,76 @@
-# ScaleFlow — Login, Register, Home & Project Details
+# Jira Resolution-Time Pipeline
 
-تصميم شاشات ScaleFlow (تسجيل الدخول، إنشاء حساب، الرئيسية، تفاصيل المشروع)
-باستخدام Flutter/Dart، بنفس الهوية البصرية ونظام الألوان الرسمي من Figma.
+Predicts how long a Jira ticket will take to resolve — **Fast (≤30 days)**,
+**Medium (31–365 days)**, or **Slow (>365 days)** — from its Summary,
+Description, Labels, Priority and creation time. Includes a bonus regression
+model that predicts the exact number of days.
 
-## هيكلية المشروع
+This is the same pipeline as the original notebook (`jira_risk_pipeline.ipynb`),
+split into organized, commented `.py` files. The Excel→CSV conversion step was
+removed since the project now reads `Jira_task_dataset.csv` directly.
+
+## Folder structure
 
 ```
-lib/
-├── main.dart                       # نقطة الدخول + كل الـ routes
-├── core/
-│   ├── app_colors.dart             # كل الألوان (auth + نظام الألوان الرسمي الجديد)
-│   ├── app_text_styles.dart        # خطوط شاشات auth
-│   └── dash_text_styles.dart       # خطوط Inter لشاشات الـ Dashboard (Home/Details)
-├── models/
-│   ├── project.dart                # موديل المشروع + حالة On Track/At Risk
-│   └── task_item.dart              # موديل المهمة + مستوى الأولوية/اللون
+jira_risk_pipeline/
+├── main.py                 # run this — executes the full pipeline top to bottom
+├── requirements.txt        # pip install -r requirements.txt
 ├── data/
-│   └── mock_data.dart              # بيانات وهمية (مشاريع، مهام، المستخدم الحالي)
-├── widgets/
-│   ├── custom_text_field.dart، password_requirement_item.dart، scaleflow_logo.dart
-│   ├── health_ring.dart            # حلقة نسبة صحة المشروع (ملوّنة حسب النسبة)
-│   ├── stat_chip.dart              # كرت إحصائية صغير ملوّن (Today's Overview...)
-│   ├── ai_insight_card.dart        # كرت "ScaleFlow AI Insight" البنفسجي
-│   ├── task_row.dart               # صف مهمة (checkbox + نقطة أولوية ملوّنة)
-│   ├── project_card.dart           # كرت مشروع مصغّر (My Projects) — قابل للضغط
-│   ├── team_avatars.dart           # صف أفاتارات الفريق مع +N
-│   └── scaleflow_bottom_nav.dart   # شريط التنقل السفلي (Home/Projects/Dashboard/AI/Profile)
-└── screens/
-    ├── register_screen.dart        # Create your account
-    ├── login_screen.dart           # Welcome back
-    ├── forgot_password_screen.dart # استرجاع كلمة السر
-    ├── home_screen.dart            # الشاشة الرئيسية (Dashboard)
-    └── project_details_screen.dart # تفاصيل مشروع محدد
+│   └── Jira_task_dataset.csv   # your input data (put it here)
+├── src/
+│   ├── config.py            # paths, constants, random seed
+│   ├── data_loading.py      # load CSV + data-quality overview
+│   ├── cleaning.py          # text cleaning, dedup, target creation
+│   ├── eda.py                # exploratory charts + class balance
+│   ├── features.py           # raw columns -> model features
+│   ├── pipelines.py          # sklearn preprocessing pipelines (sparse/dense)
+│   ├── ablation.py           # which feature groups matter
+│   ├── model_selection.py    # model comparison, tuning, ensemble
+│   ├── evaluation.py         # test metrics, confusion matrix, importance, time-shift check
+│   ├── regression.py         # bonus: predict exact resolution days
+│   ├── save_artifacts.py     # save model, metadata, predictions, report
+│   └── predict.py            # load the saved model and predict on new tickets
+└── outputs_jira/             # created automatically when you run main.py
+    ├── data/                 # cleaned dataset
+    ├── figures/               # PNG charts
+    ├── models/                # trained model (.joblib) + metadata (.json)
+    └── reports/                # CSV/JSON metrics and predictions
 ```
 
-## التنقل (Navigation)
+## How to run
 
-- بعد تسجيل دخول أو إنشاء حساب ناجح (mock) → ينتقل تلقائياً لشاشة `/home`.
-- الضغط على أي كرت مشروع بـ "My Projects" (أو تبويب "Projects" بالشريط السفلي)
-  → يفتح `ProjectDetailsScreen` لنفس المشروع (البيانات ممررة عبر الـ constructor،
-  مش عبر route مركزي، لتفادي أي تعقيد إضافي بهالمرحلة).
-- زر الرجوع (←) بشاشة Project Details → `Navigator.pop()` يرجعك عالـ Home.
+```bash
+pip install -r requirements.txt
+python main.py
+```
 
-## نظام الألوان الرسمي (من Figma "Color system")
+Everything prints progress to the console and saves results into
+`outputs_jira/`. A full run (model comparison + hyperparameter tuning) can
+take a few minutes depending on your machine — lower `SEARCH_ITER` or
+`CV_FOLDS` in `src/config.py` to speed it up.
 
-كل الألوان موجودة بـ `app_colors.dart` تحت قسم منفصل، بنفس القيم الست‑عشرية
-بالضبط اللي بالتصميم:
+## Using the trained model later
 
-| اللون | Hex | الاستخدام |
-|---|---|---|
-| Dark charcoal | `#2C2D30` | نصوص أساسية، عناوين، أيقونات |
-| Purple | `#6C5CE7` | AI، insights، تقدّم أساسي |
-| Green | `#61BD4F` | صحي، نجاح، مكتمل، On Track |
-| Cyan | `#26C6DA` | بيانات، معلومات، مشاريع نشطة |
-| Yellow | `#F2D600` | مهم، قيد المعالجة، Due Today |
-| Pink | `#EB5A9A` | مستخدمين، أفاتارات |
-| Coral | `#FF6B4A` | تنبيهات، خطر، Overdue |
-| White | `#FFFFFF` | خلفية أساسية، سطح الكروت |
+```python
+import pandas as pd
+from src.predict import predict_resolution_class
 
-كل كرت/أيقونة بشاشتي Home وProject Details مربوطة باللون الدلالي المناسب
-إلها (مثلاً: Team = Pink، Tasks = Cyan، Days Left = Yellow، Overdue = Coral...).
+new_tickets = pd.DataFrame({
+    "Summary": ["Login page throws 500 error"],
+    "Description": ["Users can't log in, stack trace attached..."],
+    "Labels": ["bug,login"],
+    "Priority": ["High"],
+    "Created": ["2026-01-15 10:00:00"],
+})
 
-## اسم المستخدم بالتحية
+print(predict_resolution_class(new_tickets))
+```
 
-`"Good morning, {firstName} 👋"` — الاسم ديناميكي فعلياً، مش Hardcoded:
-- لما تعملي **Register** باسمك، بينحفظ وبيصير هو اسم شاشة الـ Home فوراً.
-- لما تسجّلي **Login** بحساب موجود، بيرجع اسم صاحب هاد الحساب بالذات.
-- الاسم المعروض هو أول كلمة بس من الاسم الكامل (`CurrentUser.firstName`
-  بملف `lib/data/mock_data.dart`)، مثلاً "Lama Khaled" → "Lama".
+## Notes
 
-لما يترابط مع الـ Backend الحقيقي، بس بدّلوا جسم `CurrentUser.register()`
-و`CurrentUser.login()` بنداء API حقيقي (التعليق `TODO (Backend track)`
-موجود بنفس المكان بالضبط) — باقي الشاشات ما رح تحتاج أي تعديل.
-
-## بيانات وهمية (Mock Data)
-
-كل بيانات المشاريع والمهام بملف `lib/data/mock_data.dart`، مفصولة تماماً عن
-الشاشات نفسها. لما يجهز الـ Backend، بدّل `MockData.projects` (وقيم
-`Today's Overview`) بنداء API حقيقي — الشاشات نفسها ما رح تحتاج تتغيّر لأنها
-بتستهلك نفس الـ `Project`/`TaskItem` models.
-
-
-
-## طريقة التشغيل على VS Code / Chrome
-
-1. تأكد إنو Flutter SDK مثبت (`flutter --version`).
-2. افتح مجلد `scaleflow_auth` بـ VS Code.
-3. بالتيرمنال:
-   ```bash
-   flutter pub get
-   flutter run -d chrome
-   ```
-4. الشاشة الافتراضية هي `Register`. تقدر تنقل بين الشاشتين من الرابط
-   بالأسفل ("Log in" / "Create one") داخل التطبيق مباشرة.
-
-## ملاحظات مهمة
-
-- **الحالات (Validation States) المطبّقة:**
-  - الإيميل: تتحقق من صيغته وتظهر رسالة خطأ حمراء أو أيقونة صح خضراء.
-  - كلمة السر (شاشة التسجيل): شروط تتحدّث لحظياً أثناء الكتابة (8+ أحرف، حرف كبير، رقم).
-  - تأكيد كلمة السر: تتحقق من التطابق مع كلمة السر الأصلية.
-  - حقول تسجيل الدخول: رسالة خطأ عند الضغط على "Log In" وأحد الحقول فاضي.
-    بعد اجتياز التحقق من الشكل، بيتحقق من الإيميل/كلمة السر مقابل **حسابات
-    محفوظة بالذاكرة (mock auth store)** بملف `lib/data/mock_data.dart`
-    (كلاس `CurrentUser`) — لحد ما يجهز الـ Backend الفعلي:
-    - أي حساب تعمليه بشاشة Register بينحفظ فعلياً وبتقدري تسجّلي فيه
-      دخول مباشرة بعدها.
-    - في كمان حساب تجريبي جاهز مسبقاً: Email: `test@scaleflow.com` —
-      Password: `Test1234`.
-    - **ملاحظة:** هاي الحسابات بالذاكرة بس (RAM)، يعني بتنمسح لما تسكّري
-      وتفتحي التطبيق من جديد (hot restart أو إعادة تشغيل) — هاد طبيعي
-      ومتوقع لحد ما نربطها بقاعدة بيانات حقيقية.
-
-    أي بيانات غلط بتظهر "Invalid email or password" فوق الزر، متل
-    التطبيقات الحقيقية. لما يجهز الـ API، دوروا على تعليق
-    `TODO (Backend track)` بأعلى `CurrentUser.register()`/`login()`
-    بملف `mock_data.dart` واستبدلوهم بنداء API فعلي.
-- **إظهار/إخفاء كلمة السر:** أيقونة عين بكل حقل باسورد (`CustomTextField(isPassword: true)`).
-- **التصميم المتجاوب (Responsive):** استخدمنا `LayoutBuilder` + `ConstrainedBox`
-  بحيث المحتوى بياخد أقصى عرض 420px على الشاشات الكبيرة (تابلت/ويب)،
-  ويمتد بشكل طبيعي على شاشات الموبايل الصغيرة، مع `SingleChildScrollView`
-  لتفادي مشاكل الـ overflow لما يفتح الكيبورد.
-- **اللوغو:** حالياً مرسوم بـ `CustomPainter` كبديل مؤقت (placeholder) لحد ما
-  يوصلكم ملف اللوغو الرسمي (SVG/PNG) من فريق الـ UI/UX — وقتها بس بدّل
-  محتوى `ScaleFlowLogo` بصورة `Image.asset(...)`.
-- **الخط:** الكود معتمد على خط `Roboto` الافتراضي. إذا فريق التصميم حدد خط
-  معيّن بالـ design system (مثلاً Poppins/Inter)، ضيفوه بمجلد `fonts/`
-  وسجّلوه بـ `pubspec.yaml` تحت `flutter: fonts:`.
-- **الألوان:** كل الألوان مجمّعة بملف `app_colors.dart` — أي تعديل مستقبلي
-  على الهوية البصرية بصير بمكان واحد بس.
-
-## الخطوة الجاية (اختياري)
-
-- ربط الشاشتين بـ state management (Provider/Bloc/Riverpod) حسب المعمارية
-  المتفق عليها مع فريق الـ Backend.
-- ربط `Forgot password?` بشاشة استرجاع كلمة السر.
-- استبدال اللوغو المرسوم بالكود بملف اللوغو الرسمي.
+- Every function has a short comment explaining what it does and why
+  (especially the less-obvious lines: regex patterns, `np.digitize` class
+  cutting, `TruncatedSVD` text compression, soft-voting ensembles,
+  permutation importance, and the log-scale regression target).
+- Config values (random seed, test size, cross-validation folds, class
+  cut-offs in days) live in one place: `src/config.py`.

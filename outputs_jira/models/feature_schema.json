@@ -1,0 +1,30 @@
+{
+  "raw_input_columns": [
+    "Summary",
+    "Description",
+    "Labels",
+    "Priority",
+    "Created"
+  ],
+  "model_input_columns": [
+    "text",
+    "labels_clean",
+    "Priority",
+    "created_days",
+    "created_year",
+    "created_month",
+    "created_dow",
+    "created_hour",
+    "is_weekend",
+    "summary_len",
+    "desc_len",
+    "desc_words",
+    "n_labels",
+    "has_url",
+    "has_code",
+    "has_module_path",
+    "has_question",
+    "desc_equals_summary"
+  ],
+  "note": "Call build_features() on the raw columns first; the saved pipeline expects its output."
+}

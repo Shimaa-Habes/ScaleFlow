@@ -1,6 +1,0 @@
-@ScaleFlow_HostAddress = http://localhost:5233
-
-GET {{ScaleFlow_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
