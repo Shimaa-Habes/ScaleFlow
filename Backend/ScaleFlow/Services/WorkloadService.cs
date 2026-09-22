@@ -241,24 +241,30 @@ public class WorkloadService : IWorkloadService
             .SendAsync("TaskAssignmentRemoved", new { taskId, userId = assigneeUserId }, ct);
     }
 
-    public async Task<IReadOnlyList<TaskAssignmentResponse>> ListTaskAssignments(
-        ClaimsPrincipal user, int projectId, int taskId, CancellationToken ct)
-    {
-        await _projectService.GetProject(user, projectId, ct);
-        await FindTask(projectId, taskId, ct);
+   public async Task<IReadOnlyList<TaskAssignmentResponse>> ListTaskAssignments(
+    ClaimsPrincipal user,
+    int projectId,
+    int taskId,
+    CancellationToken ct)
+{
+    await _projectService.GetProject(user, projectId, ct);
 
-        return await _context.TaskAssignments
-            .AsNoTracking()
-            .Where(a => a.TaskId == taskId)
-            .OrderBy(a => a.Id)
-            .Select(a => new TaskAssignmentResponse(
-                a.Id,
-                a.TaskId,
-                a.UserId,
-                a.User.FullName,
-                a.AssignedBy,
-                a.IsPrimary,
-                a.AssignedAt))
-            .ToListAsync(ct);
-    }
+    await FindTask(projectId, taskId, ct);
+
+    return await _context.TaskAssignments
+        .AsNoTracking()
+        .Where(x => x.TaskId == taskId)
+        .OrderByDescending(x => x.IsPrimary)
+        .ThenBy(x => x.AssignedAt)
+        .Select(x => new TaskAssignmentResponse(
+            x.Id,
+            x.TaskId,
+            x.UserId,
+            x.User.FullName,
+            x.AssignedBy,
+            x.IsPrimary,
+            x.AssignedAt
+        ))
+        .ToListAsync(ct);
+}
 }

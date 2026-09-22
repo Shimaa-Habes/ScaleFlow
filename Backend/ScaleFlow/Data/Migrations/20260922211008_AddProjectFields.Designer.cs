@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScaleFlow.Models;
 
 #nullable disable
 
-namespace ScaleFlow.Migrations
+namespace ScaleFlow.Data.Migrations
 {
     [DbContext(typeof(ScaleFlowDbContext))]
-    partial class ScaleFlowDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260922211008_AddProjectFields")]
+    partial class AddProjectFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -635,9 +638,6 @@ namespace ScaleFlow.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAtRisk")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")

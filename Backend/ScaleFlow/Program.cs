@@ -57,6 +57,7 @@ public class Program
         builder.Services.AddScoped<IProjectAiService, ProjectAiService>();
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<IWorkloadService, WorkloadService>();
+        builder.Services.AddScoped<IDashboardService, DashboardService>();
         builder.Services.AddScoped<IReportService, ReportService>();
 
         // Controllers
@@ -318,7 +319,7 @@ public class Program
 
         // Middleware order
         app.UseCors("AllowAll");
-
+app.UseStaticFiles();
         app.UseMiddleware<ApiExceptionMiddleware>();
 
         app.UseStatusCodePages(async context =>
@@ -328,7 +329,7 @@ public class Program
                     context.HttpContext.Response.StatusCode +
                     ".")));
 
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
 
         app.UseAuthentication();
         app.UseAuthorization();
