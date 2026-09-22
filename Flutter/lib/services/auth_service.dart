@@ -3,7 +3,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = 'http://localhost:5233/api/Auth';
+  static const String baseUrl = 'http://localhost:5233/api/Auth';
+
+  // ============================================================
+  // AUTHENTICATION TOKEN
+  // ============================================================
+
+  static String? accessToken;
+
+  // ============================================================
+  // LOGIN
+  // ============================================================
 
   Future<Map<String, dynamic>> login(
     String email,
@@ -36,10 +46,16 @@ class AuthService {
       }
 
       if (response.statusCode == 200) {
+        final data = responseData['data'];
+
+        if (data is Map<String, dynamic>) {
+          accessToken = data['accessToken']?.toString();
+        }
+
         return {
           'success': true,
           'message': responseData['message'] ?? 'Login successful.',
-          'data': responseData['data'],
+          'data': data,
         };
       }
 
@@ -58,6 +74,10 @@ class AuthService {
       };
     }
   }
+
+  // ============================================================
+  // REGISTER
+  // ============================================================
 
   Future<Map<String, dynamic>> register(
     String name,
@@ -94,10 +114,16 @@ class AuthService {
       }
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = responseData['data'];
+
+        if (data is Map<String, dynamic>) {
+          accessToken = data['accessToken']?.toString();
+        }
+
         return {
           'success': true,
           'message': responseData['message'] ?? 'Account created successfully.',
-          'data': responseData['data'],
+          'data': data,
         };
       }
 
@@ -116,5 +142,13 @@ class AuthService {
         'message': 'Unable to connect to the server. Please try again.',
       };
     }
+  }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
+  static void logout() {
+    accessToken = null;
   }
 }
