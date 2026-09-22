@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
-import '../data/mock_data.dart';
+import '../services/auth_service.dart';
 import 'home_screen.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
@@ -21,19 +24,30 @@ class CompleteProfileScreen extends StatefulWidget {
 
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   late final TextEditingController _nameController;
+
   final TextEditingController _jobTitleController = TextEditingController();
+
   final TextEditingController _companyController = TextEditingController();
+
   final TextEditingController _departmentController = TextEditingController();
+
   final TextEditingController _phoneController = TextEditingController();
+
   final TextEditingController _cityController = TextEditingController();
+
   final TextEditingController _bioController = TextEditingController();
 
   String _selectedRole = 'Team Member';
+
   String _selectedCountry = 'Palestine';
+
   String _selectedLanguage = 'English';
+
   String _selectedDefaultView = 'Projects';
 
   bool _notificationsEnabled = true;
+
+  bool _isSaving = false;
 
   final List<String> _roles = [
     'Project Manager',
@@ -61,7 +75,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.fullName);
+
+    _nameController = TextEditingController(
+      text: widget.fullName,
+    );
   }
 
   @override
@@ -73,10 +90,19 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     _phoneController.dispose();
     _cityController.dispose();
     _bioController.dispose();
+
     super.dispose();
   }
 
-  void _completeProfile() {
+  // ============================================================
+  // SAVE COMPLETE PROFILE
+  // ============================================================
+
+  Future<void> _completeProfile() async {
+    if (_isSaving) {
+      return;
+    }
+
     final name = _nameController.text.trim();
 
     if (name.isEmpty) {
@@ -84,15 +110,122 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       return;
     }
 
-    CurrentUser.fullName = name;
+    final token = AuthService.accessToken;
 
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const HomePage(),
-      ),
-      (route) => false,
-    );
+    if (token == null || token.isEmpty) {
+      _showMessage(
+        'Your session has expired. Please log in again.',
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final response = await http.put(
+        Uri.parse(
+          'http://localhost:5233/api/Profile/me',
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'fullName': name,
+          'jobTitle': _jobTitleController.text.trim(),
+          'company': _companyController.text.trim(),
+          'department': _departmentController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'country': _selectedCountry,
+          'city': _cityController.text.trim(),
+          'shortBio': _bioController.text.trim(),
+          'language': _selectedLanguage,
+          'defaultView': _selectedDefaultView,
+          'notificationsEnabled': _notificationsEnabled,
+        }),
+      );
+
+      print('========== PROFILE UPDATE ==========');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=====================================');
+
+      Map<String, dynamic> responseData = {};
+
+      try {
+        responseData = jsonDecode(response.body);
+      } catch (_) {
+        responseData = {};
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        _showMessage(
+          responseData['message'] ?? 'Profile completed successfully.',
+        );
+
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+        );
+
+        if (!mounted) {
+          return;
+        }
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => const HomePage(),
+          ),
+          (route) => false,
+        );
+
+        return;
+      }
+
+      if (response.statusCode == 401) {
+        AuthService.logout();
+
+        _showMessage(
+          'Your session has expired. Please log in again.',
+        );
+
+        return;
+      }
+
+      _showMessage(
+        responseData['message'] ??
+            'Unable to save your profile. Please try again.',
+      );
+    } catch (e) {
+      print('========== PROFILE UPDATE ERROR ==========');
+      print(e);
+      print('==========================================');
+
+      if (!mounted) {
+        return;
+      }
+
+      _showMessage(
+        'Unable to connect to the server. Please try again.',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
   }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -103,6 +236,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       ),
     );
   }
+
+  // ============================================================
+  // TEXT FIELD
+  // ============================================================
 
   Widget _buildTextField({
     required String label,
@@ -138,11 +275,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(
+                color: Color(0xFFE2E8F0),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(
+                color: Color(0xFFE2E8F0),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -156,6 +297,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       ],
     );
   }
+
+  // ============================================================
+  // DROPDOWN
+  // ============================================================
 
   Widget _buildDropdown({
     required String label,
@@ -191,11 +336,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(
+                color: Color(0xFFE2E8F0),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(
+                color: Color(0xFFE2E8F0),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -216,6 +365,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     );
   }
 
+  // ============================================================
+  // SECTION CARD
+  // ============================================================
+
   Widget _buildSectionCard({
     required String title,
     required IconData icon,
@@ -227,7 +380,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white, width: 1.5),
+        border: Border.all(
+          color: Colors.white,
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -247,7 +403,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   color: AppColors.primaryButton.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: AppColors.primaryButton, size: 20),
+                child: Icon(
+                  icon,
+                  color: AppColors.primaryButton,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -261,14 +421,23 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             ],
           ),
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Divider(color: Color(0xFFEDF2F7), height: 1),
+            padding: EdgeInsets.symmetric(
+              vertical: 16,
+            ),
+            child: Divider(
+              color: Color(0xFFEDF2F7),
+              height: 1,
+            ),
           ),
           ...children,
         ],
       ),
     );
   }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -316,13 +485,19 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 ),
               ),
             ),
-
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  24,
+                  20,
+                  40,
+                ),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 480),
+                    constraints: const BoxConstraints(
+                      maxWidth: 480,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -336,18 +511,26 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             letterSpacing: 0.5,
                           ),
                         ),
-                        const SizedBox(height: 8),
+
+                        const SizedBox(
+                          height: 8,
+                        ),
+
                         Text(
                           'Tell us a little about yourself to personalize your ScaleFlow experience.',
                           textAlign: TextAlign.center,
                           style: AppTextStyles.subtitle.copyWith(
                             fontSize: 14,
                             height: 1.5,
-                            color: const Color(0xFF64748B),
+                            color: const Color(
+                              0xFF64748B,
+                            ),
                           ),
                         ),
 
-                        const SizedBox(height: 32),
+                        const SizedBox(
+                          height: 32,
+                        ),
 
                         Stack(
                           alignment: Alignment.bottomRight,
@@ -360,17 +543,23 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                 gradient: LinearGradient(
                                   colors: [
                                     AppColors.primaryButton,
-                                    AppColors.primaryButton.withOpacity(0.6),
+                                    AppColors.primaryButton.withOpacity(
+                                      0.6,
+                                    ),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primaryButton
-                                        .withOpacity(0.3),
+                                    color: AppColors.primaryButton.withOpacity(
+                                      0.3,
+                                    ),
                                     blurRadius: 20,
-                                    offset: const Offset(0, 8),
+                                    offset: const Offset(
+                                      0,
+                                      8,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -393,12 +582,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                               decoration: BoxDecoration(
                                 color: AppColors.primaryButton,
                                 shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.white, width: 2),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
                               ),
                               child: IconButton(
-                                icon: const Icon(Icons.camera_alt_rounded,
-                                    size: 16, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.camera_alt_rounded,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
                                 onPressed: () {
                                   _showMessage(
                                     'Profile picture upload will be connected later.',
@@ -409,7 +603,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 36),
+                        const SizedBox(
+                          height: 36,
+                        ),
+
+                        // ==================================================
+                        // PERSONAL INFORMATION
+                        // ==================================================
 
                         _buildSectionCard(
                           title: 'Personal Information',
@@ -420,24 +620,44 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                               hint: 'Enter your full name',
                               controller: _nameController,
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildTextField(
                               label: 'Job Title',
                               hint: 'e.g. Frontend Developer',
                               controller: _jobTitleController,
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildDropdown(
                               label: 'Role',
                               value: _selectedRole,
                               items: _roles,
                               onChanged: (value) {
                                 if (value != null) {
-                                  setState(() => _selectedRole = value);
+                                  setState(
+                                    () => _selectedRole = value,
+                                  );
                                 }
                               },
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              'Your system role is managed by ScaleFlow permissions.',
+                              style: AppTextStyles.subtitle.copyWith(
+                                fontSize: 11.5,
+                                color: const Color(
+                                  0xFF94A3B8,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildTextField(
                               label: 'Short Bio',
                               hint: 'Tell us briefly about yourself',
@@ -447,7 +667,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(
+                          height: 24,
+                        ),
+
+                        // ==================================================
+                        // WORK INFORMATION
+                        // ==================================================
 
                         _buildSectionCard(
                           title: 'Work Information',
@@ -458,7 +684,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                               hint: 'Enter your company or organization',
                               controller: _companyController,
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildTextField(
                               label: 'Department',
                               hint: 'e.g. Development',
@@ -467,7 +695,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(
+                          height: 24,
+                        ),
+
+                        // ==================================================
+                        // CONTACT & LOCATION
+                        // ==================================================
 
                         _buildSectionCard(
                           title: 'Contact & Location',
@@ -479,18 +713,24 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildDropdown(
                               label: 'Country',
                               value: _selectedCountry,
                               items: _countries,
                               onChanged: (value) {
                                 if (value != null) {
-                                  setState(() => _selectedCountry = value);
+                                  setState(
+                                    () => _selectedCountry = value,
+                                  );
                                 }
                               },
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildTextField(
                               label: 'City',
                               hint: 'Enter your city',
@@ -499,24 +739,36 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(
+                          height: 24,
+                        ),
+
+                        // ==================================================
+                        // PREFERENCES
+                        // ==================================================
 
                         _buildSectionCard(
                           title: 'Preferences & Settings',
                           icon: Icons.tune_rounded,
                           children: [
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             _buildDropdown(
                               label: 'Default View',
                               value: _selectedDefaultView,
                               items: _defaultViews,
                               onChanged: (value) {
                                 if (value != null) {
-                                  setState(() => _selectedDefaultView = value);
+                                  setState(
+                                    () => _selectedDefaultView = value,
+                                  );
                                 }
                               },
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(
+                              height: 18,
+                            ),
                             Row(
                               children: [
                                 Expanded(
@@ -529,10 +781,14 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
-                                          color: Color(0xFF2C3E50),
+                                          color: Color(
+                                            0xFF2C3E50,
+                                          ),
                                         ),
                                       ),
-                                      const SizedBox(height: 3),
+                                      const SizedBox(
+                                        height: 3,
+                                      ),
                                       Text(
                                         'Receive important project updates',
                                         style: AppTextStyles.subtitle.copyWith(
@@ -547,7 +803,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                   activeColor: AppColors.primaryButton,
                                   onChanged: (value) {
                                     setState(
-                                        () => _notificationsEnabled = value);
+                                      () => _notificationsEnabled = value,
+                                    );
                                   },
                                 ),
                               ],
@@ -555,38 +812,67 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 36),
+                        const SizedBox(
+                          height: 36,
+                        ),
+
+                        // ==================================================
+                        // CONTINUE BUTTON
+                        // ==================================================
 
                         SizedBox(
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton(
-                            onPressed: _completeProfile,
+                            onPressed: _isSaving ? null : _completeProfile,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryButton,
                               foregroundColor: Colors.white,
+                              disabledBackgroundColor:
+                                  AppColors.primaryButton.withOpacity(
+                                0.55,
+                              ),
                               elevation: 4,
-                              shadowColor:
-                                  AppColors.primaryButton.withOpacity(0.4),
+                              shadowColor: AppColors.primaryButton.withOpacity(
+                                0.4,
+                              ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(
+                                  30,
+                                ),
                               ),
                             ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Continue to ScaleFlow',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.5,
+                            child: _isSaving
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Continue to ScaleFlow',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 20,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(Icons.arrow_forward_rounded, size: 20),
-                              ],
-                            ),
                           ),
                         ),
                       ],
