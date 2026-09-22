@@ -1,0 +1,10 @@
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.dbmdl
+*.jfm
+*.pvc
+*.dsot
+*.suo

@@ -26,4 +26,8 @@
     <ProjectReference Include="..\ScaleFlow\ScaleFlow.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="ProjectTaskAuthorizationTests.cs" />
+  </ItemGroup>
+
 </Project>

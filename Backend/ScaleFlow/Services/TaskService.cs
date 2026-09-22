@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ScaleFlow.DTOs;
+using ScaleFlow.Hubs;
 using ScaleFlow.Middleware;
 using ScaleFlow.Models;
 
@@ -9,10 +11,12 @@ namespace ScaleFlow.Services;
 public class TaskService : ITaskService
 {
     private readonly ScaleFlowDbContext _context;
+    private readonly IHubContext<ScaleFlowHub>? _hubContext;
 
-    public TaskService(ScaleFlowDbContext context)
+    public TaskService(ScaleFlowDbContext context, IHubContext<ScaleFlowHub>? hubContext = null)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
     private static int GetUserId(ClaimsPrincipal user)
@@ -96,9 +100,14 @@ public class TaskService : ITaskService
         task.CompletionPercent = request.CompletionPercent;
         _context.ProjectTasks.Add(task);
         await _context.SaveChangesAsync(ct);
-        return new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
+        var createdResponse = new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
                 task.Priority, task.Type, task.PlannedStart, task.PlannedEnd, task.EstimatedHours,
                 task.CompletionPercent, task.CreatedBy, task.UpdatedBy, task.CreatedAt, task.UpdatedAt);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{projectId}").SendAsync("TaskCreated", createdResponse, ct);
+        }
+        return createdResponse;
     }
     // Updates a task and records status changes.
     public async Task<TaskResponse> UpdateTask(ClaimsPrincipal user, int projectId, int id, TaskRequest request, CancellationToken ct)
@@ -119,9 +128,14 @@ public class TaskService : ITaskService
         task.UpdatedBy = userId;
         task.UpdatedAt = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync(ct);
-        return new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
+        var updatedResponse = new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
                 task.Priority, task.Type, task.PlannedStart, task.PlannedEnd, task.EstimatedHours,
                 task.CompletionPercent, task.CreatedBy, task.UpdatedBy, task.CreatedAt, task.UpdatedAt);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{projectId}").SendAsync("TaskUpdated", updatedResponse, ct);
+        }
+        return updatedResponse;
     }
     // Soft-deletes an accessible task.
     public async Task DeleteTask(ClaimsPrincipal user, int projectId, int id, CancellationToken ct)
@@ -132,6 +146,10 @@ public class TaskService : ITaskService
         task.DeletedBy = task.UpdatedBy = userId;
         task.DeletedAt = task.UpdatedAt = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync(ct);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{projectId}").SendAsync("TaskDeleted", new { projectId, taskId = id }, ct);
+        }
     }
     // Returns active prerequisites as response DTOs.
     public async Task<IReadOnlyList<TaskDependencyResponse>> ListDependencies(ClaimsPrincipal user, int projectId, int taskId, CancellationToken ct)

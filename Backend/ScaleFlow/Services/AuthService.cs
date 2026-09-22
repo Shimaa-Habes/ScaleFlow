@@ -66,12 +66,17 @@ public class AuthService : IAuthService
                 "A user with this email already exists.");
         }
 
-        // Use the default ScaleFlow organization automatically.
-        // The user does not need to select an organization during registration.
-        var organization = await _dbContext.Organizations
-            .FirstOrDefaultAsync(
-                o => o.Code == "SCALEFLOW" && !o.IsDeleted,
-                cancellationToken);
+        // Use specified organization or fallback to default ScaleFlow organization
+        Organization? organization = null;
+        if (request.OrganizationId > 0)
+        {
+            organization = await _dbContext.Organizations
+                .FirstOrDefaultAsync(o => o.Id == request.OrganizationId && !o.IsDeleted, cancellationToken);
+        }
+
+        organization ??= await _dbContext.Organizations
+            .FirstOrDefaultAsync(o => o.Code == "SCALEFLOW" && !o.IsDeleted, cancellationToken)
+            ?? await _dbContext.Organizations.FirstOrDefaultAsync(o => !o.IsDeleted, cancellationToken);
 
         if (organization is null)
         {

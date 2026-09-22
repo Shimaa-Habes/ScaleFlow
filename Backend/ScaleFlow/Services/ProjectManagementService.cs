@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ScaleFlow.DTOs;
+using ScaleFlow.Hubs;
 using ScaleFlow.Middleware;
 using ScaleFlow.Models;
 
@@ -9,10 +11,12 @@ namespace ScaleFlow.Services;
 public class ProjectManagementService : IProjectService
 {
     private readonly ScaleFlowDbContext _context;
+    private readonly IHubContext<ScaleFlowHub>? _hubContext;
 
-    public ProjectManagementService(ScaleFlowDbContext context)
+    public ProjectManagementService(ScaleFlowDbContext context, IHubContext<ScaleFlowHub>? hubContext = null)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
     private static int GetUserId(ClaimsPrincipal user)
@@ -108,9 +112,14 @@ public class ProjectManagementService : IProjectService
         project.IsArchived = request.Status == ProjectStatus.Archived;
         project.UpdatedAt = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync(ct);
-        return new ProjectResponse(project.Id, project.OrganizationId, project.OwnerId, project.Name,
+        var updatedResponse = new ProjectResponse(project.Id, project.OrganizationId, project.OwnerId, project.Name,
                 project.Description, project.Status, project.Priority, project.Budget, project.StartDate,
                 project.EndDate, project.CreatedAt, project.UpdatedAt);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{id}").SendAsync("ProjectUpdated", updatedResponse, ct);
+        }
+        return updatedResponse;
     }
     // Soft-deletes a project owned by the authenticated user.
     public async Task DeleteProject(ClaimsPrincipal user, int id, CancellationToken ct)
@@ -121,5 +130,9 @@ public class ProjectManagementService : IProjectService
         project.DeletedBy = userId;
         project.DeletedAt = project.UpdatedAt = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync(ct);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{id}").SendAsync("ProjectDeleted", new { projectId = id }, ct);
+        }
     }
 }

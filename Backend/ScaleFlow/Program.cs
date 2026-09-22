@@ -9,13 +9,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-using ScaleFlow.DTOs;
-using ScaleFlow.Middleware;
-using ScaleFlow.Validation;
 using ScaleFlow.Constants;
+using ScaleFlow.DTOs;
+using ScaleFlow.Hubs;
+using ScaleFlow.Middleware;
 using ScaleFlow.Models;
 using ScaleFlow.Options;
 using ScaleFlow.Services;
+using ScaleFlow.Validation;
 
 namespace ScaleFlow;
 
@@ -35,6 +36,9 @@ public class Program
                     .AllowAnyHeader());
         });
 
+        // SignalR
+        builder.Services.AddSignalR();
+
         // JWT settings
         builder.Services.Configure<JwtSettings>(
             builder.Configuration.GetSection("JwtSettings"));
@@ -51,6 +55,9 @@ public class Program
         builder.Services.AddScoped<ITeamService, TeamService>();
         builder.Services.AddScoped<IMlService, UnavailableMlService>();
         builder.Services.AddScoped<IProjectAiService, ProjectAiService>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<IWorkloadService, WorkloadService>();
+        builder.Services.AddScoped<IReportService, ReportService>();
 
         // Controllers
         builder.Services.AddControllers(options =>
@@ -181,6 +188,18 @@ public class Program
                         return context.Response.WriteAsJsonAsync(
                             ApiResponse<object>.Fail(
                                 "Access denied."));
+                    },
+
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
                     }
                 };
 
@@ -215,14 +234,18 @@ public class Program
         var app = builder.Build();
 
         // Database migration + role + default organization seeding
-        using (var scope = app.Services.CreateScope())
+        if (!app.Environment.IsEnvironment("Testing"))
         {
+            using var scope = app.Services.CreateScope();
             var dbContext =
                 scope.ServiceProvider
                     .GetRequiredService<ScaleFlowDbContext>();
 
             // Apply pending migrations.
-            await dbContext.Database.MigrateAsync();
+            if (dbContext.Database.IsRelational())
+            {
+                await dbContext.Database.MigrateAsync();
+            }
 
             // ---------------------------------------------------------
             // Seed default organization
@@ -311,6 +334,7 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+        app.MapHub<ScaleFlowHub>("/hubs/scaleflow");
 
         app.Run();
     }

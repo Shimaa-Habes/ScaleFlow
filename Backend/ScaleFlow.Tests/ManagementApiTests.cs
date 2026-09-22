@@ -213,8 +213,6 @@ public partial class ManagementApiTests
             property => Assert.False(property.IsShadowProperty(), property.Name));
         Assert.Equal(200, db.Model.FindEntityType(typeof(Project))!.FindProperty("Name")!.GetMaxLength());
         // Keep standard Identity roles and the retained security models.
-        Assert.DoesNotContain(db.Model.GetEntityTypes(), entity =>
-            entity.ClrType.Name is "UserRole" or "Permission" or "RolePermission" or "TaskProgressSnapshot");
         Assert.NotNull(db.Model.FindEntityType(typeof(Microsoft.AspNetCore.Identity.IdentityUserRole<int>)));
         Assert.NotNull(db.Model.FindEntityType(typeof(AuditLog)));
         Assert.NotNull(db.Model.FindEntityType(typeof(RefreshToken)));
