@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+
 using ScaleFlow.Constants;
 using ScaleFlow.DTOs;
 using ScaleFlow.Models;
@@ -39,27 +40,23 @@ public class AuthService : IAuthService
     {
         if (string.IsNullOrWhiteSpace(request.FullName))
         {
-            throw new InvalidOperationException("Full name is required.");
+            throw new InvalidOperationException(
+                "Full name is required.");
         }
 
         if (string.IsNullOrWhiteSpace(request.Email))
         {
-            throw new InvalidOperationException("Email is required.");
+            throw new InvalidOperationException(
+                "Email is required.");
         }
 
         if (string.IsNullOrWhiteSpace(request.Password))
         {
-            throw new InvalidOperationException("Password is required.");
-        }
-
-        if (request.OrganizationId <= 0)
-        {
-            throw new InvalidOperationException("OrganizationId is required.");
+            throw new InvalidOperationException(
+                "Password is required.");
         }
 
         var email = request.Email.Trim();
-
-        var normalizedEmail = _userManager.NormalizeEmail(email);
 
         var existingUser = await _userManager.FindByEmailAsync(email);
 
@@ -69,15 +66,17 @@ public class AuthService : IAuthService
                 "A user with this email already exists.");
         }
 
-        var organizationExists = await _dbContext.Organizations
-            .AnyAsync(
-                o => o.Id == request.OrganizationId && !o.IsDeleted,
+        // Use the default ScaleFlow organization automatically.
+        // The user does not need to select an organization during registration.
+        var organization = await _dbContext.Organizations
+            .FirstOrDefaultAsync(
+                o => o.Code == "SCALEFLOW" && !o.IsDeleted,
                 cancellationToken);
 
-        if (!organizationExists)
+        if (organization is null)
         {
             throw new InvalidOperationException(
-                "Organization not found.");
+                "Default ScaleFlow organization was not found.");
         }
 
         var user = new User
@@ -85,21 +84,22 @@ public class AuthService : IAuthService
             FullName = request.FullName.Trim(),
 
             Email = email,
-            NormalizedEmail = normalizedEmail,
-
             UserName = email,
-            NormalizedUserName = _userManager.NormalizeName(email),
 
             PhoneNumber = request.Phone,
             Phone = request.Phone,
 
-            OrganizationId = request.OrganizationId,
+            OrganizationId = organization.Id,
+
             IsActive = true,
             IsDeleted = false,
+
             EmailConfirmed = false,
+
             CreatedAt = DateTimeOffset.UtcNow
         };
 
+        // ASP.NET Identity creates and stores the password hash.
         var result = await _userManager.CreateAsync(
             user,
             request.Password);
@@ -112,6 +112,7 @@ public class AuthService : IAuthService
                     result.Errors.Select(e => e.Description)));
         }
 
+        // New users are assigned the Client role by default.
         var defaultRole = RoleConstants.Client;
 
         await EnsureRoleExistsAsync(defaultRole);
@@ -139,82 +140,88 @@ public class AuthService : IAuthService
             UserId = user.Id,
             Email = user.Email ?? string.Empty,
             FullName = user.FullName,
+
             AccessToken = token,
+
             ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(
                 _jwtSettings.ExpiryMinutes),
+
             Roles = roles.ToList()
         };
     }
 
-   public async Task<AuthResponse> LoginAsync(
-    LoginRequest request,
-    CancellationToken cancellationToken = default)
-{
-    if (string.IsNullOrWhiteSpace(request.Email) ||
-        string.IsNullOrWhiteSpace(request.Password))
+    public async Task<AuthResponse> LoginAsync(
+        LoginRequest request,
+        CancellationToken cancellationToken = default)
     {
-        throw new InvalidOperationException(
-            "Email and password are required.");
+        if (string.IsNullOrWhiteSpace(request.Email) ||
+            string.IsNullOrWhiteSpace(request.Password))
+        {
+            throw new InvalidOperationException(
+                "Email and password are required.");
+        }
+
+        var email = request.Email.Trim();
+
+        // Find the user directly by email.
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(
+                u => u.Email == email,
+                cancellationToken);
+
+        if (user is null)
+        {
+            throw new InvalidOperationException(
+                "Invalid email or password.");
+        }
+
+        if (!user.IsActive || user.IsDeleted)
+        {
+            throw new InvalidOperationException(
+                "User account is not active.");
+        }
+
+        // ASP.NET Identity verifies the stored password hash.
+        var passwordValid = await _userManager.CheckPasswordAsync(
+            user,
+            request.Password);
+
+        if (!passwordValid)
+        {
+            throw new InvalidOperationException(
+                "Invalid email or password.");
+        }
+
+        user.LastLoginAt = DateTimeOffset.UtcNow;
+
+        var updateResult = await _userManager.UpdateAsync(user);
+
+        if (!updateResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                "Unable to update user login information.");
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var token = _jwtTokenService.GenerateToken(
+            user,
+            roles);
+
+        return new AuthResponse
+        {
+            UserId = user.Id,
+            Email = user.Email ?? string.Empty,
+            FullName = user.FullName,
+
+            AccessToken = token,
+
+            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(
+                _jwtSettings.ExpiryMinutes),
+
+            Roles = roles.ToList()
+        };
     }
-
-    var email = request.Email.Trim();
-
-    // Find user directly by Email.
-    var user = await _userManager.Users
-        .FirstOrDefaultAsync(
-            u => u.Email == email,
-            cancellationToken);
-
-    if (user is null)
-    {
-        throw new InvalidOperationException(
-            "Invalid email or password.");
-    }
-
-    if (!user.IsActive || user.IsDeleted)
-    {
-        throw new InvalidOperationException(
-            "User account is not active.");
-    }
-
-    // Verify password using ASP.NET Identity.
-    var passwordValid = await _userManager.CheckPasswordAsync(
-        user,
-        request.Password);
-
-    if (!passwordValid)
-    {
-        throw new InvalidOperationException(
-            "Invalid email or password.");
-    }
-
-    user.LastLoginAt = DateTimeOffset.UtcNow;
-
-    var updateResult = await _userManager.UpdateAsync(user);
-
-    if (!updateResult.Succeeded)
-    {
-        throw new InvalidOperationException(
-            "Unable to update user login information.");
-    }
-
-    var roles = await _userManager.GetRolesAsync(user);
-
-    var token = _jwtTokenService.GenerateToken(
-        user,
-        roles);
-
-    return new AuthResponse
-    {
-        UserId = user.Id,
-        Email = user.Email ?? string.Empty,
-        FullName = user.FullName,
-        AccessToken = token,
-        ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(
-            _jwtSettings.ExpiryMinutes),
-        Roles = roles.ToList()
-    };
-}
 
     public async Task<User?> FindUserByEmailAsync(
         string email,
@@ -233,7 +240,7 @@ public class AuthService : IAuthService
     {
         if (!await _roleManager.RoleExistsAsync(roleName))
         {
-            await _roleManager.CreateAsync(
+            var result = await _roleManager.CreateAsync(
                 new Role
                 {
                     Name = roleName,
@@ -241,6 +248,15 @@ public class AuthService : IAuthService
                     Scope = RoleScope.Global,
                     IsSystem = true
                 });
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join(
+                        "; ",
+                        result.Errors.Select(e => e.Description)));
+            }
         }
     }
 }
+

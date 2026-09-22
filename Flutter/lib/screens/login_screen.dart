@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:ui';
+
+import 'package:flutter/material.dart';
 
 import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
-import '../services/auth_service.dart'; 
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _rememberMe = true;
   bool _obscurePassword = true;
-  bool _isLoading = false; 
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -34,54 +35,96 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool _isValidEmail(String value) {
-    return RegExp(r'^[\w\.\-]+@[\w\-]+\.[a-zA-Z]{2,}$').hasMatch(value);
+    return RegExp(
+      r'^[\w\.\-]+@[\w\-]+\.[a-zA-Z]{2,}$',
+    ).hasMatch(value);
   }
 
-  void _handleLogin() async {
-    setState(() {
-      _emailError = _emailController.text.isEmpty
-          ? 'This field is required'
-          : (!_isValidEmail(_emailController.text)
-              ? 'Please enter a valid email address'
-              : null);
+  Future<void> _handleLogin() async {
+    FocusScope.of(context).unfocus();
 
-      _passwordError =
-          _passwordController.text.isEmpty ? 'This field is required' : null;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    setState(() {
+      if (email.isEmpty) {
+        _emailError = 'This field is required';
+      } else if (!_isValidEmail(email)) {
+        _emailError = 'Please enter a valid email address';
+      } else {
+        _emailError = null;
+      }
+
+      _passwordError = password.isEmpty ? 'This field is required' : null;
 
       _loginError = null;
     });
 
-    if (_emailError != null || _passwordError != null) return;
-
-    setState(() {
-      _isLoading = true; 
-    });
-
-    final bool isSuccess = await _authService.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
-
-    setState(() {
-      _isLoading = false; 
-    });
-
-    if (!isSuccess) {
-      setState(() => _loginError = 'Invalid email, password, or server error');
+    if (_emailError != null || _passwordError != null) {
       return;
     }
 
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Logged in successfully ✅')),
-    );
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
+    setState(() {
+      _isLoading = true;
     });
+
+    try {
+      print('========== LOGIN REQUEST ==========');
+      print('Email: $email');
+      print('Password length: ${password.length}');
+      print('===================================');
+
+      final result = await _authService.login(
+        email,
+        password,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      if (!result['success']) {
+        setState(() {
+          _isLoading = false;
+          _loginError = result['message'] ?? 'Invalid email or password.';
+        });
+        return;
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Logged in successfully ✅'),
+        ),
+      );
+
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () {
+          if (!mounted) {
+            return;
+          }
+
+          Navigator.of(context).pushReplacementNamed('/home');
+        },
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isLoading = false;
+        _loginError = 'Unable to connect to the server. Please try again.';
+      });
+
+      print('========== LOGIN SCREEN ERROR ==========');
+      print(e);
+      print('========================================');
+    }
   }
 
   @override
@@ -97,29 +140,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-
             Positioned.fill(
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+                filter: ImageFilter.blur(
+                  sigmaX: 12.0,
+                  sigmaY: 12.0,
+                ),
                 child: Container(
                   color: Colors.white.withOpacity(0.35),
                 ),
               ),
             ),
-
             SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 20,
+                  ),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 380),
+                    constraints: const BoxConstraints(
+                      maxWidth: 380,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 10),
-
-                        // Logo
                         Center(
                           child: Image.asset(
                             'assets/images/Logo.png',
@@ -127,10 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             fit: BoxFit.contain,
                           ),
                         ),
-
                         const SizedBox(height: 24),
-
-                        // Title
                         Text(
                           'Welcome Back',
                           textAlign: TextAlign.center,
@@ -141,9 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             letterSpacing: 0.5,
                           ),
                         ),
-
                         const SizedBox(height: 6),
-
                         Text(
                           'Sign in to your account to continue',
                           textAlign: TextAlign.center,
@@ -153,10 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-
                         const SizedBox(height: 32),
-
-                        // Email
                         _buildLabel('Email Address'),
                         const SizedBox(height: 6),
                         _buildTextField(
@@ -174,10 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                         ),
-
                         const SizedBox(height: 18),
-
-                        // Password
                         _buildLabel('Password'),
                         const SizedBox(height: 6),
                         _buildTextField(
@@ -195,10 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                         ),
-
                         const SizedBox(height: 14),
-
-                        // Remember me + Forgot password
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -242,8 +274,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.of(context)
-                                    .pushNamed('/forgot-password');
+                                Navigator.of(context).pushNamed(
+                                  '/forgot-password',
+                                );
                               },
                               child: Text(
                                 'Forgot password?',
@@ -256,10 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 24),
-
-                        // Error message
                         if (_loginError != null) ...[
                           Text(
                             _loginError!,
@@ -272,8 +302,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 14),
                         ],
-
-                        // Log In Button
                         SizedBox(
                           height: 52,
                           child: ElevatedButton(
@@ -306,16 +334,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ),
                                       SizedBox(width: 8),
-                                      Icon(Icons.arrow_forward_rounded,
-                                          size: 20),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 20,
+                                      ),
                                     ],
                                   ),
                           ),
                         ),
-
                         const SizedBox(height: 30),
-
-                        // Footer
                         Center(
                           child: RichText(
                             text: TextSpan(
@@ -324,13 +351,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.grey.shade700,
                               ),
                               children: [
-                                const TextSpan(text: "Don't have an account? "),
+                                const TextSpan(
+                                  text: "Don't have an account? ",
+                                ),
                                 WidgetSpan(
                                   alignment: PlaceholderAlignment.middle,
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.of(context)
-                                          .pushReplacementNamed('/register');
+                                          .pushReplacementNamed(
+                                        '/register',
+                                      );
                                     },
                                     child: Text(
                                       'Sign up',

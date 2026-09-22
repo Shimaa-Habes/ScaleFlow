@@ -1,14 +1,17 @@
 using System.Text;
+
 using FluentValidation;
+
 using Microsoft.AspNetCore.Mvc;
-using ScaleFlow.DTOs;
-using ScaleFlow.Middleware;
-using ScaleFlow.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using ScaleFlow.DTOs;
+using ScaleFlow.Middleware;
+using ScaleFlow.Validation;
 using ScaleFlow.Constants;
 using ScaleFlow.Models;
 using ScaleFlow.Options;
@@ -137,11 +140,6 @@ public class Program
             .AddEntityFrameworkStores<ScaleFlowDbContext>()
             .AddDefaultTokenProviders();
 
-        // Password hasher
-        builder.Services.AddScoped<
-            IPasswordHasher<User>,
-            PasswordHasher<User>>();
-
         // JWT configuration
         var jwtSettings =
             builder.Configuration
@@ -216,15 +214,47 @@ public class Program
         // Build application
         var app = builder.Build();
 
-        // Database migration + role seeding
+        // Database migration + role + default organization seeding
         using (var scope = app.Services.CreateScope())
         {
             var dbContext =
                 scope.ServiceProvider
                     .GetRequiredService<ScaleFlowDbContext>();
 
+            // Apply pending migrations.
             await dbContext.Database.MigrateAsync();
 
+            // ---------------------------------------------------------
+            // Seed default organization
+            // ---------------------------------------------------------
+            var defaultOrganization =
+                await dbContext.Organizations
+                    .FirstOrDefaultAsync(
+                        organization =>
+                            organization.Code == "SCALEFLOW" &&
+                            !organization.IsDeleted);
+
+            if (defaultOrganization is null)
+            {
+                defaultOrganization = new Organization
+                {
+                    Name = "ScaleFlow",
+                    Slug = "scaleflow",
+                    Code = "SCALEFLOW",
+                    Industry = "Software",
+                    Timezone = "Asia/Hebron",
+                    IsDeleted = false,
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+
+                dbContext.Organizations.Add(defaultOrganization);
+
+                await dbContext.SaveChangesAsync();
+            }
+
+            // ---------------------------------------------------------
+            // Seed roles
+            // ---------------------------------------------------------
             var roleManager =
                 scope.ServiceProvider
                     .GetRequiredService<RoleManager<Role>>();
@@ -285,3 +315,4 @@ public class Program
         app.Run();
     }
 }
+

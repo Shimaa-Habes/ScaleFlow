@@ -1,57 +1,120 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = "http://localhost:5233/api/Auth";
+  final String baseUrl = 'http://localhost:5233/api/Auth';
 
-  Future<bool> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(
+    String email,
+    String password,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: jsonEncode({
-          "email": email,
-          "password": password,
+          'email': email.trim(),
+          'password': password,
         }),
       );
 
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        print(
-            "Login failed. Status: ${response.statusCode}, Body: ${response.body}");
-        return false;
+      print('========== LOGIN RESPONSE ==========');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('====================================');
+
+      Map<String, dynamic> responseData = {};
+
+      try {
+        responseData = jsonDecode(response.body);
+      } catch (_) {
+        responseData = {};
       }
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': responseData['message'] ?? 'Login successful.',
+          'data': responseData['data'],
+        };
+      }
+
+      return {
+        'success': false,
+        'message': responseData['message'] ?? 'Invalid email or password.',
+      };
     } catch (e) {
-      print("Error during login: $e");
-      return false;
+      print('========== LOGIN ERROR ==========');
+      print(e);
+      print('=================================');
+
+      return {
+        'success': false,
+        'message': 'Unable to connect to the server. Please try again.',
+      };
     }
   }
 
-  Future<bool> register(String name, String email, String password) async {
+  Future<Map<String, dynamic>> register(
+    String name,
+    String email,
+    String password,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/register'),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: jsonEncode({
-          "fullName": name,
-          "email": email,
-          "password": password,
-          "phone": "0591234567",
-          "organizationId": 1
+          'fullName': name.trim(),
+          'email': email.trim(),
+          'password': password,
+          'phone': '0591234567',
+          'organizationId': 1,
         }),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
-      } else {
-        print(
-            "Register failed. Status: ${response.statusCode}, Body: ${response.body}");
-        return false;
+      print('========== REGISTER RESPONSE ==========');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=======================================');
+
+      Map<String, dynamic> responseData = {};
+
+      try {
+        responseData = jsonDecode(response.body);
+      } catch (_) {
+        responseData = {};
       }
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {
+          'success': true,
+          'message': responseData['message'] ?? 'Account created successfully.',
+          'data': responseData['data'],
+        };
+      }
+
+      return {
+        'success': false,
+        'message':
+            responseData['message'] ?? 'Registration failed. Please try again.',
+      };
     } catch (e) {
-      print("Error during register: $e");
-      return false;
+      print('========== REGISTER ERROR ==========');
+      print(e);
+      print('====================================');
+
+      return {
+        'success': false,
+        'message': 'Unable to connect to the server. Please try again.',
+      };
     }
   }
 }
