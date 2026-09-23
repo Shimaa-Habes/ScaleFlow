@@ -17,10 +17,16 @@ class HomeService {
     // Only active projects are shown on Home.
     // AI/ML is intentionally NOT used here.
     final activeProjects = projects.where((project) {
-      return _toInt(project['status']) == 2 && project['isArchived'] != true;
+      final status = _toInt(project['status']);
+
+      return status == 2 && project['isArchived'] != true;
     }).toList();
 
     final allTasks = <Map<String, dynamic>>[];
+
+    // ============================================================
+    // LOAD TASKS FOR ACTIVE PROJECTS
+    // ============================================================
 
     for (final project in activeProjects) {
       final projectId = _toInt(project['id']);
@@ -34,11 +40,77 @@ class HomeService {
       for (final task in tasks) {
         task['_projectName'] = project['name'];
         task['_projectId'] = projectId;
+
         allTasks.add(task);
       }
     }
 
     final now = DateTime.now();
+
+    // ============================================================
+    // AT-RISK PROJECTS
+    // ============================================================
+    //
+    // A project is considered At Risk when:
+    //
+    // 1. Backend explicitly marks the project as IsAtRisk = true
+    // OR
+    // 2. One of its active tasks is Blocked
+    // OR
+    // 3. One of its active tasks is Overdue
+    //
+    // AI/ML prediction is NOT used here.
+    // ============================================================
+
+    final atRiskProjectIds = <int>{};
+
+    // ------------------------------------------------------------
+    // 1. Read project-level IsAtRisk from Backend
+    // ------------------------------------------------------------
+
+    for (final project in activeProjects) {
+      final projectId = _toInt(project['id']);
+
+      if (projectId == null) {
+        continue;
+      }
+
+      if (_toBool(project['isAtRisk'])) {
+        atRiskProjectIds.add(projectId);
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 2. Check tasks for Blocked / Overdue
+    // ------------------------------------------------------------
+
+    for (final task in allTasks) {
+      final projectId = _toInt(task['_projectId']);
+
+      if (projectId == null) {
+        continue;
+      }
+
+      final status = _toInt(task['status']);
+      final plannedEnd = _parseDate(task['plannedEnd']);
+
+      // Status 5 = Done
+      // Status 7 = Cancelled
+      final isCompleted = status == 5;
+      final isCancelled = status == 7;
+
+      // Status 6 = Blocked
+      final isBlocked = status == 6;
+
+      final isOverdue = plannedEnd != null &&
+          plannedEnd.isBefore(now) &&
+          !isCompleted &&
+          !isCancelled;
+
+      if (isBlocked || isOverdue) {
+        atRiskProjectIds.add(projectId);
+      }
+    }
 
     // ============================================================
     // TODAY'S TASKS
@@ -99,43 +171,6 @@ class HomeService {
 
       return plannedEnd.isBefore(now);
     }).toList();
-
-    // ============================================================
-    // AT-RISK PROJECTS
-    //
-    // Temporary rule based only on existing backend data.
-    // AI/ML risk prediction is NOT used.
-    //
-    // A project is considered at risk if:
-    // - one of its tasks is Blocked
-    // OR
-    // - one of its active tasks is overdue.
-    // ============================================================
-
-    final atRiskProjectIds = <int>{};
-
-    for (final task in allTasks) {
-      final projectId = _toInt(task['_projectId']);
-
-      if (projectId == null) {
-        continue;
-      }
-
-      final status = _toInt(task['status']);
-
-      final plannedEnd = _parseDate(task['plannedEnd']);
-
-      final isBlocked = status == 6;
-
-      final isOverdue = plannedEnd != null &&
-          plannedEnd.isBefore(now) &&
-          status != 5 &&
-          status != 7;
-
-      if (isBlocked || isOverdue) {
-        atRiskProjectIds.add(projectId);
-      }
-    }
 
     // ============================================================
     // UPCOMING TASKS
@@ -381,7 +416,29 @@ class HomeService {
       return value;
     }
 
+    if (value is num) {
+      return value.toInt();
+    }
+
     return int.tryParse(value?.toString() ?? '');
+  }
+
+  // ============================================================
+  // BOOLEAN PARSER
+  // ============================================================
+
+  bool _toBool(dynamic value) {
+    if (value is bool) {
+      return value;
+    }
+
+    if (value is num) {
+      return value != 0;
+    }
+
+    final text = value?.toString().toLowerCase().trim();
+
+    return text == 'true' || text == '1';
   }
 
   // ============================================================
@@ -407,19 +464,13 @@ class HomeData {
   final List<Map<String, dynamic>> todayTasks;
   final List<Map<String, dynamic>> upcomingTasks;
   final List<Map<String, dynamic>> overdueTasks;
-
   final int completedTasks;
   final int activeTaskCount;
-
   final Set<int> atRiskProjectIds;
-
   final List<HomeNotification> notifications;
 
   // ============================================================
   // AI / ML PLACEHOLDERS
-  //
-  // These are intentionally NOT calculated yet.
-  // They will be populated when the AI/ML integration is ready.
   // ============================================================
 
   final bool aiReady;
@@ -449,7 +500,11 @@ class HomeData {
 
   int get atRiskProjects => atRiskProjectIds.length;
 
-  int get onTrackProjects => projects.length - atRiskProjectIds.length;
+  int get onTrackProjects {
+    final result = projects.length - atRiskProjectIds.length;
+
+    return result < 0 ? 0 : result;
+  }
 
   int get unreadNotifications {
     return notifications.where((item) => !item.isRead).length;
@@ -457,6 +512,7 @@ class HomeData {
 
   // ============================================================
   // PROGRESS
+  // ============================================================
   //
   // This is normal backend data, NOT AI/ML.
   // ============================================================
@@ -493,6 +549,10 @@ class HomeData {
 
     if (value is int) {
       return value;
+    }
+
+    if (value is num) {
+      return value.toInt();
     }
 
     return int.tryParse(value?.toString() ?? '') ?? 0;
