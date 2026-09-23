@@ -1,0 +1,1294 @@
+openapi: 3.0.3
+info:
+  title: ScaleFlow API
+  version: 1.0.0
+  description: Enterprise project management, AI predictive risk analysis, resource workload balancing, and real-time collaboration API.
+servers:
+  - url: http://localhost:5000/api
+    description: Local Development Server
+  - url: https://api.scaleflow.io/api
+    description: Production Server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter your signed JWT token obtained from `/auth/login` or `/auth/register`.
+
+  schemas:
+    ApiResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          nullable: true
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          nullable: true
+
+    RegisterRequest:
+      type: object
+      required:
+        - fullName
+        - email
+        - password
+        - organizationId
+      properties:
+        fullName:
+          type: string
+          maxLength: 200
+          example: Sarah Jenkins
+        email:
+          type: string
+          format: email
+          maxLength: 256
+          example: sarah@example.com
+        password:
+          type: string
+          minLength: 8
+          example: SecurePass123!
+        phone:
+          type: string
+          nullable: true
+          example: +1-555-0199
+        organizationId:
+          type: integer
+          example: 1
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: sarah@example.com
+        password:
+          type: string
+          example: SecurePass123!
+
+    AuthResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 14
+        email:
+          type: string
+          example: sarah@example.com
+        fullName:
+          type: string
+          example: Sarah Jenkins
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        expiresAt:
+          type: string
+          format: date-time
+        roles:
+          type: array
+          items:
+            type: string
+          example: ["ProjectManager"]
+
+    ProfileResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+        email:
+          type: string
+        fullName:
+          type: string
+        jobTitle:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        department:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        shortBio:
+          type: string
+          nullable: true
+        language:
+          type: string
+          nullable: true
+        defaultView:
+          type: string
+          example: Projects
+        notificationsEnabled:
+          type: boolean
+        avatarUrl:
+          type: string
+          nullable: true
+
+    UpdateProfileRequest:
+      type: object
+      required:
+        - fullName
+        - notificationsEnabled
+      properties:
+        fullName:
+          type: string
+          maxLength: 200
+        jobTitle:
+          type: string
+          nullable: true
+          maxLength: 100
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        department:
+          type: string
+          nullable: true
+          maxLength: 100
+        phone:
+          type: string
+          nullable: true
+          maxLength: 30
+        country:
+          type: string
+          nullable: true
+          maxLength: 100
+        city:
+          type: string
+          nullable: true
+          maxLength: 100
+        shortBio:
+          type: string
+          nullable: true
+          maxLength: 1000
+        language:
+          type: string
+          nullable: true
+          maxLength: 50
+        defaultView:
+          type: string
+          nullable: true
+          maxLength: 50
+        notificationsEnabled:
+          type: boolean
+
+    ProjectRequest:
+      type: object
+      required:
+        - name
+        - status
+        - priority
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          example: Cloud Native Migration
+        description:
+          type: string
+          nullable: true
+          maxLength: 4000
+        workspaceUrl:
+          type: string
+          nullable: true
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 0
+        isAtRisk:
+          type: boolean
+          default: false
+        status:
+          type: integer
+          description: 0:Draft, 1:Planning, 2:Active, 3:OnHold, 4:Completed, 5:Cancelled, 6:Archived
+          enum: [0, 1, 2, 3, 4, 5, 6]
+          default: 1
+        priority:
+          type: integer
+          description: 1:Low, 2:Medium, 3:High, 4:Critical
+          enum: [1, 2, 3, 4]
+          default: 2
+        budget:
+          type: number
+          format: decimal
+          nullable: true
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+        memberUserIds:
+          type: array
+          items:
+            type: integer
+
+    ProjectResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        organizationId:
+          type: integer
+        ownerId:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        workspaceUrl:
+          type: string
+          nullable: true
+        progress:
+          type: integer
+        isAtRisk:
+          type: boolean
+        imageUrl:
+          type: string
+          nullable: true
+        status:
+          type: integer
+        priority:
+          type: integer
+        budget:
+          type: number
+          format: decimal
+          nullable: true
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaskRequest:
+      type: object
+      required:
+        - title
+        - status
+        - priority
+        - type
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          maxLength: 4000
+        status:
+          type: integer
+          description: 1:Backlog, 2:Todo, 3:InProgress, 4:Review, 5:Done, 6:Blocked, 7:Cancelled
+          enum: [1, 2, 3, 4, 5, 6, 7]
+          default: 1
+        priority:
+          type: integer
+          description: 1:Low, 2:Medium, 3:High, 4:Critical
+          enum: [1, 2, 3, 4]
+          default: 2
+        type:
+          type: integer
+          description: 1:Task, 2:Bug, 3:Feature, 4:Research
+          enum: [1, 2, 3, 4]
+          default: 1
+        plannedStart:
+          type: string
+          format: date-time
+          nullable: true
+        plannedEnd:
+          type: string
+          format: date-time
+          nullable: true
+        estimatedHours:
+          type: number
+          format: decimal
+          nullable: true
+        completionPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: integer
+        priority:
+          type: integer
+        type:
+          type: integer
+        plannedStart:
+          type: string
+          format: date-time
+          nullable: true
+        plannedEnd:
+          type: string
+          format: date-time
+          nullable: true
+        estimatedHours:
+          type: number
+          format: decimal
+          nullable: true
+        completionPercent:
+          type: integer
+          nullable: true
+        createdBy:
+          type: integer
+        updatedBy:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaskDependencyRequest:
+      type: object
+      required:
+        - dependsOnTaskId
+        - dependencyType
+      properties:
+        dependsOnTaskId:
+          type: integer
+        dependencyType:
+          type: integer
+          description: 1:FinishToStart, 2:StartToStart, 3:FinishToFinish, 4:StartToFinish
+          enum: [1, 2, 3, 4]
+          default: 1
+        lagDays:
+          type: integer
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+          maxLength: 4000
+
+    TaskDependencyResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        taskId:
+          type: integer
+        dependsOnTaskId:
+          type: integer
+        dependencyType:
+          type: integer
+        lagDays:
+          type: integer
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    TeamRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          maxLength: 4000
+        leadUserId:
+          type: integer
+          nullable: true
+
+    TeamResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        leadUserId:
+          type: integer
+          nullable: true
+        leadName:
+          type: string
+          nullable: true
+        memberCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AddTeamMemberRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+        roleInTeam:
+          type: string
+          nullable: true
+          maxLength: 100
+
+    TeamMemberResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        teamId:
+          type: integer
+        userId:
+          type: integer
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+        jobTitle:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        roleInTeam:
+          type: string
+          nullable: true
+        joinedAt:
+          type: string
+          format: date-time
+
+    AddProjectMemberRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+        hourlyRate:
+          type: number
+          format: decimal
+          nullable: true
+        roleOverride:
+          type: string
+          nullable: true
+          maxLength: 100
+
+    UpdateProjectMemberRequest:
+      type: object
+      required:
+        - isBlocked
+      properties:
+        isBlocked:
+          type: boolean
+        hourlyRate:
+          type: number
+          format: decimal
+          nullable: true
+        roleOverride:
+          type: string
+          nullable: true
+          maxLength: 100
+
+    ProjectMemberResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        userId:
+          type: integer
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+        jobTitle:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        isBlocked:
+          type: boolean
+        hourlyRate:
+          type: number
+          format: decimal
+          nullable: true
+        roleOverride:
+          type: string
+          nullable: true
+        joinedAt:
+          type: string
+          format: date-time
+
+    ProjectProgressResponse:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        totalTasks:
+          type: integer
+        completedTasks:
+          type: integer
+        inProgressTasks:
+          type: integer
+        blockedTasks:
+          type: integer
+        cancelledTasks:
+          type: integer
+        progressPercent:
+          type: number
+          format: decimal
+
+    AssignTaskRequest:
+      type: object
+      required:
+        - assigneeUserId
+      properties:
+        assigneeUserId:
+          type: integer
+        isPrimary:
+          type: boolean
+          default: false
+
+    TaskAssignmentResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        taskId:
+          type: integer
+        userId:
+          type: integer
+        userName:
+          type: string
+        assignedBy:
+          type: integer
+        isPrimary:
+          type: boolean
+        assignedAt:
+          type: string
+          format: date-time
+
+    MemberWorkloadResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+          nullable: true
+        jobTitle:
+          type: string
+          nullable: true
+        assignedTasksCount:
+          type: integer
+        totalEstimatedHours:
+          type: number
+          format: decimal
+        totalActualHours:
+          type: number
+          format: decimal
+        completedTasksCount:
+          type: integer
+        inProgressTasksCount:
+          type: integer
+        overdueTasksCount:
+          type: integer
+        utilizationRatio:
+          type: number
+          format: decimal
+        workloadStatus:
+          type: string
+
+    ProjectWorkloadSummaryResponse:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        totalMembers:
+          type: integer
+        totalAssignedTasks:
+          type: integer
+        unassignedTasksCount:
+          type: integer
+        averageUtilization:
+          type: number
+          format: decimal
+        overloadedMembersCount:
+          type: integer
+        underutilizedMembersCount:
+          type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberWorkloadResponse'
+
+    AiAnalysisRequest:
+      type: object
+      properties:
+        inputWindowDays:
+          type: integer
+          minimum: 1
+          maximum: 365
+          default: 30
+
+    DelayPredictionResponse:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        delayProbability:
+          type: number
+          format: decimal
+        predictedDelayDays:
+          type: integer
+        confidence:
+          type: number
+          format: decimal
+        explanation:
+          type: string
+          nullable: true
+
+    RiskAnalysisResponse:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        riskScore:
+          type: number
+          format: decimal
+        confidence:
+          type: number
+          format: decimal
+        explanation:
+          type: string
+          nullable: true
+
+    BottleneckDetectionResponse:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        bottlenecks:
+          type: array
+          items:
+            type: object
+            properties:
+              taskId:
+                type: integer
+              score:
+                type: number
+                format: decimal
+              explanation:
+                type: string
+                nullable: true
+
+    AiProjectHealthResponse:
+      type: object
+      properties:
+        projectId:
+          type: integer
+        healthScore:
+          type: number
+          format: decimal
+        riskCount:
+          type: integer
+        overdueTasksCount:
+          type: integer
+        confidence:
+          type: number
+          format: decimal
+        explanation:
+          type: string
+          nullable: true
+
+    GenerateReportRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        reportType:
+          type: string
+          enum: [Summary, Performance, Risk, FullAi]
+          default: FullAi
+        periodFrom:
+          type: string
+          format: date-time
+          nullable: true
+        periodTo:
+          type: string
+          format: date-time
+          nullable: true
+
+    GeneratedReportResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        title:
+          type: string
+        summaryText:
+          type: string
+          nullable: true
+        reportJson:
+          type: string
+          nullable: true
+        periodFrom:
+          type: string
+          format: date-time
+          nullable: true
+        periodTo:
+          type: string
+          format: date-time
+          nullable: true
+        createdBy:
+          type: integer
+          nullable: true
+        createdByName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        recipientUserId:
+          type: integer
+        actorUserId:
+          type: integer
+          nullable: true
+        actorName:
+          type: string
+          nullable: true
+        type:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        targetType:
+          type: string
+        targetId:
+          type: integer
+        projectId:
+          type: integer
+          nullable: true
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    NotificationSummaryResponse:
+      type: object
+      properties:
+        unreadCount:
+          type: integer
+        totalCount:
+          type: integer
+
+    DashboardOverviewResponse:
+      type: object
+      properties:
+        activeProjects:
+          type: integer
+        tasksDue:
+          type: integer
+        overdueTasks:
+          type: integer
+        atRiskProjects:
+          type: integer
+        completedTasks:
+          type: integer
+        totalTasks:
+          type: integer
+        overallProgress:
+          type: number
+          format: decimal
+        onTrackProjects:
+          type: integer
+        projectPerformance:
+          type: array
+          items:
+            type: object
+            properties:
+              projectId:
+                type: integer
+              projectName:
+                type: string
+              completionPercent:
+                type: integer
+              status:
+                type: string
+        upcomingDeadlines:
+          type: array
+          items:
+            type: object
+            properties:
+              taskId:
+                type: integer
+              taskTitle:
+                type: string
+              projectId:
+                type: integer
+              projectName:
+                type: string
+              dueDate:
+                type: string
+                format: date-time
+        teamWorkload:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: integer
+              fullName:
+                type: string
+              avatarUrl:
+                type: string
+                nullable: true
+              workloadPercent:
+                type: number
+                format: decimal
+              workloadStatus:
+                type: string
+
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Registration successful
+        '400':
+          description: Validation error or duplicate account
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Invalid email or password
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get token claims and identity
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Claims retrieved
+        '401':
+          description: Unauthorized
+
+  /profile/me:
+    get:
+      tags: [Profile]
+      summary: Get current user profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved
+    put:
+      tags: [Profile]
+      summary: Update user profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List all accessible projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of projects
+    post:
+      tags: [Projects]
+      summary: Create a new project
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '201':
+          description: Project created successfully
+
+  /projects/{id}:
+    get:
+      tags: [Projects]
+      summary: Get project by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project details
+        '404':
+          description: Project not found
+    put:
+      tags: [Projects]
+      summary: Update project
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+    delete:
+      tags: [Projects]
+      summary: Delete project (Owner only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project deleted successfully
+
+  /projects/{id}/image:
+    post:
+      tags: [Projects]
+      summary: Upload project banner image
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Project image uploaded successfully
+
+  /projects/{projectId}/members:
+    get:
+      tags: [Project Members]
+      summary: List project members
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Members list
+    post:
+      tags: [Project Members]
+      summary: Add member to project
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProjectMemberRequest'
+      responses:
+        '201':
+          description: Member added successfully
+
+  /projects/{projectId}/tasks:
+    get:
+      tags: [Tasks]
+      summary: List tasks in project
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of tasks
+    post:
+      tags: [Tasks]
+      summary: Create new task
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '201':
+          description: Task created successfully
+
+  /projects/{projectId}/progress:
+    get:
+      tags: [Project Progress]
+      summary: Get computed progress metrics
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Progress metrics
+
+  /projects/{projectId}/workload:
+    get:
+      tags: [Workload]
+      summary: Get project workload distribution
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Workload summary
+
+  /projects/{projectId}/ai/delay-prediction:
+    post:
+      tags: [AI Analytics]
+      summary: Predict deadline delay
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiAnalysisRequest'
+      responses:
+        '200':
+          description: Delay prediction output
+
+  /projects/{projectId}/reports/generate:
+    post:
+      tags: [Reports]
+      summary: Generate analytical report
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateReportRequest'
+      responses:
+        '201':
+          description: Report generated
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: List user notifications
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of notifications
+
+  /dashboard/overview:
+    get:
+      tags: [Dashboard]
+      summary: Get executive overview metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard overview
