@@ -302,7 +302,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Good morning, Shimaa',
+                '👋 Welcome Back, Shimaa',
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w700,
