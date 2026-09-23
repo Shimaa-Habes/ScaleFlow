@@ -16,6 +16,9 @@ import 'ai_insights_screen.dart';
 import 'dashboard_screen.dart';
 import '../services/auth_service.dart';
 
+import '../models/project.dart';
+import 'project_details_screen.dart';
+
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
 
@@ -80,7 +83,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/Projects?page=1&pageSize=100'),
+        Uri.parse(
+          '$_baseUrl/Projects?page=1&pageSize=100',
+        ),
         headers: _headers(),
       );
 
@@ -171,8 +176,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           _projectTasks[projectId] = tasks;
         });
       } catch (_) {
-        // Task loading failure should not prevent projects
-        // from being displayed.
+        // Task loading failure should not prevent
+        // projects from being displayed.
       }
     }
   }
@@ -212,6 +217,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       //
       // "On Track" and "At Risk" are UI/risk states.
       // Both are initially created as Active.
+
       const backendStatus = 2;
 
       final body = {
@@ -219,6 +225,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         'description': description == null || description.trim().isEmpty
             ? null
             : description.trim(),
+
         'workspaceUrl': workspaceUrl == null || workspaceUrl.trim().isEmpty
             ? null
             : workspaceUrl.trim(),
@@ -235,10 +242,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         'budget': null,
 
         'startDate': startDate?.toUtc().toIso8601String(),
+
         'endDate': endDate?.toUtc().toIso8601String(),
 
+        // Member names are currently UI input only.
+        // The backend expects user IDs.
         'memberUserIds': <int>[],
       };
+
       final response = await http.post(
         Uri.parse('$_baseUrl/Projects'),
         headers: _headers(),
@@ -410,8 +421,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             message = decoded['message'].toString();
           }
 
-          // Some API error responses may contain
-          // the actual message under data.
           if (decoded['data'] is Map) {
             final data = Map<String, dynamic>.from(
               decoded['data'],
@@ -473,11 +482,15 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   // PROJECT STATUS HELPERS
   // ============================================================
 
-  bool _isArchived(Map<String, dynamic> project) {
+  bool _isArchived(
+    Map<String, dynamic> project,
+  ) {
     return project['isArchived'] == true || project['isDeleted'] == true;
   }
 
-  bool _isCompleted(Map<String, dynamic> project) {
+  bool _isCompleted(
+    Map<String, dynamic> project,
+  ) {
     final status = _toInt(project['status']);
 
     final projectId = _toInt(project['id']);
@@ -504,18 +517,20 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     return status == 4;
   }
 
-  bool _isAtRisk(Map<String, dynamic> project) {
-    // ------------------------------------------------------------
-    // 1. Explicit risk state saved by the backend.
-    // ------------------------------------------------------------
+  bool _isAtRisk(
+    Map<String, dynamic> project,
+  ) {
+    // ----------------------------------------------------------
+    // 1. Explicit risk state saved by backend.
+    // ----------------------------------------------------------
 
     if (project['isAtRisk'] == true) {
       return true;
     }
 
-    // ------------------------------------------------------------
-    // 2. Automatic risk detection from project tasks.
-    // ------------------------------------------------------------
+    // ----------------------------------------------------------
+    // 2. Automatic risk detection from tasks.
+    // ----------------------------------------------------------
 
     final projectId = _toInt(project['id']);
 
@@ -553,13 +568,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       }
     }
 
-    // ------------------------------------------------------------
+    // ----------------------------------------------------------
     // 3. Project itself is overdue.
-    // ------------------------------------------------------------
+    // ----------------------------------------------------------
 
-    final endDate = _parseDate(
-      project['endDate'],
-    );
+    final endDate = _parseDate(project['endDate']);
 
     if (endDate != null &&
         endDate.isBefore(DateTime.now()) &&
@@ -631,9 +644,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   int _daysLeft(
     Map<String, dynamic> project,
   ) {
-    final endDate = _parseDate(
-      project['endDate'],
-    );
+    final endDate = _parseDate(project['endDate']);
 
     if (endDate == null) return 0;
 
@@ -666,7 +677,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
         final imageUrl = project['imageUrl']?.toString();
 
-        final screenHeight = MediaQuery.sizeOf(sheetContext).height;
+        final screenHeight = MediaQuery.sizeOf(
+          sheetContext,
+        ).height;
 
         return SafeArea(
           child: Container(
@@ -698,13 +711,19 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD9DCE1),
-                        borderRadius: BorderRadius.circular(10),
+                        color: const Color(
+                          0xFFD9DCE1,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(
+                    height: 20,
+                  ),
 
                   // ------------------------------------------------
                   // Project image
@@ -712,7 +731,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
                   if (imageUrl != null && imageUrl.trim().isNotEmpty)
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(
+                        14,
+                      ),
                       child: Image.network(
                         _absoluteImageUrl(
                           imageUrl,
@@ -724,10 +745,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                           return Container(
                             width: double.infinity,
                             height: 100,
-                            color: const Color(0xFFF8F9FB),
+                            color: const Color(
+                              0xFFF8F9FB,
+                            ),
                             child: const Icon(
                               Icons.image_not_supported_outlined,
-                              color: Color(0xFF6C5CE7),
+                              color: Color(
+                                0xFF6C5CE7,
+                              ),
                               size: 30,
                             ),
                           );
@@ -736,7 +761,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
 
                   if (imageUrl != null && imageUrl.trim().isNotEmpty)
-                    const SizedBox(height: 14),
+                    const SizedBox(
+                      height: 14,
+                    ),
 
                   // ------------------------------------------------
                   // Project name
@@ -751,7 +778,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
                   // ------------------------------------------------
                   // Description
@@ -767,7 +796,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(
+                    height: 20,
+                  ),
 
                   // ------------------------------------------------
                   // Statistics
@@ -799,7 +830,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(
+                    height: 18,
+                  ),
 
                   // ------------------------------------------------
                   // AI Insights
@@ -814,7 +847,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(
+                    height: 6,
+                  ),
 
                   const Text(
                     'Not Ready Yet',
@@ -825,7 +860,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(
+                    height: 4,
+                  ),
 
                   const Text(
                     'AI/ML project analysis will be connected in a later stage.',
@@ -835,32 +872,46 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(
+                    height: 18,
+                  ),
 
                   // ------------------------------------------------
-                  // Open details
+                  // OPEN PROJECT DETAILS
                   // ------------------------------------------------
 
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        // Close the bottom sheet.
                         Navigator.of(
                           sheetContext,
                         ).pop();
 
-                        ScaffoldMessenger.of(
+                        // Convert the backend
+                        // project to the
+                        // Project model.
+                        final projectModel = _toProjectModel(
+                          project,
+                        );
+
+                        // Open the real
+                        // Project Details screen.
+                        Navigator.of(
                           context,
-                        ).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Full Project Details integration is next.',
+                        ).push(
+                          MaterialPageRoute(
+                            builder: (_) => ProjectDetailsScreen(
+                              project: projectModel,
                             ),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF5D5FEF),
+                        backgroundColor: const Color(
+                          0xFF5D5FEF,
+                        ),
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(
@@ -878,7 +929,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
                   if (tasks.isEmpty)
                     const Text(
@@ -894,6 +947,84 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           ),
         );
       },
+    );
+  }
+
+  // ============================================================
+  // CONVERT BACKEND PROJECT TO PROJECT MODEL
+  // ============================================================
+
+  Project _toProjectModel(
+    Map<String, dynamic> project,
+  ) {
+    final projectId = _toInt(project['id']) ?? 0;
+
+    final projectProgress = _projectProgress(project);
+
+    final tasksTotal = _tasksTotal(project);
+
+    final tasksCompleted = _tasksCompleted(project);
+
+    final daysLeft = _daysLeft(project);
+
+    final isAtRisk = _isAtRisk(project);
+
+    final endDate = _parseDate(project['endDate']);
+
+    String dueDate = 'Not set';
+
+    if (endDate != null) {
+      dueDate = '${endDate.month.toString().padLeft(2, '0')}/'
+          '${endDate.day.toString().padLeft(2, '0')}/'
+          '${endDate.year}';
+    }
+
+    return Project(
+      id: projectId.toString(),
+
+      name: project['name']?.toString().trim().isNotEmpty == true
+          ? project['name'].toString()
+          : 'Unnamed Project',
+
+      subtitle: project['description']?.toString() ?? '',
+
+      status: isAtRisk ? ProjectStatus.atRisk : ProjectStatus.onTrack,
+
+      percentComplete: projectProgress.round(),
+
+      dueDate: dueDate,
+
+      // Temporary UI fallback values
+      // until the ML service is connected.
+      healthPercent: isAtRisk ? 60 : 84,
+
+      healthNote: isAtRisk
+          ? 'This project has an overdue or blocked task.'
+          : 'Project is currently on track.',
+
+      teamCount: 0,
+
+      tasksCompleted: tasksCompleted,
+
+      tasksTotal: tasksTotal,
+
+      daysLeft: daysLeft,
+
+      aiInsightTitle: 'AI Insights',
+
+      aiInsightBody:
+          'AI/ML project analysis will be connected in a later stage.',
+
+      team: const [],
+
+      // IMPORTANT:
+      // ProjectDetailsScreen loads the
+      // real tasks from the backend.
+      tasks: const [],
+
+      projectLink: project['workspaceUrl']?.toString() ?? '',
+
+      memberNames: const [],
     );
   }
 
@@ -1129,9 +1260,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                                 'At Risk',
                                 'Completed',
                               ].map(
-                                (
-                                  filter,
-                                ) {
+                                (filter) {
                                   final isSelected = _selectedFilter == filter;
 
                                   return Padding(
@@ -1337,9 +1466,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ) ??
                     0] ??
                 const [],
-            isAtRisk: _isAtRisk(
-              project,
-            ),
+            isAtRisk: _isAtRisk(project),
             progress: _projectProgress(
               project,
             ),
@@ -1369,7 +1496,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   int? _toInt(
     dynamic value,
   ) {
-    if (value is int) return value;
+    if (value is int) {
+      return value;
+    }
 
     return int.tryParse(
       value?.toString() ?? '',
@@ -1379,7 +1508,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   DateTime? _parseDate(
     dynamic value,
   ) {
-    if (value == null) return null;
+    if (value == null) {
+      return null;
+    }
 
     return DateTime.tryParse(
       value.toString(),
@@ -1417,7 +1548,12 @@ class _ProjectCard extends StatelessWidget {
   String _absoluteImageUrl(
     String value,
   ) {
-    if (value.startsWith('http://') || value.startsWith('https://')) {
+    if (value.startsWith(
+          'http://',
+        ) ||
+        value.startsWith(
+          'https://',
+        )) {
       return value;
     }
 
@@ -1446,15 +1582,19 @@ class _ProjectCard extends StatelessWidget {
     final hasImage = imageUrl != null && imageUrl!.trim().isNotEmpty;
 
     return Material(
-      color: Colors.white.withOpacity(
-        0.94,
+      color: Colors.white.withOpacity(0.94),
+      borderRadius: BorderRadius.circular(
+        16,
       ),
-      borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          16,
+        ),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(
+            14,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(
               16,
@@ -1822,9 +1962,7 @@ class _DetailItem extends StatelessWidget {
         Icon(
           icon,
           size: 20,
-          color: const Color(
-            0xFF6C5CE7,
-          ),
+          color: const Color(0xFF6C5CE7),
         ),
         const SizedBox(
           height: 5,
@@ -1892,8 +2030,7 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
   DateTime? _endDate;
 
   XFile? _selectedImage;
-  // This prevents readAsBytes() from running
-  // repeatedly during rebuilds.
+
   Uint8List? _selectedImageBytes;
 
   final List<String> _members = [];
@@ -1944,13 +2081,15 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
 
       if (image == null) return;
 
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
       // WEBP is not supported
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
 
       final fileName = image.name.toLowerCase();
 
-      if (fileName.endsWith('.webp')) {
+      if (fileName.endsWith(
+        '.webp',
+      )) {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1964,15 +2103,15 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
         return;
       }
 
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
       // Read image bytes once
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
 
       final bytes = await image.readAsBytes();
 
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
       // Maximum 5 MB
-      // ----------------------------------------------------------
+      // --------------------------------------------------------
 
       const maxSize = 5 * 1024 * 1024;
 
@@ -1994,7 +2133,10 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
 
       setState(() {
         _selectedImage = image;
-        _selectedImageBytes = Uint8List.fromList(bytes);
+
+        _selectedImageBytes = Uint8List.fromList(
+          bytes,
+        );
       });
     } catch (e) {
       if (!mounted) return;
@@ -2160,7 +2302,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
     if (_selectedImage == null || _selectedImageBytes == null) {
       return InkWell(
         onTap: _pickProjectImage,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(
+          14,
+        ),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(
@@ -2168,10 +2312,16 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
             horizontal: 14,
           ),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FB),
-            borderRadius: BorderRadius.circular(14),
+            color: const Color(
+              0xFFF8F9FB,
+            ),
+            borderRadius: BorderRadius.circular(
+              14,
+            ),
             border: Border.all(
-              color: const Color(0xFFE3E6EA),
+              color: const Color(
+                0xFFE3E6EA,
+              ),
             ),
           ),
           child: Column(
@@ -2180,16 +2330,24 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7).withOpacity(0.09),
+                  color: const Color(
+                    0xFF6C5CE7,
+                  ).withOpacity(
+                    0.09,
+                  ),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.add_photo_alternate_outlined,
-                  color: Color(0xFF6C5CE7),
+                  color: Color(
+                    0xFF6C5CE7,
+                  ),
                   size: 23,
                 ),
               ),
-              const SizedBox(height: 9),
+              const SizedBox(
+                height: 9,
+              ),
               const Text(
                 'Upload Project Image',
                 style: TextStyle(
@@ -2198,7 +2356,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                   color: AppColors.darkCharcoal,
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(
+                height: 3,
+              ),
               const Text(
                 'JPG, PNG, GIF, BMP, TIFF, HEIC and more • Max 5 MB',
                 textAlign: TextAlign.center,
@@ -2216,27 +2376,39 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(
+            14,
+          ),
           child: Image.memory(
             _selectedImageBytes!,
             width: double.infinity,
             height: 145,
             fit: BoxFit.cover,
             gaplessPlayback: true,
-            errorBuilder: (_, __, ___) {
+            errorBuilder: (
+              _,
+              __,
+              ___,
+            ) {
               return Container(
                 width: double.infinity,
                 height: 145,
-                color: const Color(0xFFF8F9FB),
+                color: const Color(
+                  0xFFF8F9FB,
+                ),
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.image_not_supported_outlined,
-                      color: Color(0xFF6C5CE7),
+                      color: Color(
+                        0xFF6C5CE7,
+                      ),
                       size: 30,
                     ),
-                    SizedBox(height: 6),
+                    SizedBox(
+                      height: 6,
+                    ),
                     Text(
                       'Preview unavailable',
                       style: TextStyle(
@@ -2251,7 +2423,10 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
           ),
         ),
 
+        // --------------------------------------------------------
         // Remove image
+        // --------------------------------------------------------
+
         Positioned(
           top: 8,
           right: 8,
@@ -2262,7 +2437,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
               onTap: _removeProjectImage,
               customBorder: const CircleBorder(),
               child: const Padding(
-                padding: EdgeInsets.all(7),
+                padding: EdgeInsets.all(
+                  7,
+                ),
                 child: Icon(
                   Icons.close,
                   color: Colors.white,

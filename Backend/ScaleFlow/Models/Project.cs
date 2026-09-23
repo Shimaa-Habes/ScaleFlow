@@ -61,4 +61,6 @@ public class Project : SoftDeletableEntity
 
     public ICollection<Notification> Notifications { get; set; }
         = new HashSet<Notification>();
+
+    public ProjectArchitecture? Architecture { get; set; }
 }

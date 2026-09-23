@@ -59,6 +59,16 @@ class _HomePageState extends State<HomePage> {
     _loadHomeData();
   }
 
+  void _openNotifications() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Notifications screen is not connected yet.',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
   // ============================================================
   // LOAD HOME DATA
   // ============================================================
@@ -314,20 +324,25 @@ class _HomePageState extends State<HomePage> {
         Stack(
           clipBehavior: Clip.none,
           children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: _white,
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _openNotifications,
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: _border,
+                child: Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: _white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: _border),
+                  ),
+                  child: const Icon(
+                    Icons.notifications_none_rounded,
+                    color: _text,
+                    size: 23,
+                  ),
                 ),
-              ),
-              child: const Icon(
-                Icons.notifications_none_rounded,
-                color: _text,
-                size: 23,
               ),
             ),
             if (unread > 0)

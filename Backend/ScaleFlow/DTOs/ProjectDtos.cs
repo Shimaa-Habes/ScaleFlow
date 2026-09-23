@@ -45,3 +45,28 @@ public record ProjectResponse(
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt
 );
+
+public class ProjectArchitectureRequest
+{
+    public string? Frontend { get; set; }
+    public string? Backend { get; set; }
+    public string? Database { get; set; }
+    public string? Authentication { get; set; }
+    public string? AiMl { get; set; }
+    public string? RealTime { get; set; }
+    public string? ExternalServices { get; set; }
+}
+
+public record ProjectArchitectureResponse(
+    int Id,
+    int ProjectId,
+    string? Frontend,
+    string? Backend,
+    string? Database,
+    string? Authentication,
+    string? AiMl,
+    string? RealTime,
+    string? ExternalServices,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? UpdatedAt
+);

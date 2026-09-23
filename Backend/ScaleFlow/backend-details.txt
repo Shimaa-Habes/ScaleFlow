@@ -1,0 +1,1850 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ScaleFlow.DTOs;
+using ScaleFlow.Middleware;
+using ScaleFlow.Models;
+using ScaleFlow.Services;
+
+namespace ScaleFlow.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class ProjectsController : ControllerBase
+{
+    private readonly IProjectService _projectService;
+    private readonly ScaleFlowDbContext _context;
+    private readonly IWebHostEnvironment _environment;
+
+    public ProjectsController(
+        IProjectService projectService,
+        ScaleFlowDbContext context,
+        IWebHostEnvironment environment)
+    {
+        _projectService = projectService;
+        _context = context;
+        _environment = environment;
+    }
+
+    // ============================================================
+    // GET ALL PROJECTS
+    // ============================================================
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] QueryParameters queryParameters,
+        CancellationToken cancellationToken)
+    {
+        var projects = await _projectService.ListProjects(
+            User,
+            queryParameters.Page,
+            queryParameters.PageSize,
+            cancellationToken);
+
+        return Ok(
+            ApiResponse<IReadOnlyList<ProjectResponse>>.Ok(
+                projects));
+    }
+
+    // ============================================================
+    // GET PROJECT BY ID
+    // ============================================================
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var project = await _projectService.GetProject(
+            User,
+            id,
+            cancellationToken);
+
+        return Ok(
+            ApiResponse<ProjectResponse>.Ok(
+                project));
+    }
+
+    // ============================================================
+    // CREATE PROJECT
+    // ============================================================
+
+    [HttpPost]
+    public async Task<IActionResult> Create(
+        [FromBody] ProjectRequest request,
+        CancellationToken cancellationToken)
+    {
+        var project = await _projectService.CreateProject(
+            User,
+            request,
+            cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = project.Id },
+            ApiResponse<ProjectResponse>.Ok(
+                project,
+                "Project created."));
+    }
+
+    // ============================================================
+    // UPDATE PROJECT
+    // ============================================================
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+        int id,
+        [FromBody] ProjectRequest request,
+        CancellationToken cancellationToken)
+    {
+        var project = await _projectService.UpdateProject(
+            User,
+            id,
+            request,
+            cancellationToken);
+
+        return Ok(
+            ApiResponse<ProjectResponse>.Ok(
+                project,
+                "Project updated."));
+    }
+
+    // ============================================================
+    // UPLOAD PROJECT IMAGE
+    // ============================================================
+
+    [HttpPost("{id}/image")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(5 * 1024 * 1024)]
+    public async Task<IActionResult> UploadImage(
+        int id,
+        [FromForm] IFormFile image,
+        CancellationToken cancellationToken)
+    {
+        // --------------------------------------------------------
+        // Basic validation
+        // --------------------------------------------------------
+
+        if (image == null || image.Length == 0)
+        {
+            throw new ApiException(
+                400,
+                "Invalid file. Please select an image.");
+        }
+
+        // --------------------------------------------------------
+        // Maximum file size: 5 MB
+        // --------------------------------------------------------
+
+        const long maxFileSize = 5 * 1024 * 1024;
+
+        if (image.Length > maxFileSize)
+        {
+            throw new ApiException(
+                400,
+                "Project image must be 5 MB or smaller.");
+        }
+
+        // --------------------------------------------------------
+        // Get current user
+        // --------------------------------------------------------
+
+        var userIdClaim = User.FindFirst(
+            System.Security.Claims.ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(
+                userIdClaim?.Value,
+                out var userId))
+        {
+            throw new ApiException(
+                401,
+                "Invalid user identity.");
+        }
+
+        // --------------------------------------------------------
+        // Find project
+        // --------------------------------------------------------
+
+        var project = await _context.Projects
+            .SingleOrDefaultAsync(
+                x =>
+                    x.Id == id &&
+                    x.OwnerId == userId &&
+                    !x.IsDeleted,
+                cancellationToken);
+
+        if (project is null)
+        {
+            throw new ApiException(
+                404,
+                "Project not found.");
+        }
+
+        // --------------------------------------------------------
+        // File information
+        // --------------------------------------------------------
+
+        var originalExtension =
+            Path.GetExtension(image.FileName)
+                .ToLowerInvariant();
+
+        var contentType =
+            image.ContentType?.Trim().ToLowerInvariant() ?? string.Empty;
+
+        // --------------------------------------------------------
+        // WEBP is explicitly NOT allowed
+        // --------------------------------------------------------
+
+        if (originalExtension == ".webp" ||
+            contentType == "image/webp")
+        {
+            throw new ApiException(
+                400,
+                "WEBP images are not supported. Please select another image format.");
+        }
+
+        // --------------------------------------------------------
+        // Accept:
+        //
+        // 1. Any image/* MIME type
+        // 2. application/octet-stream when the filename has
+        //    a normal image extension.
+        //
+        // This is important because Flutter's
+        // MultipartFile.fromBytes can send application/octet-stream.
+        // --------------------------------------------------------
+
+        var isImageMimeType =
+            contentType.StartsWith(
+                "image/",
+                StringComparison.OrdinalIgnoreCase);
+
+        var commonImageExtensions = new HashSet<string>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".bmp",
+            ".tif",
+            ".tiff",
+            ".ico",
+            ".jfif",
+            ".pjpeg",
+            ".pjp",
+            ".avif",
+            ".heic",
+            ".heif",
+            ".raw",
+            ".cr2",
+            ".nef",
+            ".arw",
+            ".dng",
+            ".orf",
+            ".rw2",
+            ".raf",
+            ".3fr"
+        };
+
+        var hasKnownImageExtension =
+            !string.IsNullOrWhiteSpace(originalExtension) &&
+            commonImageExtensions.Contains(
+                originalExtension);
+
+        if (!isImageMimeType && !hasKnownImageExtension)
+        {
+            throw new ApiException(
+                400,
+                "Invalid file. Please select a valid image.");
+        }
+
+        // --------------------------------------------------------
+        // Determine extension
+        // --------------------------------------------------------
+
+        var extension = originalExtension;
+
+        if (string.IsNullOrWhiteSpace(extension))
+        {
+            extension = contentType switch
+            {
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                "image/gif" => ".gif",
+                "image/bmp" => ".bmp",
+                "image/tiff" => ".tiff",
+                "image/avif" => ".avif",
+                "image/heic" => ".heic",
+                "image/heif" => ".heif",
+                "image/x-icon" => ".ico",
+                _ => ".img"
+            };
+        }
+
+        // --------------------------------------------------------
+        // Upload directory
+        // --------------------------------------------------------
+
+        var webRootPath =
+            _environment.WebRootPath;
+
+        if (string.IsNullOrWhiteSpace(webRootPath))
+        {
+            webRootPath = Path.Combine(
+                _environment.ContentRootPath,
+                "wwwroot");
+        }
+
+        var uploadDirectory = Path.Combine(
+            webRootPath,
+            "uploads",
+            "projects");
+
+        Directory.CreateDirectory(
+            uploadDirectory);
+
+        // --------------------------------------------------------
+        // Delete old project image
+        // --------------------------------------------------------
+
+        if (!string.IsNullOrWhiteSpace(project.ImageUrl))
+        {
+            var oldImageUrl =
+                project.ImageUrl.Trim();
+
+            if (oldImageUrl.StartsWith(
+                    "/uploads/projects/",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                var oldRelativePath =
+                    oldImageUrl
+                        .TrimStart('/')
+                        .Replace(
+                            '/',
+                            Path.DirectorySeparatorChar);
+
+                var oldFullPath =
+                    Path.Combine(
+                        webRootPath,
+                        oldRelativePath);
+
+                if (System.IO.File.Exists(oldFullPath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(
+                            oldFullPath);
+                    }
+                    catch
+                    {
+                        // Do not fail the new upload
+                        // because the old file could not
+                        // be deleted.
+                    }
+                }
+            }
+        }
+
+        // --------------------------------------------------------
+        // Generate unique filename
+        // --------------------------------------------------------
+
+        var fileName =
+            $"{Guid.NewGuid():N}{extension}";
+
+        var filePath =
+            Path.Combine(
+                uploadDirectory,
+                fileName);
+
+        // --------------------------------------------------------
+        // Save file
+        // --------------------------------------------------------
+
+        await using (var stream = new FileStream(
+            filePath,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None))
+        {
+            await image.CopyToAsync(
+                stream,
+                cancellationToken);
+        }
+
+        // --------------------------------------------------------
+        // Save URL in database
+        // --------------------------------------------------------
+
+        project.ImageUrl =
+            $"/uploads/projects/{fileName}";
+
+        project.UpdatedAt =
+            DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+
+        // --------------------------------------------------------
+        // Response
+        // --------------------------------------------------------
+
+        return Ok(
+            ApiResponse<object>.Ok(
+                new
+                {
+                    projectId = project.Id,
+                    imageUrl = project.ImageUrl,
+                    fileName,
+                    contentType,
+                    size = image.Length
+                },
+                "Project image uploaded."));
+    }
+
+    // ============================================================
+    // DELETE PROJECT
+    // ============================================================
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        await _projectService.DeleteProject(
+            User,
+            id,
+            cancellationToken);
+
+        return Ok(
+            ApiResponse<object>.Ok(
+                null,
+                "Project deleted."));
+    }
+}
+using System.Security.Claims;
+using ScaleFlow.DTOs;
+
+namespace ScaleFlow.Services;
+
+public interface IProjectService
+{
+    Task<IReadOnlyList<ProjectResponse>> ListProjects(
+        ClaimsPrincipal user,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken);
+
+    Task<ProjectResponse> GetProject(
+        ClaimsPrincipal user,
+        int id,
+        CancellationToken cancellationToken);
+
+    Task<ProjectResponse> CreateProject(
+        ClaimsPrincipal user,
+        ProjectRequest request,
+        CancellationToken cancellationToken);
+
+    Task<ProjectResponse> UpdateProject(
+        ClaimsPrincipal user,
+        int id,
+        ProjectRequest request,
+        CancellationToken cancellationToken);
+
+    Task DeleteProject(
+        ClaimsPrincipal user,
+        int id,
+        CancellationToken cancellationToken);
+}
+
+using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using ScaleFlow.DTOs;
+using ScaleFlow.Hubs;
+using ScaleFlow.Middleware;
+using ScaleFlow.Models;
+
+namespace ScaleFlow.Services;
+
+public class ProjectManagementService : IProjectService
+{
+    private readonly ScaleFlowDbContext _context;
+    private readonly IHubContext<ScaleFlowHub>? _hubContext;
+
+    public ProjectManagementService(
+        ScaleFlowDbContext context,
+        IHubContext<ScaleFlowHub>? hubContext = null)
+    {
+        _context = context;
+        _hubContext = hubContext;
+    }
+
+    private static int GetUserId(ClaimsPrincipal user)
+    {
+        var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (user.Identity?.IsAuthenticated != true ||
+            !int.TryParse(userIdClaim, out var userId) ||
+            userId <= 0)
+        {
+            throw new ApiException(401, "Invalid user identity.");
+        }
+
+        return userId;
+    }
+
+    private async Task<User> Actor(
+        int userId,
+        CancellationToken ct)
+    {
+        return await _context.Users
+            .SingleOrDefaultAsync(
+                x =>
+                    x.Id == userId &&
+                    x.IsActive &&
+                    !x.IsDeleted &&
+                    !x.Organization.IsDeleted,
+                ct)
+            ?? throw new ApiException(
+                401,
+                "An active user is required.");
+    }
+
+    private IQueryable<Project> Accessible(User actor)
+    {
+        return _context.Projects
+            .Where(x =>
+                x.OrganizationId == actor.OrganizationId &&
+                (
+                    x.OwnerId == actor.Id ||
+                    x.Members.Any(m =>
+                        m.UserId == actor.Id &&
+                        !m.IsBlocked)
+                ));
+    }
+
+    private async Task<Project> FindProject(
+        int userId,
+        int id,
+        CancellationToken ct,
+        bool ownerOnly = false)
+    {
+        var actor = await Actor(userId, ct);
+
+        var project = await Accessible(actor)
+            .SingleOrDefaultAsync(
+                x => x.Id == id,
+                ct)
+            ?? throw new ApiException(
+                404,
+                "Project not found.");
+
+        if (ownerOnly && project.OwnerId != userId)
+        {
+            throw new ApiException(
+                403,
+                "Only the project owner can modify this project.");
+        }
+
+        return project;
+    }
+
+    private static ProjectResponse ToResponse(Project project)
+    {
+        return new ProjectResponse(
+            project.Id,
+            project.OrganizationId,
+            project.OwnerId,
+            project.Name,
+            project.Description,
+            project.WorkspaceUrl,
+            project.Progress,
+            project.IsAtRisk,
+            project.ImageUrl,
+            project.Status,
+            project.Priority,
+            project.Budget,
+            project.StartDate,
+            project.EndDate,
+            project.CreatedAt,
+            project.UpdatedAt);
+    }
+
+    // ---------------------------------------------------------
+    // GET ALL PROJECTS
+    // ---------------------------------------------------------
+
+    public async Task<IReadOnlyList<ProjectResponse>> ListProjects(
+        ClaimsPrincipal user,
+        int page,
+        int pageSize,
+        CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        var actor = await Actor(userId, ct);
+
+        return await Accessible(actor)
+            .AsNoTracking()
+            .OrderBy(project => project.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(project => new ProjectResponse(
+                project.Id,
+                project.OrganizationId,
+                project.OwnerId,
+                project.Name,
+                project.Description,
+                project.WorkspaceUrl,
+                project.Progress,
+                project.IsAtRisk,
+                project.ImageUrl,
+                project.Status,
+                project.Priority,
+                project.Budget,
+                project.StartDate,
+                project.EndDate,
+                project.CreatedAt,
+                project.UpdatedAt))
+            .ToListAsync(ct);
+    }
+
+    // ---------------------------------------------------------
+    // GET PROJECT BY ID
+    // ---------------------------------------------------------
+
+    public async Task<ProjectResponse> GetProject(
+        ClaimsPrincipal user,
+        int id,
+        CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        var actor = await Actor(userId, ct);
+
+        return await Accessible(actor)
+            .AsNoTracking()
+            .Where(project => project.Id == id)
+            .Select(project => new ProjectResponse(
+                project.Id,
+                project.OrganizationId,
+                project.OwnerId,
+                project.Name,
+                project.Description,
+                project.WorkspaceUrl,
+                project.Progress,
+                project.IsAtRisk,
+                project.ImageUrl,
+                project.Status,
+                project.Priority,
+                project.Budget,
+                project.StartDate,
+                project.EndDate,
+                project.CreatedAt,
+                project.UpdatedAt))
+            .SingleOrDefaultAsync(ct)
+            ?? throw new ApiException(
+                404,
+                "Project not found.");
+    }
+
+    // ---------------------------------------------------------
+    // CREATE PROJECT
+    // ---------------------------------------------------------
+
+    public async Task<ProjectResponse> CreateProject(
+        ClaimsPrincipal user,
+        ProjectRequest request,
+        CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        var actor = await Actor(userId, ct);
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ApiException(
+                400,
+                "Project name is required.");
+        }
+
+        if (request.Progress < 0 || request.Progress > 100)
+        {
+            throw new ApiException(
+                400,
+                "Progress must be between 0 and 100.");
+        }
+
+        if (request.StartDate.HasValue &&
+            request.EndDate.HasValue &&
+            request.EndDate < request.StartDate)
+        {
+            throw new ApiException(
+                400,
+                "End date cannot be earlier than start date.");
+        }
+
+        if (request.Budget.HasValue &&
+            request.Budget < 0)
+        {
+            throw new ApiException(
+                400,
+                "Budget cannot be negative.");
+        }
+
+        var project = new Project
+        {
+            OrganizationId = actor.OrganizationId,
+            OwnerId = userId,
+
+            Name = request.Name.Trim(),
+
+            Description =
+                string.IsNullOrWhiteSpace(request.Description)
+                    ? null
+                    : request.Description.Trim(),
+
+            WorkspaceUrl =
+                string.IsNullOrWhiteSpace(request.WorkspaceUrl)
+                    ? null
+                    : request.WorkspaceUrl.Trim(),
+
+            Progress = request.Progress,
+
+            // Explicit project risk selected from Flutter.
+            IsAtRisk = request.IsAtRisk,
+
+            Status = request.Status,
+            Priority = request.Priority,
+
+            Budget = request.Budget,
+
+            StartDate = request.StartDate,
+            EndDate = request.EndDate
+        };
+
+        _context.Projects.Add(project);
+
+        await _context.SaveChangesAsync(ct);
+
+        // -----------------------------------------------------
+        // ADD PROJECT MEMBERS
+        // -----------------------------------------------------
+
+        if (request.MemberUserIds.Count > 0)
+        {
+            var requestedUserIds = request.MemberUserIds
+                .Where(id => id > 0)
+                .Distinct()
+                .ToList();
+
+            var validUserIds = await _context.Users
+                .Where(x =>
+                    requestedUserIds.Contains(x.Id) &&
+                    x.OrganizationId == actor.OrganizationId &&
+                    x.IsActive &&
+                    !x.IsDeleted)
+                .Select(x => x.Id)
+                .ToListAsync(ct);
+
+            foreach (var memberUserId in validUserIds)
+            {
+                if (memberUserId == actor.Id)
+                {
+                    continue;
+                }
+
+                _context.ProjectMembers.Add(
+                    new ProjectMember
+                    {
+                        ProjectId = project.Id,
+                        UserId = memberUserId,
+                        JoinedAt = DateTimeOffset.UtcNow,
+                        IsBlocked = false
+                    });
+            }
+
+            await _context.SaveChangesAsync(ct);
+        }
+
+        return ToResponse(project);
+    }
+
+    // ---------------------------------------------------------
+    // UPDATE PROJECT
+    // ---------------------------------------------------------
+
+    public async Task<ProjectResponse> UpdateProject(
+        ClaimsPrincipal user,
+        int id,
+        ProjectRequest request,
+        CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+
+        var project = await FindProject(
+            userId,
+            id,
+            ct,
+            ownerOnly: true);
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ApiException(
+                400,
+                "Project name is required.");
+        }
+
+        if (request.Progress < 0 ||
+            request.Progress > 100)
+        {
+            throw new ApiException(
+                400,
+                "Progress must be between 0 and 100.");
+        }
+
+        if (request.StartDate.HasValue &&
+            request.EndDate.HasValue &&
+            request.EndDate < request.StartDate)
+        {
+            throw new ApiException(
+                400,
+                "End date cannot be earlier than start date.");
+        }
+
+        if (request.Budget.HasValue &&
+            request.Budget < 0)
+        {
+            throw new ApiException(
+                400,
+                "Budget cannot be negative.");
+        }
+
+        project.Name = request.Name.Trim();
+
+        project.Description =
+            string.IsNullOrWhiteSpace(request.Description)
+                ? null
+                : request.Description.Trim();
+
+        project.WorkspaceUrl =
+            string.IsNullOrWhiteSpace(request.WorkspaceUrl)
+                ? null
+                : request.WorkspaceUrl.Trim();
+
+        project.Progress = request.Progress;
+
+        // Update explicit risk status.
+        project.IsAtRisk = request.IsAtRisk;
+
+        project.Status = request.Status;
+        project.Priority = request.Priority;
+        project.Budget = request.Budget;
+
+        project.StartDate = request.StartDate;
+        project.EndDate = request.EndDate;
+
+        project.IsArchived =
+            request.Status == ProjectStatus.Archived;
+
+        project.UpdatedAt = DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync(ct);
+
+        // -----------------------------------------------------
+        // UPDATE PROJECT MEMBERS
+        // -----------------------------------------------------
+
+        var existingMembers = await _context.ProjectMembers
+            .Where(x => x.ProjectId == project.Id)
+            .ToListAsync(ct);
+
+        _context.ProjectMembers.RemoveRange(existingMembers);
+
+        var requestedUserIds = request.MemberUserIds
+            .Where(id => id > 0)
+            .Distinct()
+            .ToList();
+
+        if (requestedUserIds.Count > 0)
+        {
+            var validUserIds = await _context.Users
+                .Where(x =>
+                    requestedUserIds.Contains(x.Id) &&
+                    x.OrganizationId == project.OrganizationId &&
+                    x.IsActive &&
+                    !x.IsDeleted)
+                .Select(x => x.Id)
+                .ToListAsync(ct);
+
+            foreach (var memberUserId in validUserIds)
+            {
+                if (memberUserId == project.OwnerId)
+                {
+                    continue;
+                }
+
+                _context.ProjectMembers.Add(
+                    new ProjectMember
+                    {
+                        ProjectId = project.Id,
+                        UserId = memberUserId,
+                        JoinedAt = DateTimeOffset.UtcNow,
+                        IsBlocked = false
+                    });
+            }
+        }
+
+        await _context.SaveChangesAsync(ct);
+
+        var updatedResponse = ToResponse(project);
+
+        // -----------------------------------------------------
+        // SIGNALR
+        // -----------------------------------------------------
+
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients
+                .Group($"project_{id}")
+                .SendAsync(
+                    "ProjectUpdated",
+                    updatedResponse,
+                    ct);
+        }
+
+        return updatedResponse;
+    }
+
+    // ---------------------------------------------------------
+    // DELETE PROJECT
+    // ---------------------------------------------------------
+
+    public async Task DeleteProject(
+        ClaimsPrincipal user,
+        int id,
+        CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+
+        var project = await FindProject(
+            userId,
+            id,
+            ct,
+            ownerOnly: true);
+
+        project.IsDeleted = true;
+        project.DeletedBy = userId;
+        project.DeletedAt = DateTimeOffset.UtcNow;
+        project.UpdatedAt = DateTimeOffset.UtcNow;
+
+        await _context.SaveChangesAsync(ct);
+
+        // -----------------------------------------------------
+        // SIGNALR
+        // -----------------------------------------------------
+
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients
+                .Group($"project_{id}")
+                .SendAsync(
+                    "ProjectDeleted",
+                    new { projectId = id },
+                    ct);
+        }
+    }
+}
+using ScaleFlow.Models;
+
+namespace ScaleFlow.DTOs;
+
+public class ProjectRequest
+{
+    public string Name { get; set; } = string.Empty;
+
+    public string? Description { get; set; }
+
+    public string? WorkspaceUrl { get; set; }
+
+    public int Progress { get; set; } = 0;
+
+    public bool IsAtRisk { get; set; } = false;
+
+    public ProjectStatus Status { get; set; } = ProjectStatus.Planning;
+
+    public ProjectPriority Priority { get; set; } = ProjectPriority.Medium;
+
+    public decimal? Budget { get; set; }
+
+    public DateTimeOffset? StartDate { get; set; }
+
+    public DateTimeOffset? EndDate { get; set; }
+
+    public List<int> MemberUserIds { get; set; } = new();
+}
+
+public record ProjectResponse(
+    int Id,
+    int OrganizationId,
+    int OwnerId,
+    string Name,
+    string? Description,
+    string? WorkspaceUrl,
+    int Progress,
+    bool IsAtRisk,
+    string? ImageUrl,
+    ProjectStatus Status,
+    ProjectPriority Priority,
+    decimal? Budget,
+    DateTimeOffset? StartDate,
+    DateTimeOffset? EndDate,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? UpdatedAt
+);
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ScaleFlow.DTOs;
+using ScaleFlow.Services;
+
+namespace ScaleFlow.Controllers;
+
+[ApiController]
+[Route("api/projects/{projectId}/members")]
+[Authorize]
+public class ProjectMembersController : ControllerBase
+{
+    private readonly IProjectMemberService _memberService;
+
+    public ProjectMembersController(IProjectMemberService memberService)
+    {
+        _memberService = memberService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(int projectId, [FromQuery] QueryParameters queryParameters, CancellationToken cancellationToken)
+    {
+        var members = await _memberService.ListMembers(User, projectId, queryParameters.Page, queryParameters.PageSize, cancellationToken);
+        return Ok(ApiResponse<IReadOnlyList<ProjectMemberResponse>>.Ok(members));
+    }
+
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetById(int projectId, int userId, CancellationToken cancellationToken)
+    {
+        var member = await _memberService.GetMember(User, projectId, userId, cancellationToken);
+        return Ok(ApiResponse<ProjectMemberResponse>.Ok(member));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(int projectId, [FromBody] AddProjectMemberRequest request, CancellationToken cancellationToken)
+    {
+        var member = await _memberService.AddMember(User, projectId, request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { projectId, userId = member.UserId },
+            ApiResponse<ProjectMemberResponse>.Ok(member, "Project member added."));
+    }
+
+    [HttpPut("{userId}")]
+    public async Task<IActionResult> Update(int projectId, int userId, [FromBody] UpdateProjectMemberRequest request, CancellationToken cancellationToken)
+    {
+        var member = await _memberService.UpdateMember(User, projectId, userId, request, cancellationToken);
+        return Ok(ApiResponse<ProjectMemberResponse>.Ok(member, "Project member updated."));
+    }
+
+    [HttpDelete("{userId}")]
+    public async Task<IActionResult> Remove(int projectId, int userId, CancellationToken cancellationToken)
+    {
+        await _memberService.RemoveMember(User, projectId, userId, cancellationToken);
+        return Ok(ApiResponse<object>.Ok(null, "Project member removed."));
+    }
+}
+using System.Security.Claims;
+using ScaleFlow.DTOs;
+
+namespace ScaleFlow.Services;
+
+public interface IProjectMemberService
+{
+    Task<IReadOnlyList<ProjectMemberResponse>> ListMembers(ClaimsPrincipal user, int projectId, int page, int pageSize, CancellationToken cancellationToken);
+    Task<ProjectMemberResponse> GetMember(ClaimsPrincipal user, int projectId, int userId, CancellationToken cancellationToken);
+    Task<ProjectMemberResponse> AddMember(ClaimsPrincipal user, int projectId, AddProjectMemberRequest request, CancellationToken cancellationToken);
+    Task<ProjectMemberResponse> UpdateMember(ClaimsPrincipal user, int projectId, int userId, UpdateProjectMemberRequest request, CancellationToken cancellationToken);
+    Task RemoveMember(ClaimsPrincipal user, int projectId, int userId, CancellationToken cancellationToken);
+}
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using ScaleFlow.DTOs;
+using ScaleFlow.Middleware;
+using ScaleFlow.Models;
+
+namespace ScaleFlow.Services;
+
+public class ProjectMemberService : IProjectMemberService
+{
+    private readonly ScaleFlowDbContext _context;
+    private readonly IProjectService _projectService;
+
+    public ProjectMemberService(ScaleFlowDbContext context, IProjectService projectService)
+    {
+        _context = context;
+        _projectService = projectService;
+    }
+
+    private async Task<ProjectResponse> RequireOwner(ClaimsPrincipal user, int projectId, CancellationToken ct)
+    {
+        var project = await _projectService.GetProject(user, projectId, ct);
+        if (!int.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) || project.OwnerId != userId)
+        {
+            throw new ApiException(403, "Only the project owner can manage project members.");
+        }
+        return project;
+    }
+
+    // Returns member display data without exposing Identity entities.
+    public async Task<IReadOnlyList<ProjectMemberResponse>> ListMembers(ClaimsPrincipal user, int projectId, int page, int pageSize, CancellationToken ct)
+    {
+        await _projectService.GetProject(user, projectId, ct);
+        return await _context.ProjectMembers
+            .AsNoTracking()
+            .Where(member => member.ProjectId == projectId)
+            .OrderBy(member => member.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(member => new ProjectMemberResponse(member.Id, member.ProjectId, member.UserId,
+                member.User.FullName, member.User.AvatarUrl, member.User.JobTitle, member.User.IsActive,
+                member.IsBlocked, member.HourlyRate, member.RoleOverride, member.JoinedAt))
+            .ToListAsync(ct);
+    }
+
+    // Returns one membership by its user identifier.
+    public async Task<ProjectMemberResponse> GetMember(ClaimsPrincipal user, int projectId, int userId, CancellationToken ct)
+    {
+        await _projectService.GetProject(user, projectId, ct);
+        return await _context.ProjectMembers
+            .AsNoTracking()
+            .Where(member => member.ProjectId == projectId && member.UserId == userId)
+            .Select(member => new ProjectMemberResponse(member.Id, member.ProjectId, member.UserId,
+                member.User.FullName, member.User.AvatarUrl, member.User.JobTitle, member.User.IsActive,
+                member.IsBlocked, member.HourlyRate, member.RoleOverride, member.JoinedAt))
+            .SingleOrDefaultAsync(ct)
+            ?? throw new ApiException(404, "Project member not found.");
+    }
+
+    // Adds an active user from the project's organization.
+    public async Task<ProjectMemberResponse> AddMember(ClaimsPrincipal user, int projectId, AddProjectMemberRequest request, CancellationToken ct)
+    {
+        var project = await RequireOwner(user, projectId, ct);
+        if (request.UserId == project.OwnerId)
+        {
+            throw new ApiException(400, "The project owner already has access.");
+        }
+        if (!await _context.Users.AnyAsync(member => member.Id == request.UserId &&
+            member.OrganizationId == project.OrganizationId && member.IsActive && !member.IsDeleted, ct))
+        {
+            throw new ApiException(404, "An active organization user was not found.");
+        }
+        if (await _context.ProjectMembers.AnyAsync(member => member.ProjectId == projectId && member.UserId == request.UserId, ct))
+        {
+            throw new ApiException(409, "Project member already exists.");
+        }
+
+        var member = new ProjectMember
+        {
+            ProjectId = projectId,
+            UserId = request.UserId,
+            HourlyRate = request.HourlyRate,
+            RoleOverride = request.RoleOverride
+        };
+        _context.ProjectMembers.Add(member);
+        await _context.SaveChangesAsync(ct);
+        return await GetMember(user, projectId, request.UserId, ct);
+    }
+
+    // Updates membership metadata and revokes team links when blocked.
+    public async Task<ProjectMemberResponse> UpdateMember(ClaimsPrincipal user, int projectId, int userId, UpdateProjectMemberRequest request, CancellationToken ct)
+    {
+        var project = await RequireOwner(user, projectId, ct);
+        if (userId == project.OwnerId)
+        {
+            throw new ApiException(400, "The project owner's membership cannot be changed.");
+        }
+        var member = await _context.ProjectMembers.SingleOrDefaultAsync(member =>
+            member.ProjectId == projectId && member.UserId == userId, ct)
+            ?? throw new ApiException(404, "Project member not found.");
+        member.IsBlocked = request.IsBlocked;
+        member.HourlyRate = request.HourlyRate;
+        member.RoleOverride = request.RoleOverride;
+        member.UpdatedAt = DateTimeOffset.UtcNow;
+        if (request.IsBlocked)
+        {
+            await RemoveTeamLinks(projectId, userId, ct);
+        }
+        await _context.SaveChangesAsync(ct);
+        return await GetMember(user, projectId, userId, ct);
+    }
+
+    // Removes the membership and its project-team links atomically.
+    public async Task RemoveMember(ClaimsPrincipal user, int projectId, int userId, CancellationToken ct)
+    {
+        var project = await RequireOwner(user, projectId, ct);
+        if (userId == project.OwnerId)
+        {
+            throw new ApiException(400, "The project owner cannot be removed.");
+        }
+        var member = await _context.ProjectMembers.SingleOrDefaultAsync(member =>
+            member.ProjectId == projectId && member.UserId == userId, ct)
+            ?? throw new ApiException(404, "Project member not found.");
+        await RemoveTeamLinks(projectId, userId, ct);
+        _context.ProjectMembers.Remove(member);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    // Prevents removed or blocked members from retaining team membership or leadership.
+    private async Task RemoveTeamLinks(int projectId, int userId, CancellationToken ct)
+    {
+        var members = await _context.TeamMembers
+            .Where(member => member.Team.ProjectId == projectId && member.UserId == userId).ToListAsync(ct);
+        _context.TeamMembers.RemoveRange(members);
+        var teams = await _context.Teams.Where(team => team.ProjectId == projectId && team.LeadUserId == userId).ToListAsync(ct);
+        foreach (var team in teams)
+        {
+            team.LeadUserId = null;
+            team.UpdatedAt = DateTimeOffset.UtcNow;
+        }
+    }
+}
+namespace ScaleFlow.DTOs;
+
+public class AddProjectMemberRequest
+{
+    public int UserId { get; set; }
+    public decimal? HourlyRate { get; set; }
+    public string? RoleOverride { get; set; }
+}
+
+public class UpdateProjectMemberRequest
+{
+    public bool IsBlocked { get; set; }
+    public decimal? HourlyRate { get; set; }
+    public string? RoleOverride { get; set; }
+}
+
+public record ProjectMemberResponse(int Id, int ProjectId, int UserId, string FullName,
+    string? AvatarUrl, string? JobTitle, bool IsActive, bool IsBlocked, decimal? HourlyRate,
+    string? RoleOverride, DateTimeOffset JoinedAt);
+using System.Security.Claims;
+using ScaleFlow.DTOs;
+
+namespace ScaleFlow.Services;
+
+public interface ITaskService
+{
+    Task<IReadOnlyList<TaskResponse>> ListTasks(ClaimsPrincipal user, int projectId, int page, int pageSize, CancellationToken cancellationToken);
+    Task<TaskResponse> GetTask(ClaimsPrincipal user, int projectId, int id, CancellationToken cancellationToken);
+    Task<TaskResponse> CreateTask(ClaimsPrincipal user, int projectId, TaskRequest request, CancellationToken cancellationToken);
+    Task<TaskResponse> UpdateTask(ClaimsPrincipal user, int projectId, int id, TaskRequest request, CancellationToken cancellationToken);
+    Task DeleteTask(ClaimsPrincipal user, int projectId, int id, CancellationToken cancellationToken);
+    Task<IReadOnlyList<TaskDependencyResponse>> ListDependencies(ClaimsPrincipal user, int projectId, int taskId, CancellationToken cancellationToken);
+    Task<TaskDependencyResponse> GetDependency(ClaimsPrincipal user, int projectId, int taskId, int id, CancellationToken cancellationToken);
+    Task<TaskDependencyResponse> CreateDependency(ClaimsPrincipal user, int projectId, int taskId, TaskDependencyRequest request, CancellationToken cancellationToken);
+    Task<TaskDependencyResponse> UpdateDependency(ClaimsPrincipal user, int projectId, int taskId, int id, TaskDependencyRequest request, CancellationToken cancellationToken);
+    Task DeleteDependency(ClaimsPrincipal user, int projectId, int taskId, int id, CancellationToken cancellationToken);
+}
+using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using ScaleFlow.DTOs;
+using ScaleFlow.Hubs;
+using ScaleFlow.Middleware;
+using ScaleFlow.Models;
+
+namespace ScaleFlow.Services;
+
+public class TaskService : ITaskService
+{
+    private readonly ScaleFlowDbContext _context;
+    private readonly IHubContext<ScaleFlowHub>? _hubContext;
+
+    public TaskService(ScaleFlowDbContext context, IHubContext<ScaleFlowHub>? hubContext = null)
+    {
+        _context = context;
+        _hubContext = hubContext;
+    }
+
+    private static int GetUserId(ClaimsPrincipal user)
+    {
+        var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (user.Identity?.IsAuthenticated != true || !int.TryParse(userIdClaim, out var userId) || userId <= 0)
+        {
+            throw new ApiException(401, "Invalid user identity.");
+        }
+
+        return userId;
+    }
+
+    private async Task<User> Actor(int userId, CancellationToken ct) =>
+        await _context.Users.SingleOrDefaultAsync(x => x.Id == userId && x.IsActive && !x.IsDeleted && !x.Organization.IsDeleted, ct)
+        ?? throw new ApiException(401, "An active user is required.");
+
+    private IQueryable<Project> Accessible(User actor) => _context.Projects.Where(x => x.OrganizationId == actor.OrganizationId &&
+        (x.OwnerId == actor.Id || x.Members.Any(m => m.UserId == actor.Id && !m.IsBlocked)));
+
+    private async Task<Project> FindProject(int userId, int id, CancellationToken ct)
+    {
+        var actor = await Actor(userId, ct);
+        var project = await Accessible(actor).SingleOrDefaultAsync(x => x.Id == id, ct)
+            ?? throw new ApiException(404, "Project not found.");
+        return project;
+    }
+
+    // Returns a paginated task list as response DTOs.
+    public async Task<IReadOnlyList<TaskResponse>> ListTasks(ClaimsPrincipal user, int projectId, int page, int pageSize, CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        await FindProject(userId, projectId, ct);
+        return await _context.ProjectTasks
+            .AsNoTracking()
+            .Where(task => task.ProjectId == projectId)
+            .OrderBy(task => task.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(task => new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
+                task.Priority, task.Type, task.PlannedStart, task.PlannedEnd, task.EstimatedHours,
+                task.CompletionPercent, task.CreatedBy, task.UpdatedBy, task.CreatedAt, task.UpdatedAt))
+            .ToListAsync(ct);
+    }
+    private async Task<ProjectTask> FindTask(int userId, int projectId, int id, CancellationToken ct)
+    {
+        await FindProject(userId, projectId, ct);
+        return await _context.ProjectTasks.SingleOrDefaultAsync(x => x.Id == id && x.ProjectId == projectId, ct)
+            ?? throw new ApiException(404, "Task not found.");
+    }
+    // Returns one accessible task as a response DTO.
+    public async Task<TaskResponse> GetTask(ClaimsPrincipal user, int projectId, int id, CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        await FindProject(userId, projectId, ct);
+        return await _context.ProjectTasks
+            .AsNoTracking()
+            .Where(task => task.Id == id && task.ProjectId == projectId)
+            .Select(task => new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
+                task.Priority, task.Type, task.PlannedStart, task.PlannedEnd, task.EstimatedHours,
+                task.CompletionPercent, task.CreatedBy, task.UpdatedBy, task.CreatedAt, task.UpdatedAt))
+            .SingleOrDefaultAsync(ct)
+            ?? throw new ApiException(404, "Task not found.");
+    }
+
+    // Creates a task from the request DTO.
+    public async Task<TaskResponse> CreateTask(ClaimsPrincipal user, int projectId, TaskRequest request, CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        await FindProject(userId, projectId, ct);
+        var task = new ProjectTask { ProjectId = projectId, CreatedBy = userId, UpdatedBy = userId };
+        task.Title = request.Title.Trim();
+        task.Description = request.Description;
+        task.Status = request.Status;
+        task.Priority = request.Priority;
+        task.Type = request.Type;
+        task.PlannedStart = request.PlannedStart;
+        task.PlannedEnd = request.PlannedEnd;
+        task.EstimatedHours = request.EstimatedHours;
+        task.CompletionPercent = request.CompletionPercent;
+        _context.ProjectTasks.Add(task);
+        await _context.SaveChangesAsync(ct);
+        var createdResponse = new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
+                task.Priority, task.Type, task.PlannedStart, task.PlannedEnd, task.EstimatedHours,
+                task.CompletionPercent, task.CreatedBy, task.UpdatedBy, task.CreatedAt, task.UpdatedAt);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{projectId}").SendAsync("TaskCreated", createdResponse, ct);
+        }
+        return createdResponse;
+    }
+    // Updates a task and records status changes.
+    public async Task<TaskResponse> UpdateTask(ClaimsPrincipal user, int projectId, int id, TaskRequest request, CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        var task = await FindTask(userId, projectId, id, ct);
+        if (task.Status != request.Status)
+            _context.TaskStatusHistories.Add(new TaskStatusHistory { TaskId = id, FromStatus = task.Status, ToStatus = request.Status, ChangedBy = userId });
+        task.Title = request.Title.Trim();
+        task.Description = request.Description;
+        task.Status = request.Status;
+        task.Priority = request.Priority;
+        task.Type = request.Type;
+        task.PlannedStart = request.PlannedStart;
+        task.PlannedEnd = request.PlannedEnd;
+        task.EstimatedHours = request.EstimatedHours;
+        task.CompletionPercent = request.CompletionPercent;
+        task.UpdatedBy = userId;
+        task.UpdatedAt = DateTimeOffset.UtcNow;
+        await _context.SaveChangesAsync(ct);
+        var updatedResponse = new TaskResponse(task.Id, task.ProjectId, task.Title, task.Description, task.Status,
+                task.Priority, task.Type, task.PlannedStart, task.PlannedEnd, task.EstimatedHours,
+                task.CompletionPercent, task.CreatedBy, task.UpdatedBy, task.CreatedAt, task.UpdatedAt);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{projectId}").SendAsync("TaskUpdated", updatedResponse, ct);
+        }
+        return updatedResponse;
+    }
+    // Soft-deletes an accessible task.
+    public async Task DeleteTask(ClaimsPrincipal user, int projectId, int id, CancellationToken ct)
+    {
+        var userId = GetUserId(user);
+        var task = await FindTask(userId, projectId, id, ct);
+        task.IsDeleted = true;
+        task.DeletedBy = task.UpdatedBy = userId;
+        task.DeletedAt = task.UpdatedAt = DateTimeOffset.UtcNow;
+        await _context.SaveChangesAsync(ct);
+        if (_hubContext is not null)
+        {
+            await _hubContext.Clients.Group($"project_{projectId}").SendAsync("TaskDeleted", new { projectId, taskId = id }, ct);
+        }
+    }
+    // Returns active prerequisites as response DTOs.
+    public async Task<IReadOnlyList<TaskDependencyResponse>> ListDependencies(ClaimsPrincipal user, int projectId, int taskId, CancellationToken ct)
+    {
+        await FindTask(GetUserId(user), projectId, taskId, ct);
+        return await _context.TaskDependencies
+            .AsNoTracking()
+            .Where(dependency => dependency.TaskId == taskId)
+            .OrderBy(dependency => dependency.Id)
+            .Select(dependency => new TaskDependencyResponse(dependency.Id, dependency.TaskId, dependency.DependsOnTaskId,
+                dependency.DependencyType, dependency.LagDays, dependency.Notes, dependency.CreatedAt))
+            .ToListAsync(ct);
+    }
+
+    private async Task<TaskDependency> FindDependency(int userId, int projectId, int taskId, int id, CancellationToken ct)
+    {
+        await FindTask(userId, projectId, taskId, ct);
+        return await _context.TaskDependencies.SingleOrDefaultAsync(x => x.Id == id && x.TaskId == taskId, ct)
+            ?? throw new ApiException(404, "Dependency not found.");
+    }
+
+    // Returns one dependency belonging to the requested task.
+    public async Task<TaskDependencyResponse> GetDependency(ClaimsPrincipal user, int projectId, int taskId, int id, CancellationToken ct)
+    {
+        await FindTask(GetUserId(user), projectId, taskId, ct);
+        return await _context.TaskDependencies
+            .AsNoTracking()
+            .Where(dependency => dependency.Id == id && dependency.TaskId == taskId)
+            .Select(dependency => new TaskDependencyResponse(dependency.Id, dependency.TaskId, dependency.DependsOnTaskId,
+                dependency.DependencyType, dependency.LagDays, dependency.Notes, dependency.CreatedAt))
+            .SingleOrDefaultAsync(ct)
+            ?? throw new ApiException(404, "Dependency not found.");
+    }
+
+    // Creates a dependency after validating the task graph.
+    public async Task<TaskDependencyResponse> CreateDependency(ClaimsPrincipal user, int projectId, int taskId, TaskDependencyRequest request, CancellationToken ct)
+    {
+        // Keep graph validation and writes in the same transaction.
+        await using var transaction = _context.Database.IsRelational()
+            ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, ct) : null;
+        var userId = GetUserId(user);
+        await FindTask(userId, projectId, taskId, ct);
+        await ValidateDependency(userId, projectId, taskId, request.DependsOnTaskId, null, ct);
+        var dependency = new TaskDependency { TaskId = taskId };
+        dependency.DependsOnTaskId = request.DependsOnTaskId;
+        dependency.DependencyType = request.DependencyType;
+        dependency.LagDays = request.LagDays;
+        dependency.Notes = request.Notes;
+        _context.TaskDependencies.Add(dependency);
+        await _context.SaveChangesAsync(ct);
+        if (transaction is not null) await transaction.CommitAsync(ct);
+        return new TaskDependencyResponse(dependency.Id, dependency.TaskId, dependency.DependsOnTaskId,
+                dependency.DependencyType, dependency.LagDays, dependency.Notes, dependency.CreatedAt);
+    }
+
+    // Updates a dependency without allowing duplicates or cycles.
+    public async Task<TaskDependencyResponse> UpdateDependency(ClaimsPrincipal user, int projectId, int taskId, int id, TaskDependencyRequest request, CancellationToken ct)
+    {
+        await using var transaction = _context.Database.IsRelational()
+            ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, ct) : null;
+        var userId = GetUserId(user);
+        var dependency = await FindDependency(userId, projectId, taskId, id, ct);
+        await ValidateDependency(userId, projectId, taskId, request.DependsOnTaskId, id, ct);
+        dependency.DependsOnTaskId = request.DependsOnTaskId;
+        dependency.DependencyType = request.DependencyType;
+        dependency.LagDays = request.LagDays;
+        dependency.Notes = request.Notes;
+        await _context.SaveChangesAsync(ct);
+        if (transaction is not null) await transaction.CommitAsync(ct);
+        return new TaskDependencyResponse(dependency.Id, dependency.TaskId, dependency.DependsOnTaskId,
+                dependency.DependencyType, dependency.LagDays, dependency.Notes, dependency.CreatedAt);
+    }
+
+    // Removes a dependency belonging to the requested task.
+    public async Task DeleteDependency(ClaimsPrincipal user, int projectId, int taskId, int id, CancellationToken ct)
+    {
+        var dependency = await FindDependency(GetUserId(user), projectId, taskId, id, ct);
+        _context.TaskDependencies.Remove(dependency);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    private async Task ValidateDependency(int userId, int projectId, int taskId, int dependsOnTaskId, int? excludedId, CancellationToken ct)
+    {
+        if (taskId == dependsOnTaskId) throw new ApiException(400, "A task cannot depend on itself.");
+        await FindTask(userId, projectId, dependsOnTaskId, ct);
+        var edges = await _context.TaskDependencies.AsNoTracking()
+            .Where(x => x.Task!.ProjectId == projectId && (!excludedId.HasValue || x.Id != excludedId.Value))
+            .Select(x => new { x.TaskId, x.DependsOnTaskId }).ToListAsync(ct);
+        if (edges.Any(x => x.TaskId == taskId && x.DependsOnTaskId == dependsOnTaskId))
+            throw new ApiException(409, "Dependency already exists.");
+
+        // Follow prerequisites to detect direct and indirect cycles.
+        var graph = edges.ToLookup(x => x.TaskId, x => x.DependsOnTaskId);
+        var pending = new Stack<int>();
+        var visited = new HashSet<int>();
+        pending.Push(dependsOnTaskId);
+        while (pending.TryPop(out var current))
+        {
+            if (current == taskId) throw new ApiException(400, "Dependency would create a cycle.");
+            if (!visited.Add(current)) continue;
+            foreach (var next in graph[current]) pending.Push(next);
+        }
+    }
+
+}
+using ScaleFlow.Models;
+using TaskStatus = ScaleFlow.Models.TaskStatus;
+
+namespace ScaleFlow.DTOs;
+
+public class TaskRequest
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public TaskStatus Status { get; set; } = TaskStatus.Backlog;
+    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+    public TaskType Type { get; set; } = TaskType.Task;
+    public DateTimeOffset? PlannedStart { get; set; }
+    public DateTimeOffset? PlannedEnd { get; set; }
+    public decimal? EstimatedHours { get; set; }
+    public int? CompletionPercent { get; set; }
+}
+
+public record TaskResponse(int Id, int ProjectId, string Title, string? Description, TaskStatus Status,
+    TaskPriority Priority, TaskType Type, DateTimeOffset? PlannedStart, DateTimeOffset? PlannedEnd,
+    decimal? EstimatedHours, int? CompletionPercent, int CreatedBy, int UpdatedBy,
+    DateTimeOffset CreatedAt, DateTimeOffset? UpdatedAt);
+using ScaleFlow.Models;
+
+namespace ScaleFlow.DTOs;
+
+public sealed class CreateProjectRequest
+{
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+    public ProjectStatus Status { get; set; } = ProjectStatus.Planning;
+    public ProjectPriority Priority { get; set; } = ProjectPriority.Medium;
+    public decimal? Budget { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
+}
+
+public sealed class UpdateProjectRequest
+{
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+    public ProjectStatus Status { get; set; }
+    public ProjectPriority Priority { get; set; }
+    public decimal? Budget { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
+    public bool IsArchived { get; set; }
+}
+
+public sealed class CreateTaskRequest
+{
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+    public ScaleFlow.Models.TaskStatus Status { get; set; } = ScaleFlow.Models.TaskStatus.Backlog;
+    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+    public TaskType Type { get; set; } = TaskType.Task;
+    public int? AssignedUserId { get; set; }
+    public DateTimeOffset? PlannedStart { get; set; }
+    public DateTimeOffset? PlannedEnd { get; set; }
+    public decimal? EstimatedHours { get; set; }
+}
+
+public sealed class UpdateTaskRequest
+{
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+    public ScaleFlow.Models.TaskStatus Status { get; set; }
+    public TaskPriority Priority { get; set; }
+    public TaskType Type { get; set; }
+    public DateTimeOffset? PlannedStart { get; set; }
+    public DateTimeOffset? PlannedEnd { get; set; }
+    public decimal? EstimatedHours { get; set; }
+    public int? CompletionPercent { get; set; }
+}
+using System;
+
+namespace ScaleFlow.Models;
+public class TaskAssignment
+{
+    public int Id { get; set; }
+    public int TaskId { get; set; }
+    public int UserId { get; set; }
+    public int AssignedBy { get; set; }
+    public DateTimeOffset AssignedAt { get; set; } = DateTimeOffset.UtcNow;
+    public bool IsPrimary { get; set; } = false;
+    public ProjectTask Task { get; set; } = null!;
+    public User User { get; set; } = null!;
+    public User AssignedByUser { get; set; } = null!;
+}
+
+
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ScaleFlow.DTOs;
+using ScaleFlow.Services;
+
+namespace ScaleFlow.Controllers;
+
+[ApiController]
+[Route("api/projects/{projectId}/progress")]
+[Authorize]
+public class ProjectProgressController : ControllerBase
+{
+    private readonly IProjectProgressService _progressService;
+
+    public ProjectProgressController(IProjectProgressService progressService)
+    {
+        _progressService = progressService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Get(int projectId, CancellationToken cancellationToken)
+    {
+        var progress = await _progressService.GetProgress(User, projectId, cancellationToken);
+        return Ok(ApiResponse<ProjectProgressResponse>.Ok(progress));
+    }
+}
+using System.Security.Claims;
+using ScaleFlow.DTOs;
+
+namespace ScaleFlow.Services;
+
+public interface IProjectProgressService
+{
+    Task<ProjectProgressResponse> GetProgress(ClaimsPrincipal user, int projectId, CancellationToken cancellationToken);
+}
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using ScaleFlow.DTOs;
+using ScaleFlow.Models;
+using TaskStatus = ScaleFlow.Models.TaskStatus;
+
+namespace ScaleFlow.Services;
+
+public class ProjectProgressService : IProjectProgressService
+{
+    private readonly ScaleFlowDbContext _context;
+    private readonly IProjectService _projectService;
+
+    public ProjectProgressService(ScaleFlowDbContext context, IProjectService projectService)
+    {
+        _context = context;
+        _projectService = projectService;
+    }
+
+    // Calculates live progress without changing task or project state.
+    public async Task<ProjectProgressResponse> GetProgress(ClaimsPrincipal user, int projectId, CancellationToken ct)
+    {
+        await _projectService.GetProject(user, projectId, ct);
+        var summary = await _context.ProjectTasks
+            .AsNoTracking()
+            .Where(task => task.ProjectId == projectId)
+            .GroupBy(task => task.ProjectId)
+            .Select(tasks => new
+            {
+                Total = tasks.Count(),
+                Completed = tasks.Count(task => task.Status == TaskStatus.Done),
+                InProgress = tasks.Count(task => task.Status == TaskStatus.InProgress),
+                Blocked = tasks.Count(task => task.Status == TaskStatus.Blocked),
+                Cancelled = tasks.Count(task => task.Status == TaskStatus.Cancelled),
+                Progress = tasks.Where(task => task.Status != TaskStatus.Cancelled)
+                    .Average(task => (decimal?)(task.Status == TaskStatus.Done ? 100 : task.CompletionPercent ?? 0))
+            })
+            .SingleOrDefaultAsync(ct);
+
+        // Empty projects and projects with only cancelled tasks have zero progress.
+        return summary is null
+            ? new ProjectProgressResponse(projectId, 0, 0, 0, 0, 0, 0)
+            : new ProjectProgressResponse(projectId, summary.Total, summary.Completed, summary.InProgress,
+                summary.Blocked, summary.Cancelled, Math.Round(summary.Progress ?? 0, 2));
+    }
+}
+namespace ScaleFlow.DTOs;
+
+public record ProjectProgressResponse(int ProjectId, int TotalTasks, int CompletedTasks,
+    int InProgressTasks, int BlockedTasks, int CancelledTasks, decimal ProgressPercent);
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ScaleFlow.DTOs;
+using ScaleFlow.Services;
+
+namespace ScaleFlow.Controllers;
+
+[ApiController]
+[Route("api/projects/{projectId}/ai")]
+[Authorize]
+public class ProjectAiController : ControllerBase
+{
+    private readonly IProjectAiService _aiService;
+
+    public ProjectAiController(IProjectAiService aiService)
+    {
+        _aiService = aiService;
+    }
+
+    [HttpPost("delay-prediction")]
+    public async Task<IActionResult> PredictDelay(int projectId, [FromBody] AiAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _aiService.PredictDelay(User, projectId, request, cancellationToken);
+        return Ok(ApiResponse<DelayPredictionResponse>.Ok(result));
+    }
+
+    [HttpPost("risk-analysis")]
+    public async Task<IActionResult> AnalyzeRisk(int projectId, [FromBody] AiAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _aiService.AnalyzeRisk(User, projectId, request, cancellationToken);
+        return Ok(ApiResponse<RiskAnalysisResponse>.Ok(result));
+    }
+
+    [HttpPost("bottleneck-detection")]
+    public async Task<IActionResult> DetectBottlenecks(int projectId, [FromBody] AiAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _aiService.DetectBottlenecks(User, projectId, request, cancellationToken);
+        return Ok(ApiResponse<BottleneckDetectionResponse>.Ok(result));
+    }
+
+    [HttpPost("project-health")]
+    public async Task<IActionResult> GetProjectHealth(int projectId, [FromBody] AiAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _aiService.GetProjectHealth(User, projectId, request, cancellationToken);
+        return Ok(ApiResponse<AiProjectHealthResponse>.Ok(result));
+    }
+}
+using System.Security.Claims;
+using ScaleFlow.DTOs;
+
+namespace ScaleFlow.Services;
+
+public interface IProjectAiService
+{
+    Task<DelayPredictionResponse> PredictDelay(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken cancellationToken);
+    Task<RiskAnalysisResponse> AnalyzeRisk(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken cancellationToken);
+    Task<BottleneckDetectionResponse> DetectBottlenecks(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken cancellationToken);
+    Task<AiProjectHealthResponse> GetProjectHealth(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken cancellationToken);
+}
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using ScaleFlow.DTOs;
+using ScaleFlow.Models;
+
+namespace ScaleFlow.Services;
+
+public class ProjectAiService : IProjectAiService
+{
+    private readonly ScaleFlowDbContext _context;
+    private readonly IProjectService _projectService;
+    private readonly IMlService _mlService;
+
+    public ProjectAiService(ScaleFlowDbContext context, IProjectService projectService, IMlService mlService)
+    {
+        _context = context;
+        _projectService = projectService;
+        _mlService = mlService;
+    }
+
+    // Authorizes the caller before preparing project-scoped DTOs for the ML adapter.
+    private async Task<AiProjectInput> PrepareInput(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken ct)
+    {
+        var project = await _projectService.GetProject(user, projectId, ct);
+        var tasks = await _context.ProjectTasks
+            .AsNoTracking()
+            .Where(task => task.ProjectId == projectId)
+            .OrderBy(task => task.Id)
+            .Select(task => new AiTaskInput(task.Id, task.Title, task.Status, task.Priority,
+                task.PlannedStart, task.PlannedEnd, task.ActualStart, task.ActualEnd,
+                task.EstimatedHours, task.ActualHours, task.CompletionPercent))
+            .ToListAsync(ct);
+        var dependencies = await _context.TaskDependencies
+            .AsNoTracking()
+            .Where(dependency => dependency.Task!.ProjectId == projectId &&
+                dependency.DependsOnTask!.ProjectId == projectId)
+            .OrderBy(dependency => dependency.Id)
+            .Select(dependency => new AiDependencyInput(dependency.TaskId, dependency.DependsOnTaskId,
+                dependency.DependencyType, dependency.LagDays))
+            .ToListAsync(ct);
+        return new AiProjectInput(project, request.InputWindowDays, tasks, dependencies);
+    }
+
+    // Delegates delay prediction without generating or storing synthetic results.
+    public async Task<DelayPredictionResponse> PredictDelay(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken ct)
+    {
+        var input = await PrepareInput(user, projectId, request, ct);
+        return await _mlService.PredictDelay(input, ct);
+    }
+
+    // Delegates project risk analysis through the integration interface.
+    public async Task<RiskAnalysisResponse> AnalyzeRisk(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken ct)
+    {
+        var input = await PrepareInput(user, projectId, request, ct);
+        return await _mlService.AnalyzeRisk(input, ct);
+    }
+
+    // Delegates bottleneck detection using only the requested project's data.
+    public async Task<BottleneckDetectionResponse> DetectBottlenecks(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken ct)
+    {
+        var input = await PrepareInput(user, projectId, request, ct);
+        return await _mlService.DetectBottlenecks(input, ct);
+    }
+
+    // Keeps AI health analysis separate from deterministic project progress.
+    public async Task<AiProjectHealthResponse> GetProjectHealth(ClaimsPrincipal user, int projectId, AiAnalysisRequest request, CancellationToken ct)
+    {
+        var input = await PrepareInput(user, projectId, request, ct);
+        return await _mlService.GetProjectHealth(input, ct);
+    }
+}
+namespace ScaleFlow.DTOs;
+
+public record AiProjectHealthResponse(int ProjectId, decimal HealthScore, int RiskCount,
+    int OverdueTasksCount, decimal Confidence, string? Explanation);
+using ScaleFlow.Models;
+using TaskStatus = ScaleFlow.Models.TaskStatus;
+
+namespace ScaleFlow.DTOs;
+
+public class AiAnalysisRequest
+{
+    public int InputWindowDays { get; set; } = 30;
+}
+
+// Backend-side input contract; the external ML wire format will be agreed at integration.
+public record AiProjectInput(ProjectResponse Project, int InputWindowDays,
+    IReadOnlyList<AiTaskInput> Tasks, IReadOnlyList<AiDependencyInput> Dependencies);
+
+public record AiTaskInput(int Id, string Title, TaskStatus Status, TaskPriority Priority,
+    DateTimeOffset? PlannedStart, DateTimeOffset? PlannedEnd, DateTimeOffset? ActualStart,
+    DateTimeOffset? ActualEnd, decimal? EstimatedHours, decimal? ActualHours, int? CompletionPercent);
+
+public record AiDependencyInput(int TaskId, int DependsOnTaskId, DependencyType DependencyType, int? LagDays);
+namespace ScaleFlow.DTOs;
+
+public record DelayPredictionResponse(int ProjectId, decimal DelayProbability,
+    int PredictedDelayDays, decimal Confidence, string? Explanation);
+namespace ScaleFlow.DTOs;
+
+public record RiskAnalysisResponse(int ProjectId, decimal RiskScore, decimal Confidence, string? Explanation);
+namespace ScaleFlow.DTOs;
+
+public record BottleneckDetectionResponse(int ProjectId, IReadOnlyList<BottleneckTaskResponse> Bottlenecks);
+
+public record BottleneckTaskResponse(int TaskId, decimal Score, string? Explanation);
