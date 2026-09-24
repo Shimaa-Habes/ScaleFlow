@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/home_service.dart';
 import '../data/mock_data.dart';
+
 import 'ai_insights_screen.dart';
 import 'dashboard_screen.dart';
 import 'profile_screen.dart';
@@ -1369,54 +1370,58 @@ class _HomePageState extends State<HomePage> {
                             atRisk ? _coral.withValues(alpha: 0.35) : _border,
                       ),
                     ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 3,
-                      ),
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: atRisk
-                              ? _coral.withValues(alpha: 0.10)
-                              : _purple.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(11),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(15),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 3,
                         ),
-                        child: Icon(
-                          atRisk
-                              ? Icons.warning_amber_rounded
-                              : Icons.folder_outlined,
-                          color: atRisk ? _coral : _purple,
-                          size: 20,
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: atRisk
+                                ? _coral.withValues(alpha: 0.10)
+                                : _purple.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                          child: Icon(
+                            atRisk
+                                ? Icons.warning_amber_rounded
+                                : Icons.folder_outlined,
+                            color: atRisk ? _coral : _purple,
+                            size: 20,
+                          ),
                         ),
-                      ),
-                      title: Text(
-                        name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: _text,
+                        title: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: _text,
+                          ),
                         ),
-                      ),
-                      subtitle: Text(
-                        atRisk ? 'At Risk' : _projectStatus(project),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: atRisk ? _coral : _secondaryText,
-                          fontWeight: FontWeight.w600,
+                        subtitle: Text(
+                          atRisk ? 'At Risk' : _projectStatus(project),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: atRisk ? _coral : _secondaryText,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 15,
+                          color: _secondaryText,
+                        ),
+                        onTap: () {
+                          Navigator.of(sheetContext).pop(projectId);
+                        },
                       ),
-                      trailing: const Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 15,
-                        color: _secondaryText,
-                      ),
-                      onTap: () {
-                        Navigator.of(sheetContext).pop(projectId);
-                      },
                     ),
                   );
                 }),

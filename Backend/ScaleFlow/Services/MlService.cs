@@ -30,7 +30,19 @@ public class MlService : IMlService
         CancellationToken cancellationToken)
     {
         var payload = BuildRiskPayload(request);
+Console.WriteLine(
+    $"========== RISK PAYLOAD PROJECT {request.Project.Id} ==========");
 
+Console.WriteLine(
+    System.Text.Json.JsonSerializer.Serialize(
+        payload,
+        new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true
+        }));
+
+Console.WriteLine(
+    "==============================================================");
         _logger.LogInformation(
             "RISK PAYLOAD Project {ProjectId}: {Payload}",
             request.Project.Id,
@@ -67,12 +79,95 @@ public class MlService : IMlService
                 "Risk ML service returned an empty response.");
         }
 
-        return new RiskAnalysisResponse(
-            request.Project.Id,
-            prediction.RiskScore,
-            prediction.Confidence,
-            BuildRiskExplanation(prediction));
+        var adjustedRiskScore = CalculateAdjustedRiskScore(
+    request,
+    prediction.RiskScore);
+
+return new RiskAnalysisResponse(
+    request.Project.Id,
+    adjustedRiskScore,
+    prediction.Confidence,
+    BuildRiskExplanation(
+        prediction,
+        adjustedRiskScore,
+        request));
     }
+
+    private static decimal CalculateAdjustedRiskScore(
+    AiProjectInput request,
+    decimal mlRiskScore)
+{
+    var project = request.Project;
+
+    var progress = Math.Clamp(
+        project.Progress,
+        0,
+        100);
+
+    decimal score = mlRiskScore;
+
+    if (project.EndDate.HasValue)
+    {
+        var remainingDays =
+            (project.EndDate.Value - DateTimeOffset.UtcNow).TotalDays;
+
+        // Deadline is today or already passed
+        if (remainingDays <= 0 && progress < 30)
+        {
+            score = Math.Max(score, 90m);
+        }
+        // Deadline within 3 days
+        else if (remainingDays <= 3 && progress < 50)
+        {
+            score = Math.Max(score, 80m);
+        }
+        // Deadline within 7 days
+        else if (remainingDays <= 7 && progress < 70)
+        {
+            score = Math.Max(score, 70m);
+        }
+        // Deadline within 30 days with low progress
+        else if (remainingDays <= 30 && progress < 40)
+        {
+            score = Math.Max(score, 60m);
+        }
+    }
+
+    // Very low progress is itself a strong warning
+    if (progress <= 10)
+    {
+        score = Math.Max(score, 75m);
+    }
+    else if (progress <= 25)
+    {
+        score = Math.Max(score, 60m);
+    }
+
+    // Blocked or overdue tasks increase the minimum risk
+    var blockedTasks = request.Tasks.Count(
+        task => task.Status == Models.TaskStatus.Blocked);
+
+    var overdueTasks = request.Tasks.Count(
+        task =>
+            task.PlannedEnd.HasValue &&
+            task.PlannedEnd.Value < DateTimeOffset.UtcNow &&
+            (task.CompletionPercent ?? 0) < 100);
+
+    if (blockedTasks > 0)
+    {
+        score = Math.Max(score, 75m);
+    }
+
+    if (overdueTasks > 0 && progress < 50)
+    {
+        score = Math.Max(score, 80m);
+    }
+
+    return Math.Clamp(
+        decimal.Round(score, 2),
+        0m,
+        100m);
+}
 
     private static Dictionary<string, object?> BuildRiskPayload(
         AiProjectInput request)
@@ -200,24 +295,20 @@ public class MlService : IMlService
             ["Project_Type"] =
                 "IT",
 
-            ["Team_Size"] =
-                teamSize,
+            ["Team_Size"] = Math.Max(2, teamSize),
 
             ["Project_Budget_USD"] =
-                project.Budget.HasValue
-                    ? (double)Math.Max(
-                        0m,
-                        project.Budget.Value)
-                    : 0.0,
+    project.Budget.HasValue && project.Budget.Value > 0
+        ? (double)project.Budget.Value
+        : 1143032.0,
 
             ["Estimated_Timeline_Months"] =
-                estimatedTimelineMonths,
+    Math.Clamp(estimatedTimelineMonths, 2, 36),
 
             ["Complexity_Score"] =
-                complexityScore,
+    Math.Clamp(complexityScore, 1.62, 10.0),
 
-            ["Stakeholder_Count"] =
-                stakeholderCount,
+            ["Stakeholder_Count"] = Math.Max(2, stakeholderCount),
 
             // --------------------------------------------------------
             // PROJECT MANAGEMENT FEATURES
@@ -279,7 +370,7 @@ public class MlService : IMlService
             // --------------------------------------------------------
 
             ["Schedule_Pressure"] =
-                schedulePressure,
+    Math.Clamp(schedulePressure / 10.0, 0.0, 0.58),
 
             ["Budget_Utilization_Rate"] =
                 budgetUtilizationRate,
@@ -290,8 +381,7 @@ public class MlService : IMlService
             ["Funding_Source"] =
                 "Internal",
 
-            ["Market_Volatility"] =
-                2.0,
+            ["Market_Volatility"] = 0.5,
 
             ["Integration_Complexity"] =
                 integrationComplexity,
@@ -369,8 +459,7 @@ public class MlService : IMlService
                 projectStartMonth,
 
             ["Current_Phase_Duration_Months"] =
-                currentPhaseDurationMonths,
-
+    Math.Clamp(currentPhaseDurationMonths, 1, 17),
             ["Seasonal_Risk_Factor"] =
                 CalculateSeasonalRiskFactor(projectStartMonth)
         };
@@ -779,13 +868,41 @@ public class MlService : IMlService
     }
 
     private static string BuildRiskExplanation(
-        RiskPredictionResponse prediction)
+    RiskPredictionResponse prediction,
+    decimal adjustedRiskScore,
+    AiProjectInput request)
+{
+    var progress = Math.Clamp(
+        request.Project.Progress,
+        0,
+        100);
+
+    var deadlineText = "no deadline";
+
+    if (request.Project.EndDate.HasValue)
     {
-        return
-            $"Risk level: {prediction.RiskLevel}. " +
-            $"Risk score: {prediction.RiskScore:0.00}/100. " +
-            $"Model confidence: {prediction.Confidence:P0}.";
+        var remainingDays =
+            (request.Project.EndDate.Value -
+             DateTimeOffset.UtcNow).TotalDays;
+
+        if (remainingDays <= 0)
+        {
+            deadlineText = "deadline is today or passed";
+        }
+        else
+        {
+            deadlineText =
+                $"{Math.Ceiling(remainingDays)} day(s) remaining";
+        }
     }
+
+    return
+        $"Risk level: {prediction.RiskLevel}. " +
+        $"Risk score: {adjustedRiskScore:0.00}/100. " +
+        $"Project progress: {progress}%. " +
+        $"Schedule: {deadlineText}. " +
+        $"Model confidence: {prediction.Confidence:P0}.";
+}
 
     // ============================================================
     // BOTTLENECK

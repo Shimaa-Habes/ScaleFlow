@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../widgets/scaleflow_bottom_nav.dart';
 
@@ -46,14 +49,16 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
 
   final List<ChatMessage> _chatMessages = [];
 
+  bool _isSending = false;
+
   // ---------------------------------------------------------------
   // SEND CHAT MESSAGE
   // ---------------------------------------------------------------
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     final String message = _chatController.text.trim();
 
-    if (message.isEmpty) return;
+    if (message.isEmpty || _isSending) return;
 
     setState(() {
       _chatMessages.add(
@@ -64,16 +69,96 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
       );
 
       _chatController.clear();
+      _isSending = true;
 
       _chatMessages.add(
         ChatMessage(
-          text:
-              'AI chat is not connected yet. Project Risk Analysis is currently available for this project.',
+          text: 'Thinking...',
           isUser: false,
         ),
       );
     });
 
+    _scrollToBottom();
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:5233/api/ai-chat'),
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'message': message,
+        }),
+      );
+
+      if (!mounted) return;
+
+      String reply;
+
+      if (response.statusCode == 200) {
+        final dynamic data = jsonDecode(response.body);
+
+        reply = data['reply']?.toString() ??
+            'I received your message, but no response was returned.';
+      } else {
+        try {
+          final dynamic errorData = jsonDecode(response.body);
+
+          reply = errorData['message']?.toString() ??
+              'AI service returned an error.';
+        } catch (_) {
+          reply = 'AI service returned an error.';
+        }
+      }
+
+      setState(() {
+        if (_chatMessages.isNotEmpty &&
+            _chatMessages.last.text == 'Thinking...') {
+          _chatMessages.removeLast();
+        }
+
+        _chatMessages.add(
+          ChatMessage(
+            text: reply,
+            isUser: false,
+          ),
+        );
+
+        _isSending = false;
+      });
+
+      _scrollToBottom();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        if (_chatMessages.isNotEmpty &&
+            _chatMessages.last.text == 'Thinking...') {
+          _chatMessages.removeLast();
+        }
+
+        _chatMessages.add(
+          ChatMessage(
+            text:
+                'Could not connect to ScaleFlow AI. Please make sure the backend is running.',
+            isUser: false,
+          ),
+        );
+
+        _isSending = false;
+      });
+
+      _scrollToBottom();
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // SCROLL CHAT TO BOTTOM
+  // ---------------------------------------------------------------
+
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_chatScrollController.hasClients) return;
 
@@ -533,8 +618,8 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       Text(
                         'View Analysis',
                         style: TextStyle(
@@ -855,6 +940,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                 Expanded(
                   child: TextField(
                     controller: _chatController,
+                    enabled: !_isSending,
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => _sendMessage(),
                     decoration: const InputDecoration(
@@ -869,12 +955,20 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: _sendMessage,
-                  icon: const Icon(
-                    Icons.arrow_forward,
-                    size: 16,
-                    color: Colors.white,
-                  ),
+                  onPressed: _isSending ? null : _sendMessage,
+                  icon: _isSending
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.arrow_forward,
+                          size: 16,
+                          color: Colors.white,
+                        ),
                   style: IconButton.styleFrom(
                     backgroundColor: const Color(0xFF6C5CE7),
                     minimumSize: const Size(32, 32),
@@ -897,7 +991,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
             runSpacing: 6,
             children: suggestedPrompts.map((prompt) {
               return GestureDetector(
-                onTap: () => _useSuggestedPrompt(prompt),
+                onTap: _isSending ? null : () => _useSuggestedPrompt(prompt),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
