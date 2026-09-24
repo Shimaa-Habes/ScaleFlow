@@ -53,7 +53,20 @@ public class Program
         builder.Services.AddScoped<IProjectProgressService, ProjectProgressService>();
         builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
         builder.Services.AddScoped<ITeamService, TeamService>();
-        builder.Services.AddScoped<IMlService, UnavailableMlService>();
+        builder.Services.AddHttpClient<IMlService, MlService>(client =>
+{
+    var mlBaseUrl =
+        builder.Configuration["MlService:BaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(mlBaseUrl))
+    {
+        throw new InvalidOperationException(
+            "MlService:BaseUrl is not configured.");
+    }
+
+    client.BaseAddress = new Uri(mlBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
         builder.Services.AddScoped<IProjectAiService, ProjectAiService>();
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<IWorkloadService, WorkloadService>();

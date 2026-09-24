@@ -1,0 +1,150 @@
+{
+  "dataset": {
+    "rows_raw": 1193,
+    "rows_clean": 1192,
+    "train": 953,
+    "test": 239
+  },
+  "classes": [
+    "Fast (<=30d)",
+    "Medium (31-365d)",
+    "Slow (>365d)"
+  ],
+  "duration_cuts_days": [
+    30,
+    365
+  ],
+  "ablation_cv": {
+    "text only": {
+      "accuracy": 0.6873,
+      "macro_f1": 0.5624
+    },
+    "text + labels": {
+      "accuracy": 0.8111,
+      "macro_f1": 0.7145
+    },
+    "text + labels + priority": {
+      "accuracy": 0.8447,
+      "macro_f1": 0.7923
+    },
+    "everything except creation time": {
+      "accuracy": 0.8405,
+      "macro_f1": 0.7858
+    },
+    "everything (incl. creation time)": {
+      "accuracy": 0.8751,
+      "macro_f1": 0.8225
+    }
+  },
+  "model_comparison_cv": {
+    "Logistic Regression": {
+      "accuracy": 0.8751,
+      "accuracy_std": 0.0059,
+      "macro_f1": 0.8225,
+      "balanced_accuracy": 0.8179
+    },
+    "Linear SVM (calibrated)": {
+      "accuracy": 0.8699,
+      "accuracy_std": 0.0113,
+      "macro_f1": 0.8145,
+      "balanced_accuracy": 0.8111
+    },
+    "Hist Gradient Boosting": {
+      "accuracy": 0.8426,
+      "accuracy_std": 0.0192,
+      "macro_f1": 0.7692,
+      "balanced_accuracy": 0.7539
+    },
+    "Extra Trees": {
+      "accuracy": 0.8321,
+      "accuracy_std": 0.0146,
+      "macro_f1": 0.7262,
+      "balanced_accuracy": 0.715
+    },
+    "Random Forest": {
+      "accuracy": 0.8258,
+      "accuracy_std": 0.0116,
+      "macro_f1": 0.7063,
+      "balanced_accuracy": 0.6989
+    },
+    "MLP (64, 32)": {
+      "accuracy": 0.788,
+      "accuracy_std": 0.0119,
+      "macro_f1": 0.637,
+      "balanced_accuracy": 0.6442
+    },
+    "Majority-class baseline": {
+      "accuracy": 0.574,
+      "accuracy_std": 0.0019,
+      "macro_f1": 0.2431,
+      "balanced_accuracy": 0.3333
+    }
+  },
+  "tuned_models": {
+    "Hist Gradient Boosting": {
+      "params": {
+        "model__min_samples_leaf": 3,
+        "model__max_leaf_nodes": 31,
+        "model__max_iter": 150,
+        "model__learning_rate": 0.03,
+        "model__l2_regularization": 0.0,
+        "model__class_weight": "balanced"
+      },
+      "cv": 0.8971507302287132
+    },
+    "Random Forest": {
+      "params": {
+        "model__n_estimators": 600,
+        "model__min_samples_leaf": 3,
+        "model__max_features": 0.5,
+        "model__max_depth": 12,
+        "model__class_weight": "balanced_subsample"
+      },
+      "cv": 0.8551887572333976
+    },
+    "Logistic Regression": {
+      "params": {
+        "model__class_weight": "balanced",
+        "model__C": 10
+      },
+      "cv": 0.8782860292091484
+    }
+  },
+  "final_comparison_cv": {
+    "Hist Gradient Boosting (tuned)": {
+      "accuracy": 0.8972,
+      "accuracy_std": 0.0162,
+      "macro_f1": 0.8585,
+      "balanced_accuracy": 0.8636
+    },
+    "Soft-voting ensemble (tuned)": {
+      "accuracy": 0.894,
+      "accuracy_std": 0.0118,
+      "macro_f1": 0.851,
+      "balanced_accuracy": 0.8513
+    },
+    "Logistic Regression (tuned)": {
+      "accuracy": 0.8783,
+      "accuracy_std": 0.0129,
+      "macro_f1": 0.8331,
+      "balanced_accuracy": 0.8385
+    },
+    "Random Forest (tuned)": {
+      "accuracy": 0.8552,
+      "accuracy_std": 0.0079,
+      "macro_f1": 0.7884,
+      "balanced_accuracy": 0.7688
+    }
+  },
+  "selected_model": "Hist Gradient Boosting (tuned)",
+  "test_metrics_random_split": {
+    "accuracy": 0.8702928870292888,
+    "balanced_accuracy": 0.8275939453748752,
+    "macro_f1": 0.8175626015184588,
+    "weighted_f1": 0.8729888239783744,
+    "roc_auc_ovr_macro": 0.9588030708813231,
+    "within_one_class_accuracy": 0.99581589958159,
+    "majority_baseline_accuracy": 0.5732217573221757,
+    "train_accuracy": 1.0
+  }
+}

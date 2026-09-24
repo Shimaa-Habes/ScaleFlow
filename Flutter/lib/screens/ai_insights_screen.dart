@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/scaleflow_bottom_nav.dart';
+
 import 'profile_screen.dart';
 import 'projects_screen.dart';
 import 'dashboard_screen.dart';
 import 'home_screen.dart';
-
 import 'risk_analysis_screen.dart';
 import 'recommendations_screen.dart';
 import 'trends_screen.dart';
@@ -22,14 +22,19 @@ class ChatMessage {
 }
 
 final List<String> suggestedPrompts = [
-  "Project risks",
-  "My workload",
-  "Upcoming deadlines",
-  "Project summary",
+  'Project risks',
+  'My workload',
+  'Upcoming deadlines',
+  'Project summary',
 ];
 
 class AiInsightsPage extends StatefulWidget {
-  const AiInsightsPage({super.key});
+  final int projectId;
+
+  const AiInsightsPage({
+    super.key,
+    required this.projectId,
+  });
 
   @override
   State<AiInsightsPage> createState() => _AiInsightsPageState();
@@ -38,18 +43,32 @@ class AiInsightsPage extends StatefulWidget {
 class _AiInsightsPageState extends State<AiInsightsPage> {
   final TextEditingController _chatController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
+
   final List<ChatMessage> _chatMessages = [];
+
+  // ---------------------------------------------------------------
+  // SEND CHAT MESSAGE
+  // ---------------------------------------------------------------
 
   void _sendMessage() {
     final String message = _chatController.text.trim();
+
     if (message.isEmpty) return;
 
     setState(() {
-      _chatMessages.add(ChatMessage(text: message, isUser: true));
-      _chatController.clear();
       _chatMessages.add(
         ChatMessage(
-          text: "AI response will be connected to the ScaleFlow backend soon.",
+          text: message,
+          isUser: true,
+        ),
+      );
+
+      _chatController.clear();
+
+      _chatMessages.add(
+        ChatMessage(
+          text:
+              'AI chat is not connected yet. Project Risk Analysis is currently available for this project.',
           isUser: false,
         ),
       );
@@ -57,6 +76,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_chatScrollController.hasClients) return;
+
       _chatScrollController.animateTo(
         _chatScrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
@@ -65,14 +85,88 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     });
   }
 
+  // ---------------------------------------------------------------
+  // SUGGESTED PROMPT
+  // ---------------------------------------------------------------
+
   void _useSuggestedPrompt(String prompt) {
     setState(() {
       _chatController.text = prompt;
     });
+
     _chatController.selection = TextSelection.fromPosition(
-      TextPosition(offset: _chatController.text.length),
+      TextPosition(
+        offset: _chatController.text.length,
+      ),
     );
   }
+
+  // ---------------------------------------------------------------
+  // OPEN RISK ANALYSIS
+  // ---------------------------------------------------------------
+
+  void _openRiskAnalysis() {
+    if (widget.projectId <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid project ID.'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RiskAnalysisScreen(
+          projectId: widget.projectId,
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // OPEN RECOMMENDATIONS
+  // ---------------------------------------------------------------
+
+  void _openRecommendations() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const RecommendationsScreen(),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // OPEN TRENDS
+  // ---------------------------------------------------------------
+
+  void _openTrends() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const TrendsScreen(),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // OPEN AI REPORT
+  // ---------------------------------------------------------------
+
+  void _openAiReport() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AiReportScreen(),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // DISPOSE
+  // ---------------------------------------------------------------
 
   @override
   void dispose() {
@@ -81,195 +175,158 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     super.dispose();
   }
 
+  // ---------------------------------------------------------------
+  // BUILD
+  // ---------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F6FB),
-      body: Stack(
-        children: [
-          // ====================================================
-          // ====================================================
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF6C5CE7).withOpacity(0.08),
-              ),
-            ),
-          ),
+      backgroundColor: const Color(0xFFF7F8FA),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildTopBar(context),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildProjectContext(),
 
-          // ====================================================
-          // ====================================================
-          Positioned(
-            bottom: -120,
-            left: -120,
-            child: Container(
-              width: 320,
-              height: 320,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF6C5CE7).withOpacity(0.06),
-              ),
-            ),
-          ),
+                    const SizedBox(height: 16),
 
-          // ====================================================
-          // ====================================================
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.10, 
-              child: Image.asset(
-                'assets/images/Proj-Image.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+                    const Text(
+                      'Smarter insights. Better decisions.',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Color(0xFF666A70),
+                      ),
+                    ),
 
-          // ====================================================
-          //          // ====================================================
-          SafeArea(
-            child: Column(
-              children: [
-                _buildTopBar(context),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 14),
+
+                    _buildMainRiskBanner(context),
+
+                    const SizedBox(height: 16),
+
+                    // ------------------------------------------------
+                    // AI FEATURE CARDS
+                    // ------------------------------------------------
+
+                    Row(
                       children: [
-                        const SizedBox(height: 4),
-                        const Text(
-                          "Smarter insights. Better decisions.",
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: Color(0xFF666A70),
+                        Expanded(
+                          child: _buildSmallGridCard(
+                            icon: Icons.error_outline,
+                            iconColor: const Color(0xFFE36B57),
+                            iconBg: const Color(0xFFFFECE8),
+                            title: 'Risk Prediction',
+                            subtitle: 'Analyze project risk',
+                            onTap: _openRiskAnalysis,
                           ),
                         ),
-                        const SizedBox(height: 14),
-                        _buildMainRiskBanner(context),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildSmallGridCard(
-                                icon: Icons.error_outline,
-                                iconColor: const Color(0xFFE53935),
-                                iconBg: const Color(0xFFFFEBEE),
-                                title: "Risk Prediction",
-                                subtitle: "3 projects at risk",
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const RiskAnalysisScreen()),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _buildSmallGridCard(
-                                icon: Icons.auto_awesome,
-                                iconColor: const Color(0xFF6C5CE7),
-                                iconBg: const Color(0xFFEFE9FE),
-                                title: "Recommendations",
-                                subtitle: "5 new suggestions",
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const RecommendationsScreen()),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildSmallGridCard(
-                                icon: Icons.trending_up,
-                                iconColor: const Color(0xFF2E7D32),
-                                iconBg: const Color(0xFFE8F8EE),
-                                title: "Trends",
-                                subtitle: "Positive momentum",
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const TrendsScreen()),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _buildSmallGridCard(
-                                icon: Icons.description_outlined,
-                                iconColor: const Color(0xFF3F82B8),
-                                iconBg: const Color(0xFFE3F2FD),
-                                title: "AI Report",
-                                subtitle: "Generate report",
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const AiReportScreen()),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Recent Insights",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Color(0xFF2C2D30),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildSmallGridCard(
+                            icon: Icons.auto_awesome,
+                            iconColor: const Color(0xFF6C5CE7),
+                            iconBg: const Color(0xFFF0EDFF),
+                            title: 'Recommendations',
+                            subtitle: 'AI recommendations',
+                            onTap: _openRecommendations,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        _buildRecentInsightCard(context),
-                        const SizedBox(height: 20),
-                        _buildAskAiCard(),
-                        const SizedBox(height: 24),
                       ],
                     ),
-                  ),
+
+                    const SizedBox(height: 10),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildSmallGridCard(
+                            icon: Icons.trending_up,
+                            iconColor: const Color(0xFF5B9B68),
+                            iconBg: const Color(0xFFEAF7ED),
+                            title: 'Trends',
+                            subtitle: 'Project trends',
+                            onTap: _openTrends,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildSmallGridCard(
+                            icon: Icons.description_outlined,
+                            iconColor: const Color(0xFF5B8FB8),
+                            iconBg: const Color(0xFFEAF4FB),
+                            title: 'AI Report',
+                            subtitle: 'Generate report',
+                            onTap: _openAiReport,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    const Text(
+                      'Recent Insights',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF2C2D30),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    _buildRecentInsightCard(context),
+
+                    const SizedBox(height: 20),
+
+                    _buildAskAiCard(),
+
+                    const SizedBox(height: 8),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+
+      // -------------------------------------------------------------
+      // BOTTOM NAVIGATION
+      // -------------------------------------------------------------
+
       bottomNavigationBar: ScaleFlowBottomNav(
         currentIndex: 3,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomePage()),
+              MaterialPageRoute(
+                builder: (_) => const HomePage(),
+              ),
             );
           } else if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ProjectsScreen()),
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => const ProjectsScreen(),
+              ),
             );
           } else if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const DashboardPage()),
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => const DashboardPage(),
+              ),
             );
           } else if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => const ProfileScreen(),
+              ),
             );
           }
         },
@@ -277,24 +334,37 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     );
   }
 
+  // ================================================================
+  // TOP BAR
+  // ================================================================
+
   Widget _buildTopBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
             tooltip: 'Back',
             padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            constraints: const BoxConstraints(
+              minWidth: 40,
+              minHeight: 40,
+            ),
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back,
-                size: 22, color: Color(0xFF2C2D30)),
+            icon: const Icon(
+              Icons.arrow_back,
+              size: 22,
+              color: Color(0xFF2C2D30),
+            ),
           ),
           const SizedBox(width: 4),
           const Expanded(
             child: Text(
-              "AI Insights",
+              'AI Insights',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -305,7 +375,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFEFE9FE),
+              color: const Color(0xFFF0EDFF),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
@@ -319,26 +389,103 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     );
   }
 
+  // ================================================================
+  // PROJECT CONTEXT
+  // ================================================================
+
+  Widget _buildProjectContext() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0EDFF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.folder_open_outlined,
+              size: 19,
+              color: Color(0xFF6C5CE7),
+            ),
+          ),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Selected Project',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: Color(0xFF858990),
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'AI analysis is scoped to this project',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2C2D30),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 9,
+              vertical: 5,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF6F7FB),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '#${widget.projectId}',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF6C5CE7),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================================================================
+  // MAIN RISK BANNER
+  // ================================================================
+
   Widget _buildMainRiskBanner(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const RiskAnalysisScreen()),
-        );
-      },
+      onTap: _openRiskAnalysis,
       child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white
-              .withOpacity(0.92), 
-          gradient: const LinearGradient(
-            colors: [Color(0xFFFFEEF2), Color(0xFFF3E8FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEAD5E8), width: 1),
+          border: Border.all(
+            color: const Color(0xFFE6E1F7),
+            width: 1,
+          ),
           boxShadow: const [
             BoxShadow(
               color: Color(0x0A000000),
@@ -351,16 +498,16 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 42,
+              height: 42,
               decoration: const BoxDecoration(
-                color: Color(0xFFFFD6E0),
+                color: Color(0xFFFFECE8),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.location_pin,
-                color: Color(0xFFE53935),
-                size: 20,
+                Icons.analytics_outlined,
+                color: Color(0xFFE36B57),
+                size: 21,
               ),
             ),
             const SizedBox(width: 12),
@@ -369,7 +516,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Project Risk Alert",
+                    'Project Risk Analysis',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14.5,
@@ -378,7 +525,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    "The Midtown Tower project is at high risk of delay due to dependency issues and resource constraints.",
+                    'View the latest AI-powered risk analysis for this project.',
                     style: TextStyle(
                       fontSize: 11.5,
                       color: Color(0xFF50545A),
@@ -389,7 +536,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                   Row(
                     children: const [
                       Text(
-                        "View Details",
+                        'View Analysis',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -397,19 +544,30 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(Icons.arrow_forward,
-                          size: 14, color: Color(0xFF6C5CE7)),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 14,
+                        color: Color(0xFF6C5CE7),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFF6C5CE7), size: 22),
+            const Icon(
+              Icons.chevron_right,
+              color: Color(0xFF6C5CE7),
+              size: 22,
+            ),
           ],
         ),
       ),
     );
   }
+
+  // ================================================================
+  // SMALL GRID CARD
+  // ================================================================
 
   Widget _buildSmallGridCard({
     required IconData icon,
@@ -422,10 +580,16 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        constraints: const BoxConstraints(
+          minHeight: 126,
+        ),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.92),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFE7E8EC),
+          ),
           boxShadow: const [
             BoxShadow(
               color: Color(0x08000000),
@@ -443,7 +607,11 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                 color: iconBg,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: iconColor),
+              child: Icon(
+                icon,
+                size: 18,
+                color: iconColor,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -468,19 +636,21 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     );
   }
 
+  // ================================================================
+  // RECENT INSIGHT
+  // ================================================================
+
   Widget _buildRecentInsightCard(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const RecommendationsScreen()),
-        );
-      },
+      onTap: _openRecommendations,
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.92),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFE7E8EC),
+          ),
           boxShadow: const [
             BoxShadow(
               color: Color(0x08000000),
@@ -496,7 +666,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFFEFE9FE),
+                color: const Color(0xFFF0EDFF),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
@@ -513,16 +683,19 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text(
-                        "Resource Allocation",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                          color: Color(0xFF2C2D30),
+                      Expanded(
+                        child: Text(
+                          'Resource Allocation',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Color(0xFF2C2D30),
+                          ),
                         ),
                       ),
+                      SizedBox(width: 8),
                       Text(
-                        "2h ago",
+                        'AI Insight',
                         style: TextStyle(
                           fontSize: 10,
                           color: Color(0xFF858990),
@@ -532,11 +705,30 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                   ),
                   const SizedBox(height: 3),
                   const Text(
-                    "Consider reallocating 2 developers from Riverside Residence.",
+                    'View AI-generated recommendations for project resources.',
                     style: TextStyle(
                       fontSize: 11.5,
                       color: Color(0xFF666A70),
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Row(
+                    children: [
+                      Text(
+                        'View recommendations',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6C5CE7),
+                        ),
+                      ),
+                      SizedBox(width: 3),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 12,
+                        color: Color(0xFF6C5CE7),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -547,12 +739,19 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     );
   }
 
+  // ================================================================
+  // ASK AI
+  // ================================================================
+
   Widget _buildAskAiCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFE7E8EC),
+        ),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0A000000),
@@ -569,7 +768,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFE9FE),
+                  color: const Color(0xFFF0EDFF),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
@@ -584,7 +783,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Ask ScaleFlow AI",
+                      'Ask ScaleFlow AI',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -592,7 +791,7 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                       ),
                     ),
                     Text(
-                      "Get instant insights about your projects.",
+                      'Ask about this project.',
                       style: TextStyle(
                         fontSize: 11,
                         color: Color(0xFF858990),
@@ -603,32 +802,55 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
               ),
             ],
           ),
+
           const SizedBox(height: 12),
+
+          // ----------------------------------------------------------
+          // CHAT MESSAGES
+          // ----------------------------------------------------------
+
           if (_chatMessages.isNotEmpty) ...[
             SizedBox(
               height: 180,
               child: ListView.builder(
                 controller: _chatScrollController,
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                ),
                 itemCount: _chatMessages.length,
                 itemBuilder: (context, index) {
-                  return _buildChatMessage(_chatMessages[index]);
+                  return _buildChatMessage(
+                    _chatMessages[index],
+                  );
                 },
               ),
             ),
             const SizedBox(height: 8),
           ],
+
+          // ----------------------------------------------------------
+          // CHAT INPUT
+          // ----------------------------------------------------------
+
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 5,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xFFF6F7FB),
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: const Color(0xFFE5E7EB),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.auto_awesome,
-                    size: 14, color: Color(0xFF858990)),
+                const Icon(
+                  Icons.auto_awesome,
+                  size: 14,
+                  color: Color(0xFF858990),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
@@ -636,9 +858,11 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => _sendMessage(),
                     decoration: const InputDecoration(
-                      hintText: "Ask anything...",
-                      hintStyle:
-                          TextStyle(fontSize: 12, color: Color(0xFF858990)),
+                      hintText: 'Ask anything...',
+                      hintStyle: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF858990),
+                      ),
                       border: InputBorder.none,
                       isDense: true,
                     ),
@@ -646,8 +870,11 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
                 ),
                 IconButton(
                   onPressed: _sendMessage,
-                  icon: const Icon(Icons.arrow_forward,
-                      size: 16, color: Colors.white),
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    size: 16,
+                    color: Colors.white,
+                  ),
                   style: IconButton.styleFrom(
                     backgroundColor: const Color(0xFF6C5CE7),
                     minimumSize: const Size(32, 32),
@@ -658,7 +885,13 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
               ],
             ),
           ),
+
           const SizedBox(height: 10),
+
+          // ----------------------------------------------------------
+          // SUGGESTED PROMPTS
+          // ----------------------------------------------------------
+
           Wrap(
             spacing: 6,
             runSpacing: 6,
@@ -666,17 +899,23 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
               return GestureDetector(
                 onTap: () => _useSuggestedPrompt(prompt),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF6F7FB),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                    border: Border.all(
+                      color: const Color(0xFFE5E7EB),
+                    ),
                   ),
                   child: Text(
                     prompt,
-                    style:
-                        const TextStyle(fontSize: 11, color: Color(0xFF2C2D30)),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF2C2D30),
+                    ),
                   ),
                 ),
               );
@@ -687,13 +926,24 @@ class _AiInsightsPageState extends State<AiInsightsPage> {
     );
   }
 
+  // ================================================================
+  // CHAT MESSAGE
+  // ================================================================
+
   Widget _buildChatMessage(ChatMessage message) {
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 280),
-        margin: const EdgeInsets.only(bottom: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        constraints: const BoxConstraints(
+          maxWidth: 280,
+        ),
+        margin: const EdgeInsets.only(
+          bottom: 6,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
         decoration: BoxDecoration(
           color: message.isUser
               ? const Color(0xFF6C5CE7)

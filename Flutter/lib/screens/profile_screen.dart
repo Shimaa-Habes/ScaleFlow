@@ -679,7 +679,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else if (index == 3) {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => const AiInsightsPage(),
+                builder: (_) => const ProjectsScreen(),
               ),
             );
           }

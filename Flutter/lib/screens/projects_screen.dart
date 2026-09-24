@@ -1,5 +1,5 @@
 // ============================================================
-// PROJECTS SCREEN - BACKEND INTEGRATED
+// PROJECTS SCREEN - FULL BACKEND + AI INTEGRATION
 // ============================================================
 
 import 'dart:convert';
@@ -11,12 +11,12 @@ import 'package:image_picker/image_picker.dart';
 
 import '../core/app_colors.dart';
 import '../widgets/scaleflow_bottom_nav.dart';
+import '../services/auth_service.dart';
+import '../models/project.dart';
+
 import 'profile_screen.dart';
 import 'ai_insights_screen.dart';
 import 'dashboard_screen.dart';
-import '../services/auth_service.dart';
-
-import '../models/project.dart';
 import 'project_details_screen.dart';
 
 class ProjectsScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
   final TextEditingController _searchController = TextEditingController();
 
-  List<Map<String, dynamic>> _projects = [];
+  final List<Map<String, dynamic>> _projects = [];
 
   final Map<int, List<Map<String, dynamic>>> _projectTasks = {};
 
@@ -42,6 +42,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   bool _isCreating = false;
 
   String? _errorMessage;
+
+  // ============================================================
+  // INIT
+  // ============================================================
 
   @override
   void initState() {
@@ -114,7 +118,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       if (!mounted) return;
 
       setState(() {
-        _projects = projects;
+        _projects
+          ..clear()
+          ..addAll(projects);
+
         _isLoading = false;
         _projectTasks.clear();
       });
@@ -140,7 +147,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     for (final project in projects) {
       final projectId = _toInt(project['id']);
 
-      if (projectId == null) continue;
+      if (projectId == null || projectId <= 0) {
+        continue;
+      }
 
       try {
         final response = await http.get(
@@ -176,7 +185,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           _projectTasks[projectId] = tasks;
         });
       } catch (_) {
-        // Task loading failure should not prevent
+        // Task loading failure must not prevent
         // projects from being displayed.
       }
     }
@@ -214,39 +223,28 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       // Completed = 4
       // Cancelled = 5
       // Archived = 6
-      //
-      // "On Track" and "At Risk" are UI/risk states.
-      // Both are initially created as Active.
 
       const backendStatus = 2;
 
       final body = {
-        'name': name,
+        'name': name.trim(),
         'description': description == null || description.trim().isEmpty
             ? null
             : description.trim(),
-
         'workspaceUrl': workspaceUrl == null || workspaceUrl.trim().isEmpty
             ? null
             : workspaceUrl.trim(),
-
         'progress': progress.clamp(0, 100),
-
-        // At Risk is a separate project risk state.
         'isAtRisk': statusLabel == 'At Risk',
-
-        // ProjectStatus.Active
         'status': backendStatus,
-
         'priority': 2,
         'budget': null,
-
         'startDate': startDate?.toUtc().toIso8601String(),
-
         'endDate': endDate?.toUtc().toIso8601String(),
 
-        // Member names are currently UI input only.
-        // The backend expects user IDs.
+        // Current create-project endpoint accepts user IDs.
+        // The UI currently stores member names only, therefore
+        // we do not invent user IDs.
         'memberUserIds': <int>[],
       };
 
@@ -262,8 +260,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         try {
           final decoded = jsonDecode(response.body);
 
-          if (decoded is Map<String, dynamic> && decoded['message'] != null) {
-            message = decoded['message'].toString();
+          if (decoded is Map<String, dynamic>) {
+            if (decoded['message'] != null) {
+              message = decoded['message'].toString();
+            }
+
+            if (decoded['errors'] != null) {
+              message = decoded['errors'].toString();
+            }
           }
         } catch (_) {}
 
@@ -284,10 +288,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         }
       } catch (_) {}
 
-      // ========================================================
-      // UPLOAD PROJECT IMAGE
-      // ========================================================
-
       if (image != null && createdProjectId != null) {
         await _uploadProjectImage(
           createdProjectId,
@@ -297,7 +297,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
       if (!mounted) return;
 
-      // Close Add Project dialog.
       Navigator.of(context).pop();
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -343,25 +342,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   ) async {
     final token = AuthService.accessToken;
 
-    // ----------------------------------------------------------
-    // Read bytes
-    // ----------------------------------------------------------
-
     final bytes = await image.readAsBytes();
-
-    // ----------------------------------------------------------
-    // Reject WEBP before sending
-    // ----------------------------------------------------------
 
     if (image.name.toLowerCase().endsWith('.webp')) {
       throw Exception(
         'WEBP images are not supported.',
       );
     }
-
-    // ----------------------------------------------------------
-    // Maximum 5 MB
-    // ----------------------------------------------------------
 
     const maxSize = 5 * 1024 * 1024;
 
@@ -370,10 +357,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         'Project image must be 5 MB or smaller.',
       );
     }
-
-    // ----------------------------------------------------------
-    // Multipart request
-    // ----------------------------------------------------------
 
     final request = http.MultipartRequest(
       'POST',
@@ -396,19 +379,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       ),
     );
 
-    // ----------------------------------------------------------
-    // Send
-    // ----------------------------------------------------------
-
     final streamedResponse = await request.send();
 
     final response = await http.Response.fromStream(
       streamedResponse,
     );
-
-    // ----------------------------------------------------------
-    // Handle errors
-    // ----------------------------------------------------------
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       String message = 'Project image upload failed.';
@@ -492,7 +467,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     Map<String, dynamic> project,
   ) {
     final status = _toInt(project['status']);
-
     final projectId = _toInt(project['id']);
 
     if (projectId != null) {
@@ -512,25 +486,15 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       }
     }
 
-    // Backend ProjectStatus:
-    // Completed = 4
     return status == 4;
   }
 
   bool _isAtRisk(
     Map<String, dynamic> project,
   ) {
-    // ----------------------------------------------------------
-    // 1. Explicit risk state saved by backend.
-    // ----------------------------------------------------------
-
     if (project['isAtRisk'] == true) {
       return true;
     }
-
-    // ----------------------------------------------------------
-    // 2. Automatic risk detection from tasks.
-    // ----------------------------------------------------------
 
     final projectId = _toInt(project['id']);
 
@@ -542,35 +506,28 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       for (final task in tasks) {
         final status = _toInt(task['status']);
 
-        // Done
+        // Completed.
         if (status == 5) {
           continue;
         }
 
-        // Cancelled
+        // Cancelled/archived.
         if (status == 7) {
           continue;
         }
 
-        // Blocked
+        // Blocked.
         if (status == 6) {
           return true;
         }
 
-        // Overdue
-        final plannedEnd = _parseDate(
-          task['plannedEnd'],
-        );
+        final plannedEnd = _parseDate(task['plannedEnd']);
 
         if (plannedEnd != null && plannedEnd.isBefore(now)) {
           return true;
         }
       }
     }
-
-    // ----------------------------------------------------------
-    // 3. Project itself is overdue.
-    // ----------------------------------------------------------
 
     final endDate = _parseDate(project['endDate']);
 
@@ -654,19 +611,62 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   }
 
   // ============================================================
+  // OPEN AI INSIGHTS
+  // ============================================================
+
+  void _openAiInsights(
+    BuildContext sheetContext,
+    int projectId,
+  ) {
+    if (projectId <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Unable to open AI Insights because the project ID is missing.',
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    Navigator.of(sheetContext).pop();
+    print('OPENING AI FOR PROJECT ID: $projectId');
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AiInsightsPage(
+          projectId: projectId,
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
   // PROJECT DETAILS
   // ============================================================
 
   void _openProject(
     Map<String, dynamic> project,
   ) {
+    final projectId = _toInt(project['id']);
+
+    if (projectId == null || projectId <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Unable to open this project because its ID is missing.',
+          ),
+        ),
+      );
+
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        final projectId = _toInt(project['id']) ?? 0;
-
         final tasks = _projectTasks[projectId] ?? [];
 
         final progress = _projectProgress(project);
@@ -680,6 +680,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         final screenHeight = MediaQuery.sizeOf(
           sheetContext,
         ).height;
+
+        final isAtRisk = _isAtRisk(project);
 
         return SafeArea(
           child: Container(
@@ -703,7 +705,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ------------------------------------------------
-                  // Drag handle
+                  // DRAG HANDLE
                   // ------------------------------------------------
 
                   Center(
@@ -726,7 +728,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
 
                   // ------------------------------------------------
-                  // Project image
+                  // PROJECT IMAGE
                   // ------------------------------------------------
 
                   if (imageUrl != null && imageUrl.trim().isNotEmpty)
@@ -766,7 +768,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     ),
 
                   // ------------------------------------------------
-                  // Project name
+                  // PROJECT NAME
                   // ------------------------------------------------
 
                   Text(
@@ -783,7 +785,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
 
                   // ------------------------------------------------
-                  // Description
+                  // DESCRIPTION
                   // ------------------------------------------------
 
                   Text(
@@ -801,7 +803,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
 
                   // ------------------------------------------------
-                  // Statistics
+                  // STATISTICS
                   // ------------------------------------------------
 
                   Row(
@@ -831,49 +833,204 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
 
                   const SizedBox(
-                    height: 18,
+                    height: 20,
                   ),
 
                   // ------------------------------------------------
-                  // AI Insights
+                  // PROJECT STATUS
                   // ------------------------------------------------
 
-                  const Text(
-                    'AI Insights',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.darkCharcoal,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 11,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isAtRisk
+                          ? const Color(
+                              0xFFE88973,
+                            ).withOpacity(0.08)
+                          : const Color(
+                              0xFF72B968,
+                            ).withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ),
+                      border: Border.all(
+                        color: isAtRisk
+                            ? const Color(
+                                0xFFE88973,
+                              ).withOpacity(0.18)
+                            : const Color(
+                                0xFF72B968,
+                              ).withOpacity(0.18),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isAtRisk
+                              ? Icons.warning_amber_rounded
+                              : Icons.check_circle_outline,
+                          size: 19,
+                          color: isAtRisk
+                              ? const Color(
+                                  0xFFE88973,
+                                )
+                              : const Color(
+                                  0xFF72B968,
+                                ),
+                        ),
+                        const SizedBox(
+                          width: 9,
+                        ),
+                        Expanded(
+                          child: Text(
+                            isAtRisk
+                                ? 'This project has an overdue or blocked task.'
+                                : 'This project is currently on track.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isAtRisk
+                                  ? const Color(
+                                      0xFFE88973,
+                                    )
+                                  : const Color(
+                                      0xFF72B968,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
                   const SizedBox(
-                    height: 6,
+                    height: 20,
                   ),
 
-                  const Text(
-                    'Not Ready Yet',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF6C5CE7),
+                  // ------------------------------------------------
+                  // AI INSIGHTS
+                  // ------------------------------------------------
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(
+                      15,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(
+                        0xFF6C5CE7,
+                      ).withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(
+                        15,
+                      ),
+                      border: Border.all(
+                        color: const Color(
+                          0xFF6C5CE7,
+                        ).withOpacity(0.13),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF6C5CE7,
+                                ).withOpacity(
+                                  0.10,
+                                ),
+                                borderRadius: BorderRadius.circular(
+                                  10,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.auto_awesome,
+                                color: Color(
+                                  0xFF6C5CE7,
+                                ),
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'AI Insights',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.darkCharcoal,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 3,
+                                  ),
+                                  Text(
+                                    'Analyze this project using the ScaleFlow Risk Model.',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 13,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              _openAiInsights(
+                                sheetContext,
+                                projectId,
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.auto_awesome,
+                              size: 17,
+                            ),
+                            label: const Text(
+                              'Open AI Insights',
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(
+                                0xFF6C5CE7,
+                              ),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  11,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
                   const SizedBox(
-                    height: 4,
-                  ),
-
-                  const Text(
-                    'AI/ML project analysis will be connected in a later stage.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-
-                  const SizedBox(
-                    height: 18,
+                    height: 16,
                   ),
 
                   // ------------------------------------------------
@@ -882,25 +1039,17 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: OutlinedButton.icon(
                       onPressed: () {
-                        // Close the bottom sheet.
                         Navigator.of(
                           sheetContext,
                         ).pop();
 
-                        // Convert the backend
-                        // project to the
-                        // Project model.
                         final projectModel = _toProjectModel(
                           project,
                         );
 
-                        // Open the real
-                        // Project Details screen.
-                        Navigator.of(
-                          context,
-                        ).push(
+                        Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => ProjectDetailsScreen(
                               project: projectModel,
@@ -908,12 +1057,22 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(
+                      icon: const Icon(
+                        Icons.open_in_new,
+                        size: 18,
+                      ),
+                      label: const Text(
+                        'Open Project Details',
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(
                           0xFF5D5FEF,
                         ),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
+                        side: const BorderSide(
+                          color: Color(
+                            0xFF5D5FEF,
+                          ),
+                        ),
                         padding: const EdgeInsets.symmetric(
                           vertical: 13,
                         ),
@@ -922,9 +1081,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                             12,
                           ),
                         ),
-                      ),
-                      child: const Text(
-                        'Open Project Details',
                       ),
                     ),
                   ),
@@ -994,8 +1150,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
       dueDate: dueDate,
 
-      // Temporary UI fallback values
-      // until the ML service is connected.
+      // The real AI risk analysis is available
+      // through AiInsightsPage.
+      //
+      // These two values are UI fallback values
+      // for the Project model only.
       healthPercent: isAtRisk ? 60 : 84,
 
       healthNote: isAtRisk
@@ -1012,14 +1171,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
       aiInsightTitle: 'AI Insights',
 
-      aiInsightBody:
-          'AI/ML project analysis will be connected in a later stage.',
+      aiInsightBody: 'AI risk analysis is available for this project.',
 
       team: const [],
 
-      // IMPORTANT:
-      // ProjectDetailsScreen loads the
-      // real tasks from the backend.
       tasks: const [],
 
       projectLink: project['workspaceUrl']?.toString() ?? '',
@@ -1350,9 +1505,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               ),
             );
           } else if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const AiInsightsPage(),
+            // AI Insights requires a specific projectId.
+            // We intentionally do not select a random project.
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Select a project first to open AI Insights.',
+                ),
               ),
             );
           } else if (index == 4) {
@@ -1392,7 +1551,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               const Icon(
                 Icons.cloud_off_outlined,
                 size: 42,
-                color: Color(0xFF858990),
+                color: Color(
+                  0xFF858990,
+                ),
               ),
               const SizedBox(
                 height: 12,
@@ -1459,13 +1620,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         itemBuilder: (context, index) {
           final project = filteredList[index];
 
+          final projectId = _toInt(
+                project['id'],
+              ) ??
+              0;
+
           return _ProjectCard(
             project: project,
-            tasks: _projectTasks[_toInt(
-                      project['id'],
-                    ) ??
-                    0] ??
-                const [],
+            tasks: _projectTasks[projectId] ?? const [],
             isAtRisk: _isAtRisk(project),
             progress: _projectProgress(
               project,
@@ -1582,7 +1744,9 @@ class _ProjectCard extends StatelessWidget {
     final hasImage = imageUrl != null && imageUrl!.trim().isNotEmpty;
 
     return Material(
-      color: Colors.white.withOpacity(0.94),
+      color: Colors.white.withOpacity(
+        0.94,
+      ),
       borderRadius: BorderRadius.circular(
         16,
       ),
@@ -1811,7 +1975,9 @@ class _ProjectCard extends StatelessWidget {
                     const Icon(
                       Icons.warning_amber_rounded,
                       size: 15,
-                      color: Color(0xFFE88973),
+                      color: Color(
+                        0xFFE88973,
+                      ),
                     ),
                     const SizedBox(
                       width: 5,
@@ -1877,7 +2043,9 @@ class _EmptyProjectsState extends StatelessWidget {
               ),
               child: const Icon(
                 Icons.folder_open_outlined,
-                color: Color(0xFF6C5CE7),
+                color: Color(
+                  0xFF6C5CE7,
+                ),
                 size: 30,
               ),
             ),
@@ -2030,7 +2198,6 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
   DateTime? _endDate;
 
   XFile? _selectedImage;
-
   Uint8List? _selectedImageBytes;
 
   final List<String> _members = [];
@@ -2041,12 +2208,17 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
 
   bool _isSubmitting = false;
 
+  // ============================================================
+  // DISPOSE
+  // ============================================================
+
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
     _workspaceLinkController.dispose();
     _memberController.dispose();
+
     super.dispose();
   }
 
@@ -2081,15 +2253,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
 
       if (image == null) return;
 
-      // --------------------------------------------------------
-      // WEBP is not supported
-      // --------------------------------------------------------
-
       final fileName = image.name.toLowerCase();
 
-      if (fileName.endsWith(
-        '.webp',
-      )) {
+      if (fileName.endsWith('.webp')) {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2103,15 +2269,7 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
         return;
       }
 
-      // --------------------------------------------------------
-      // Read image bytes once
-      // --------------------------------------------------------
-
       final bytes = await image.readAsBytes();
-
-      // --------------------------------------------------------
-      // Maximum 5 MB
-      // --------------------------------------------------------
 
       const maxSize = 5 * 1024 * 1024;
 
@@ -2220,9 +2378,7 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
     final name = _nameController.text.trim();
 
     if (name.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
             'Please enter a project name.',
@@ -2238,9 +2394,7 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
         _endDate!.isBefore(
           _startDate!,
         )) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
             'Due date cannot be before start date.',
@@ -2422,11 +2576,6 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
             },
           ),
         ),
-
-        // --------------------------------------------------------
-        // Remove image
-        // --------------------------------------------------------
-
         Positioned(
           top: 8,
           right: 8,
@@ -2502,30 +2651,18 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                   color: AppColors.darkCharcoal,
                 ),
               ),
-
               const SizedBox(
                 height: 16,
               ),
-
               Expanded(
                 child: ListView(
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   children: [
-                    // ======================================================
-                    // PROJECT IMAGE
-                    // ======================================================
-
                     _buildImageSection(),
-
                     const SizedBox(
                       height: 16,
                     ),
-
-                    // ======================================================
-                    // PROJECT NAME
-                    // ======================================================
-
                     TextField(
                       controller: _nameController,
                       enabled: !_isSubmitting,
@@ -2537,15 +2674,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         ),
                       ),
                     ),
-
                     const SizedBox(
                       height: 12,
                     ),
-
-                    // ======================================================
-                    // DESCRIPTION
-                    // ======================================================
-
                     TextField(
                       controller: _descriptionController,
                       enabled: !_isSubmitting,
@@ -2564,15 +2695,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         ),
                       ),
                     ),
-
                     const SizedBox(
                       height: 12,
                     ),
-
-                    // ======================================================
-                    // WORKSPACE URL
-                    // ======================================================
-
                     TextField(
                       controller: _workspaceLinkController,
                       enabled: !_isSubmitting,
@@ -2586,15 +2711,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         ),
                       ),
                     ),
-
                     const SizedBox(
                       height: 16,
                     ),
-
-                    // ======================================================
-                    // START DATE
-                    // ======================================================
-
                     ListTile(
                       enabled: !_isSubmitting,
                       contentPadding: EdgeInsets.zero,
@@ -2614,15 +2733,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                       ),
                       onTap: _pickStartDate,
                     ),
-
                     const Divider(
                       height: 1,
                     ),
-
-                    // ======================================================
-                    // DUE DATE
-                    // ======================================================
-
                     ListTile(
                       enabled: !_isSubmitting,
                       contentPadding: EdgeInsets.zero,
@@ -2642,15 +2755,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                       ),
                       onTap: _pickEndDate,
                     ),
-
                     const SizedBox(
                       height: 10,
                     ),
-
-                    // ======================================================
-                    // TEAM MEMBERS
-                    // ======================================================
-
                     const Text(
                       'Team Members',
                       style: TextStyle(
@@ -2659,11 +2766,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         color: AppColors.darkCharcoal,
                       ),
                     ),
-
                     const SizedBox(
                       height: 7,
                     ),
-
                     Row(
                       children: [
                         Expanded(
@@ -2695,7 +2800,6 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         ),
                       ],
                     ),
-
                     if (_members.isNotEmpty) ...[
                       const SizedBox(
                         height: 8,
@@ -2732,15 +2836,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         ).toList(),
                       ),
                     ],
-
                     const SizedBox(
                       height: 16,
                     ),
-
-                    // ======================================================
-                    // STATUS
-                    // ======================================================
-
                     const Text(
                       'Status',
                       style: TextStyle(
@@ -2749,11 +2847,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         color: AppColors.darkCharcoal,
                       ),
                     ),
-
                     const SizedBox(
                       height: 7,
                     ),
-
                     DropdownButtonFormField<String>(
                       initialValue: _status,
                       decoration: const InputDecoration(
@@ -2790,15 +2886,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                               );
                             },
                     ),
-
                     const SizedBox(
                       height: 16,
                     ),
-
-                    // ======================================================
-                    // PROGRESS
-                    // ======================================================
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -2822,7 +2912,6 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                         ),
                       ],
                     ),
-
                     Slider(
                       value: _progress,
                       min: 0,
@@ -2847,15 +2936,9 @@ class _AddProjectDialogState extends State<_AddProjectDialog> {
                   ],
                 ),
               ),
-
               const SizedBox(
                 height: 12,
               ),
-
-              // ==========================================================
-              // BUTTONS
-              // ==========================================================
-
               Row(
                 children: [
                   Expanded(

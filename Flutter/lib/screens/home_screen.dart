@@ -25,7 +25,6 @@ class _HomePageState extends State<HomePage> {
   static const Color _white = Color(0xFFFFFFFF);
   static const Color _text = Color(0xFF2C2D30);
   static const Color _secondaryText = Color(0xFF737780);
-
   static const Color _purple = Color(0xFF6C5CE7);
   static const Color _blue = Color(0xFF5B9BD5);
   static const Color _green = Color(0xFF72B968);
@@ -43,10 +42,8 @@ class _HomePageState extends State<HomePage> {
   // ============================================================
 
   HomeData? _homeData;
-
   bool _isLoading = true;
   bool _isRefreshing = false;
-
   String _selectedFilter = 'All';
 
   // ============================================================
@@ -69,6 +66,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   // ============================================================
   // LOAD HOME DATA
   // ============================================================
@@ -105,7 +103,7 @@ class _HomePageState extends State<HomePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(
             'Unable to load Home data.',
           ),
@@ -311,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 7),
-              Text(
+              const Text(
                 'Here is your project overview.',
                 style: TextStyle(
                   fontSize: 14,
@@ -335,7 +333,9 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: _white,
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: _border),
+                    border: Border.all(
+                      color: _border,
+                    ),
                   ),
                   child: const Icon(
                     Icons.notifications_none_rounded,
@@ -661,18 +661,24 @@ class _HomePageState extends State<HomePage> {
               Row(
                 children: [
                   const Icon(
-                    Icons.arrow_forward_rounded,
+                    Icons.auto_awesome_rounded,
                     size: 16,
                     color: _purple,
                   ),
                   const SizedBox(width: 5),
                   const Text(
-                    'Open project',
+                    'Open AI Insights',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: _purple,
                     ),
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: _purple,
                   ),
                 ],
               ),
@@ -715,7 +721,6 @@ class _HomePageState extends State<HomePage> {
     final title = task['title']?.toString() ?? 'Untitled Task';
     final projectName = task['_projectName']?.toString() ?? 'Project';
     final status = _toInt(task['status']);
-
     final isBlocked = status == 6;
 
     return Container(
@@ -1019,7 +1024,6 @@ class _HomePageState extends State<HomePage> {
   ) {
     final title = task['title']?.toString() ?? 'Untitled Task';
     final projectName = task['_projectName']?.toString() ?? 'Project';
-
     final plannedEnd = task['plannedEnd']?.toString();
 
     DateTime? date;
@@ -1255,15 +1259,7 @@ class _HomePageState extends State<HomePage> {
         await _loadHomeData(showLoading: false);
       }
     } else if (index == 3) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => const AiInsightsPage(),
-        ),
-      );
-
-      if (mounted) {
-        await _loadHomeData(showLoading: false);
-      }
+      await _openAiInsightsFromHome();
     } else if (index == 4) {
       await Navigator.of(context).push(
         MaterialPageRoute(
@@ -1274,6 +1270,177 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         await _loadHomeData(showLoading: false);
       }
+    }
+  }
+
+  // ============================================================
+  // OPEN AI INSIGHTS FROM BOTTOM NAV
+  // ============================================================
+
+  Future<void> _openAiInsightsFromHome() async {
+    final data = _homeData;
+
+    if (data == null || data.projects.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No projects are available for AI Insights.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final selectedProjectId = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: _white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(24),
+        ),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: _border,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.auto_awesome_rounded,
+                      color: _purple,
+                      size: 22,
+                    ),
+                    SizedBox(width: 9),
+                    Text(
+                      'AI Insights',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w700,
+                        color: _text,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 7),
+                const Text(
+                  'Select a project to view its AI-powered analysis.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: _secondaryText,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...data.projects.map((project) {
+                  final projectId = _toInt(project['id']);
+                  final name =
+                      project['name']?.toString() ?? 'Untitled Project';
+
+                  if (projectId == null) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final atRisk = data.atRiskProjectIds.contains(projectId);
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 9),
+                    decoration: BoxDecoration(
+                      color: _background,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color:
+                            atRisk ? _coral.withValues(alpha: 0.35) : _border,
+                      ),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 3,
+                      ),
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: atRisk
+                              ? _coral.withValues(alpha: 0.10)
+                              : _purple.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        child: Icon(
+                          atRisk
+                              ? Icons.warning_amber_rounded
+                              : Icons.folder_outlined,
+                          color: atRisk ? _coral : _purple,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: _text,
+                        ),
+                      ),
+                      subtitle: Text(
+                        atRisk ? 'At Risk' : _projectStatus(project),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: atRisk ? _coral : _secondaryText,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 15,
+                        color: _secondaryText,
+                      ),
+                      onTap: () {
+                        Navigator.of(sheetContext).pop(projectId);
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (!mounted || selectedProjectId == null) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AiInsightsPage(
+          projectId: selectedProjectId,
+        ),
+      ),
+    );
+
+    if (mounted) {
+      await _loadHomeData(showLoading: false);
     }
   }
 
@@ -1313,18 +1480,33 @@ class _HomePageState extends State<HomePage> {
   // OPEN PROJECT
   // ============================================================
 
-  void _openProject(
+  Future<void> _openProject(
     Map<String, dynamic> project,
-  ) {
+  ) async {
     final projectId = _toInt(project['id']);
 
     if (projectId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'This project does not have a valid project ID.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
-    // Keep this navigation compatible with the current project
-    // structure. If ProjectsScreen handles project selection,
-    // open the Projects screen and refresh after returning.
-    _openProjects();
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AiInsightsPage(
+          projectId: projectId,
+        ),
+      ),
+    );
+
+    if (mounted) {
+      await _loadHomeData(showLoading: false);
+    }
   }
 }

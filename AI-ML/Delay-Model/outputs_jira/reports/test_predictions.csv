@@ -1,0 +1,240 @@
+﻿Summary,actual,predicted,correct,prob_Fast (<=30d),prob_Medium (31-365d),prob_Slow (>365d)
+config file sourcetreeconfig.json is reset after each start of sourcetree,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Error when using check for version functionality from the optons  menu,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+uninstall windows version doesn't uninstall the code in /Users/../AppData/Local,Medium (31-365d),Medium (31-365d),True,0.0014,0.8936,0.105
+can not select any brance when git submit,Slow (>365d),Slow (>365d),True,0.0,0.0004,0.9995
+"System is displaying the entity name instead of the users email in the ""Entered By"" field of clinical profile table grids.",Medium (31-365d),Fast (<=30d),False,0.9996,0.0003,0.0001
+Allow Multiselect Cherry-pick using Interactive Rebase,Medium (31-365d),Medium (31-365d),True,0.0001,0.9997,0.0001
+View not refreshing,Medium (31-365d),Medium (31-365d),True,0.0003,0.9995,0.0003
+Can't clone repository,Medium (31-365d),Medium (31-365d),True,0.2302,0.7563,0.0136
+Clinical Profiles Updates,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Error in max allowed humidity percentage,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+UI Issues after Menu Change,Fast (<=30d),Fast (<=30d),True,0.9996,0.0002,0.0002
+All Branches / Current Branch Dropdown doesn't remember choice,Slow (>365d),Slow (>365d),True,0.0,0.0107,0.9893
+Folder icons for Local repositories overlap text,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9997
+SourceTree crashes when cloning a repository from BitBucket,Slow (>365d),Slow (>365d),True,0.0003,0.0002,0.9995
+GUI glitch for many buttons,Fast (<=30d),Medium (31-365d),False,0.4844,0.4951,0.0205
+Optional extended integration settings of remote are not saved across SourceTree restarts,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+push error,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+HR > Duty Timing/Department Timing > Forth Shift flow Timing PM to PM,Fast (<=30d),Fast (<=30d),True,0.9998,0.0001,0.0001
+Not able to connect with AWS CodeCommit,Slow (>365d),Slow (>365d),True,0.0,0.0003,0.9997
+Update SourceTree for Windows from 3.4.10 to 3.4.11 fails,Fast (<=30d),Fast (<=30d),True,0.9995,0.0005,0.0001
+NDC # issue fixed  and  will be populated under charge addl screen.,Fast (<=30d),Fast (<=30d),True,0.9997,0.0002,0.0001
+Crash on Edit Remote,Slow (>365d),Slow (>365d),True,0.0001,0.0002,0.9997
+Errors During Installation,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Allow empty commits,Fast (<=30d),Fast (<=30d),True,0.8551,0.1444,0.0005
+Cannot unstage hunk,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Unable to update Financial visit detail,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Sourcetree 3.4.9 Crashes Immediately and Doesn't Install (Windows 10),Slow (>365d),Slow (>365d),True,0.0,0.001,0.999
+"EBDSI - Criteria Selection in Create Window a Default ""OR"" Operation Missing",Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+ssl cerficate,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+"Wrong translation for ""branch"" to Italian",Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Status column is missing in grid,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0
+Source Tree install fails,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Failed update from 3.4.9,Fast (<=30d),Fast (<=30d),True,0.9984,0.0016,0.0001
+Repository quick view,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Muneeb Sohail - Previous Hard Disk Data Required,Fast (<=30d),Fast (<=30d),True,0.9998,0.0001,0.0
+How to set the font and font size of the submitted text box? Chinese fonts look uncomfortable,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Sourcetree constantly asks for GitHub credentials,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Ability to customize the font size of the interface,Medium (31-365d),Medium (31-365d),True,0.0001,0.9998,0.0001
+HR > 1 and half day deduction,Medium (31-365d),Fast (<=30d),False,0.9899,0.01,0.0001
+SourceTree User Interface does not refresh automatically in a fresh Win 10 install,Medium (31-365d),Medium (31-365d),True,0.0007,0.9986,0.0007
+Amend Comment on Previous Commit,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+can not select any branch when git push,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Source tree wrongly includes files when deleting file in unstaged files region,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Crash when changing diff font size,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Unstaged file shows 2 extensions,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+Unable to create macro with special character,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+SourceTree installer fails in Windows 10 as signing certificate has expired (and corporate policy requires valid certificate),Medium (31-365d),Medium (31-365d),True,0.0049,0.9786,0.0164
+SourceTree doesn't open nor reinstall (after Windows 10 Update),Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+"Add a big ""continue rebase"" button on the screen after resolving conflicts.",Fast (<=30d),Medium (31-365d),False,0.1917,0.8082,0.0001
+Open console button doesn't work,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Changing the remote repository path of project causes SourceTree to crash,Slow (>365d),Slow (>365d),True,0.0003,0.0001,0.9996
+Putty.exe and plink.exe certificate expired,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+git-svn support does not work,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Provide an option in Rename Branch Dialogue to force Rename (ie git branch -M),Slow (>365d),Medium (31-365d),False,0.0012,0.997,0.0018
+"Unable to Run/Re-install Sourcetree - ""Sourcetree has stopped working""",Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Window position is restored higher than when it shut down,Fast (<=30d),Fast (<=30d),True,0.5718,0.4251,0.003
+"Git Flow - ""Start bugfix"" feature",Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Screen required,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0
+Note when reset to other branch commit,Medium (31-365d),Fast (<=30d),False,0.9873,0.0121,0.0006
+Sourcetree is freesing on large binary files,Slow (>365d),Slow (>365d),True,0.0005,0.0011,0.9983
+Performance down by magnitudes on certain SSDs or ports,Fast (<=30d),Medium (31-365d),False,0.0378,0.925,0.0372
+Huge diff loading shouldn't lock Sourcetree,Slow (>365d),Slow (>365d),True,0.0015,0.0001,0.9985
+I am not able to sourcetree with my repository(Azure),Fast (<=30d),Fast (<=30d),True,0.8454,0.1454,0.0092
+Authenticator app issue,Fast (<=30d),Fast (<=30d),True,0.9996,0.0002,0.0002
+Honour the 'git config diff.lfs.textconv cat' settings,Slow (>365d),Medium (31-365d),False,0.0018,0.9964,0.0018
+I cannot log in to my Repository in Source Tree after Creating App password,Slow (>365d),Medium (31-365d),False,0.0056,0.9699,0.0245
+First tab never refresh,Slow (>365d),Slow (>365d),True,0.0,0.0003,0.9997
+2 headset Required,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Allow multiple user profiles with quick selection via toolbar,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Sourcetree crashes when remote repository is not available,Medium (31-365d),Slow (>365d),False,0.0185,0.3839,0.5975
+Checking out a branch from Bitbucket Cloud UI will freeze SourceTree WIN 3.3.8,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9998
+Crash when clonning repo,Medium (31-365d),Fast (<=30d),False,0.9742,0.0255,0.0003
+Signing Certificate has expired,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Enhance Real Date Choice to Issue Type in Issue Type Scheme,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+New Headset Required,Fast (<=30d),Fast (<=30d),True,0.9992,0.0008,0.0001
+Crash report,Fast (<=30d),Medium (31-365d),False,0.1466,0.4386,0.4148
+"Sourcetree created gigabytes of temp files while staging, committing",Medium (31-365d),Medium (31-365d),True,0.0062,0.6958,0.298
+Move Repository bar to left,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+cannot resolve conflicts on changed files with removed files from master branch,Fast (<=30d),Medium (31-365d),False,0.3417,0.6502,0.0081
+SourceTree Auto off,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Add Branch name column to History view and allow view to sort by branch name,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9998
+Sourcetree Install and Registration windows does not advance to next screen,Medium (31-365d),Medium (31-365d),True,0.0005,0.9983,0.0012
+SSH passphrase times out,Slow (>365d),Slow (>365d),True,0.0004,0.0001,0.9995
+Views don't update after an action.,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Calendar disappears while scrolling the page up or down continuously,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+"Numbers on tabs, but nothing to pull or commit/push...?",Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Selected commit being reset when dragging SourceTree to other display,Medium (31-365d),Medium (31-365d),True,0.0001,0.9999,0.0001
+Use of BitBucket App Password in Source Tree,Medium (31-365d),Medium (31-365d),True,0.0001,0.9997,0.0001
+"When Windows has dark theme enabled, please use dark colors on UI",Medium (31-365d),Medium (31-365d),True,0.0007,0.967,0.0323
+Application slows down and eventually crashes when not shut down for a couple of days,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"EBDSI - Create"" Button Does Not Change to ""Update"" After New DSI Profile Creation",Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Consume CPU More then 80%,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9998
+graphic artifacts,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9997
+Context menu text not visible in dark mode,Slow (>365d),Medium (31-365d),False,0.0085,0.574,0.4175
+Sourcetree for Linux,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Sourcetree 3.3.8 doesn't install,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Link to latest Windows version is broken on Atlassian site,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Comment filed is missing,Medium (31-365d),Fast (<=30d),False,0.9983,0.0015,0.0002
+Cascadia Code - Selected font weight ignored,Fast (<=30d),Fast (<=30d),True,0.9985,0.0014,0.0001
+GK Production > Search Order/Search Worklot > Reserved material not showing in Order BOM reports,Fast (<=30d),Fast (<=30d),True,0.9956,0.0041,0.0003
+Cannot upgrade from 3.4.9.0 to 3.4.10,Fast (<=30d),Fast (<=30d),True,0.9988,0.0011,0.0001
+Sourcetree v3.3.8 is forgetting extended integration settings,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"Cannot push branch other than ""master""",Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+Can't use SourceTree or fully log in,Medium (31-365d),Medium (31-365d),True,0.0016,0.9968,0.0016
+HR> Night shift attendance issue,Medium (31-365d),Fast (<=30d),False,0.989,0.0109,0.0001
+Zillal Shakeel - Support | Unable to reset Microsoft Office Password,Fast (<=30d),Fast (<=30d),True,0.9982,0.0018,0.0001
+Sourcetree switches back to Generic Account on optional extended integration,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Hamza Sohail - Laptop Request,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+EBDSI Components Scrollbar,Medium (31-365d),Fast (<=30d),False,0.9999,0.0001,0.0001
+"App freezes and displays ""Not Responding"" in titlebar constantly",Slow (>365d),Medium (31-365d),False,0.0004,0.9857,0.014
+Cannot push changes to branch.,Slow (>365d),Medium (31-365d),False,0.0064,0.982,0.0116
+Merge aborted unexpectedly,Slow (>365d),Medium (31-365d),False,0.0038,0.9925,0.0037
+Empty local branch name when pushing new branch,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+[Regression] Source tree 3.3.6 does not open up repository if a repository with same name is already open in a tab,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+HR > Member Detail > Attendance Tab > Attendance detail month filter drop down,Fast (<=30d),Fast (<=30d),True,0.9998,0.0002,0.0001
+Push dialog empty,Slow (>365d),Slow (>365d),True,0.0025,0.1169,0.8805
+Decode URL-encoded characters when cloning a Git repository,Slow (>365d),Slow (>365d),True,0.0001,0.001,0.9989
+F7 window highlighted grey color fixed.,Fast (<=30d),Fast (<=30d),True,0.9803,0.0194,0.0004
+No access to taskbar in full windowed mode,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+UI is getting desturbed in attributes info window,Medium (31-365d),Fast (<=30d),False,0.9994,0.0006,0.0001
+Denial of service when cloning an empty git repository,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Cannot update embedded git to v2.35.2 on windows sourcetree v3.4.8,Medium (31-365d),Medium (31-365d),True,0.0001,0.9998,0.0001
+SourceTree crashes on startup for multi-user / RDP environments,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Auto refreshing no longer works,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"When I try clone my repo, the sourceTree crashed and Done",Slow (>365d),Slow (>365d),True,0.0001,0.0003,0.9997
+Sourcetree Stop during Clone -> advanced setting,Medium (31-365d),Fast (<=30d),False,0.5804,0.4005,0.019
+Add an option to disable `git lfs ls-files` on startup,Slow (>365d),Slow (>365d),True,0.0,0.003,0.9969
+case sensitivity,Slow (>365d),Medium (31-365d),False,0.0001,0.9998,0.0001
+Unable to login Source Tree,Medium (31-365d),Medium (31-365d),True,0.0007,0.9986,0.0007
+HR > Dashboard > terminate widgets set,Fast (<=30d),Fast (<=30d),True,0.9998,0.0001,0.0001
+Comments for few Medicaid payer id are not according to provided hierarchy,Fast (<=30d),Fast (<=30d),True,0.9974,0.0025,0.0001
+"Sourcetree sees changes after fresh ""git clone"" on WSL",Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Add member to the mentioned email groups.,Fast (<=30d),Fast (<=30d),True,0.9998,0.0001,0.0001
+Taskbar not accessible when SourceTree is in full screen,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+External difftool extremely slow,Slow (>365d),Slow (>365d),True,0.0006,0.0001,0.9993
+Open remote - URL customization,Fast (<=30d),Slow (>365d),False,0.0146,0.4465,0.5389
+Health Education: Deleted Document Still Appears in Visit,Fast (<=30d),Fast (<=30d),True,0.9684,0.0274,0.0042
+Upgrade from 3.4.9 failing.,Fast (<=30d),Fast (<=30d),True,0.9995,0.0005,0.0001
+Unable to create pull request,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+incorrect recording when rotating the screen,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Allow unstaging lines and hunks in new files,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Message added for RTF file type.,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Assigned-To Dropdown Issue,Medium (31-365d),Fast (<=30d),False,0.9998,0.0001,0.0001
+Repository settings in optional extended integration with e.g. Bitbucket Server are not persisted,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9997
+Bad line length error since latest Sourcetree update,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Sourcetree does not let me push to remote branch from by local branch,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Didcount calculator unclear error message when entering letters into index field,Medium (31-365d),Medium (31-365d),True,0.0066,0.9527,0.0408
+"After changing Bitbucket password, Source tree is no longer syncs with remote branch.",Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Sourcetree history does not update and UI does not update after you Stage files or do a commit on a second monitor,Medium (31-365d),Medium (31-365d),True,0.0006,0.9989,0.0005
+Maximized SourceTree window covers taskbar when hidden taskbar is on the left of the screen,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+SourceTree merge resolve conflicts doesn't launch beyond compare,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Update fails to Sourcetree 3.4.10,Fast (<=30d),Fast (<=30d),True,0.9984,0.0014,0.0003
+Double-clicking a project to open it moves the project from its current folder toa œno foldera ,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Unable to update the source tree version,Medium (31-365d),Medium (31-365d),True,0.0028,0.9871,0.0101
+Sourcetree Windows 3.3.7 - staging / committing files is bugged,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9998
+Staged files view does not update after adding files,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+"Automation Workflow is not functioning in ""Treatment Plan""",Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Allergy is not working,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Sourcetree Graphics Problems,Slow (>365d),Medium (31-365d),False,0.2325,0.7107,0.0567
+Crash on editing remote,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+[Major Annoying] Fix index position is reset in the list of Unstaged Files,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Code selection copy in Commit history view makes app unresponsive,Medium (31-365d),Medium (31-365d),True,0.2516,0.7187,0.0297
+adding helperselector to config,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Production | New DALLAS | DOC SVR 233 | Drive Extend,Medium (31-365d),Fast (<=30d),False,0.8365,0.1611,0.0024
+Git Bash cannot be opened anymore with Git 2.31,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+EBDSI trigger window should auto close while switching modules.,Fast (<=30d),Fast (<=30d),True,0.9998,0.0001,0.0001
+Cannot execute Sourcetree after install...,Medium (31-365d),Medium (31-365d),True,0.0001,0.9998,0.0001
+CC dropdown,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Not detecting the SSH keys and the application closes abruptly,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"OAuth Fails, Unable to get Secret",Medium (31-365d),Medium (31-365d),True,0.0001,0.9998,0.0001
+Push screen does not show tracked branches,Medium (31-365d),Medium (31-365d),True,0.0003,0.9996,0.0001
+make branch first time not show,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Macro HPI change,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+"An ""Open Termial"" button fails for git bash [git-scm 2.31.1]",Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9997
+Sourcetree asks to select a Credential Helper and doesn't clone,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9997
+After setting my git account in sourcetree i am getting no unix socket support while pulling branch code,Slow (>365d),Slow (>365d),True,0.0001,0.0002,0.9998
+When click in Bitbucket login open an Localhost URL,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+ssh-agent.exe taks to much CPU,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Terminal no longer opens,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9998
+date for a Stash,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9998
+Auto Refresh stopped working,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"Files disappear in ""staged files""",Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Subwindow drap and drop can not be dropped at any position in File Status and History tab for notebook screen proportion,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9997
+Sourcetree does not register local file changes,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Registration form: unclear error message when registrted new user,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9998
+Email setup > Import status after 1 week through email settled or not,Medium (31-365d),Fast (<=30d),False,0.9985,0.0014,0.0001
+Focus is lost on dialog buttons,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+Crear medico,Slow (>365d),Slow (>365d),True,0.0,0.0004,0.9996
+Cannot open local repo when repo is a submodule open in another tab,Slow (>365d),Slow (>365d),True,0.0001,0.0094,0.9905
+Problem when trying setup sourcetree,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Force Push does not work anymore,Medium (31-365d),Medium (31-365d),True,0.0001,0.9998,0.0001
+Error message when creating pull request (v3.3.4),Slow (>365d),Medium (31-365d),False,0.009,0.7909,0.2001
+Discarding multiple unstaged files consumes too much memory,Medium (31-365d),Fast (<=30d),False,0.917,0.0756,0.0074
+Upload to confluence is broken!,Medium (31-365d),Medium (31-365d),True,0.0082,0.762,0.2297
+Unable to add result in Lab result,Fast (<=30d),Fast (<=30d),True,0.9999,0.0001,0.0001
+Unable to use Sourcetree and downlod repository on second machine,Slow (>365d),Slow (>365d),True,0.0,0.0003,0.9996
+Test Bug,Fast (<=30d),Fast (<=30d),True,0.9658,0.0337,0.0005
+App crash trying to add existing repo,Medium (31-365d),Medium (31-365d),True,0.0391,0.9399,0.021
+teams login issue,Fast (<=30d),Fast (<=30d),True,0.9996,0.0002,0.0002
+Launch SSH agent fails code -1 with system git and OpenSSH,Medium (31-365d),Medium (31-365d),True,0.0001,0.9998,0.0001
+Can't activate focused button with the space key,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+git mv command is not working properly for folder renaming,Fast (<=30d),Fast (<=30d),True,0.9998,0.0002,0.0001
+Multiple Failed Authentication causes lockout,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+100% load on one core when typing commit message,Medium (31-365d),Medium (31-365d),True,0.0002,0.9995,0.0003
+Unable to push to github org account from sourcetree,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"SourceTree ignores case of remote branch, and lowers the case on push",Slow (>365d),Slow (>365d),True,0.0001,0.0022,0.9977
+SourceTree installation,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Support CR as a line break in diff views,Slow (>365d),Slow (>365d),True,0.0,0.0003,0.9996
+Gk Planning > Planning Material categorize in gk planning planning material tab show Imported wise and Local wise,Fast (<=30d),Fast (<=30d),True,0.9714,0.0283,0.0003
+Routine OS Update | New DALLAS | VMs | Windows Update,Fast (<=30d),Fast (<=30d),True,0.9995,0.0004,0.0001
+"Alignment Issue - ""Document Type"" Input Filter",Fast (<=30d),Fast (<=30d),True,0.9998,0.0002,0.0001
+Restore the amend checkbox,Fast (<=30d),Medium (31-365d),False,0.0368,0.9542,0.009
+SourceTree doesn't list local branches with underscore '_' as Tracked,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Text unreadable on password edit dialog in dark theme,Slow (>365d),Slow (>365d),True,0.0002,0.0213,0.9784
+Sourcetree on exit terminates pageant process while it should not,Fast (<=30d),Fast (<=30d),True,0.8764,0.0607,0.0629
+Source Tree Application Crashes on Opening,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+"Folders not properly posted, new scripts not consistently detected",Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9998
+Allow for custom theme configuration for dark mode for Sourcetree Windows,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Continue rebase fails,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+Cannot register to SourceTree using my corporate account,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Following issues observed in expired password testing,Fast (<=30d),Fast (<=30d),True,0.986,0.0111,0.0029
+Unable to clone a repository,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+SourceTree insists handling a specific repo,Slow (>365d),Slow (>365d),True,0.0003,0.0001,0.9996
+Cannot open a terminal when system git is enabled,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Support multiple SSH keys,Slow (>365d),Slow (>365d),True,0.0009,0.0003,0.9988
+Add extended integration with Team Foundation Server (TFS) 2015 and Visual Studio Online,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+HR > Leaves > Report print issue fix,Fast (<=30d),Fast (<=30d),True,0.9997,0.0002,0.0001
+"Jump Server: 10.60.45.245 (212.69.146.145), 10.50.45.245",Fast (<=30d),Fast (<=30d),True,0.9989,0.0006,0.0006
+Git Add Issue,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Error at cloning Repository,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9999
+Global ignore file not working on Windows 10,Medium (31-365d),Medium (31-365d),True,0.1585,0.6698,0.1717
+OMT forms,Fast (<=30d),Fast (<=30d),True,0.9998,0.0002,0.0001
+UI is not updated automatically v3.3.6,Slow (>365d),Slow (>365d),True,0.0,0.0002,0.9997
+Gate > Inward + Outward > Date issue solved,Fast (<=30d),Fast (<=30d),True,0.9692,0.0308,0.0001
+SourceTree - Settings/Preferences not saved,Slow (>365d),Slow (>365d),True,0.0002,0.0001,0.9998
+Sourcetree freezing on being left in background,Slow (>365d),Slow (>365d),True,0.0001,0.0001,0.9998
+LFS file download prompt every time I launch Sourcetree since update to v3.4.2,Fast (<=30d),Fast (<=30d),True,0.5281,0.4672,0.0047
+Provide Re-Authentication window when push return access denied.,Slow (>365d),Slow (>365d),True,0.0,0.0001,0.9999
+Default for Production branch in GitFlow should be main not master,Medium (31-365d),Medium (31-365d),True,0.0001,0.9999,0.0001

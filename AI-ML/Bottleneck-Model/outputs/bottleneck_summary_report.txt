@@ -1,0 +1,15 @@
+SCALEFLOW - BOTTLENECK DETECTION SUMMARY REPORT
+==================================================
+Total issues analyzed : 727282
+Flagged as bottleneck  : 36365 (5.00%)
+
+Top 5 features driving anomalies (ratio = bottleneck avg / normal avg):
+--------------------------------------------------
+  Reopen Count                   normal=0.01  bottleneck=0.58  ratio=52.75x
+  rework_indicator               normal=0.01  bottleneck=0.42  ratio=38.26x
+  has_rework                     normal=0.01  bottleneck=0.42  ratio=38.26x
+  worklog_total                  normal=0.09  bottleneck=3.12  ratio=34.73x
+  Worklog Count                  normal=0.09  bottleneck=2.07  ratio=23.42x
+
+Full results  -> C:\Users\lenovo\Desktop\ScaleFlow-Integration\AI-ML\Bottleneck-Model\outputs\bottleneck_scores_full.csv
+Top flagged   -> C:\Users\lenovo\Desktop\ScaleFlow-Integration\AI-ML\Bottleneck-Model\outputs\flagged_bottlenecks.csv

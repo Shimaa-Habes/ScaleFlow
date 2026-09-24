@@ -114,13 +114,13 @@ public class ProjectsController : ControllerBase
     // UPLOAD PROJECT IMAGE
     // ============================================================
 
-    [HttpPost("{id}/image")]
-    [Consumes("multipart/form-data")]
-    [RequestSizeLimit(5 * 1024 * 1024)]
-    public async Task<IActionResult> UploadImage(
-        int id,
-        [FromForm] IFormFile image,
-        CancellationToken cancellationToken)
+   [HttpPost("{id}/image")]
+[Consumes("multipart/form-data")]
+[RequestSizeLimit(5 * 1024 * 1024)]
+public async Task<IActionResult> UploadImage(
+    int id,
+    IFormFile image,
+    CancellationToken cancellationToken)
     {
         // --------------------------------------------------------
         // Basic validation

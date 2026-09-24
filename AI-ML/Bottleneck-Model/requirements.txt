@@ -1,0 +1,10 @@
+# ScaleFlow - Bottleneck Detection (Isolation Forest) pipeline dependencies
+# Install with: pip install -r requirements.txt
+
+pandas>=2.0.0        # data loading and manipulation
+numpy>=1.24.0         # numeric operations used in model.py
+scikit-learn>=1.3.0   # IsolationForest, SimpleImputer, StandardScaler
+joblib>=1.3.0         # saving/loading the trained model and preprocessor
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.6.0

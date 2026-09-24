@@ -6,9 +6,11 @@ namespace ScaleFlow.Models;
 public class Project : SoftDeletableEntity
 {
     public int OrganizationId { get; set; }
+
     public int OwnerId { get; set; }
 
     public string Name { get; set; } = null!;
+
     public string? Description { get; set; }
 
     public string? WorkspaceUrl { get; set; }
@@ -20,16 +22,20 @@ public class Project : SoftDeletableEntity
     public string? ImageUrl { get; set; }
 
     public ProjectStatus Status { get; set; } = ProjectStatus.Planning;
+
     public ProjectPriority Priority { get; set; } = ProjectPriority.Medium;
 
     public decimal? Budget { get; set; }
 
     public DateTimeOffset? StartDate { get; set; }
+
     public DateTimeOffset? EndDate { get; set; }
 
     public bool IsArchived { get; set; } = false;
 
+    // Relationships
     public Organization Organization { get; set; } = null!;
+
     public User Owner { get; set; } = null!;
 
     public ICollection<ProjectMember> Members { get; set; }

@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import '../core/app_colors.dart';
 import '../services/auth_service.dart';
 import '../widgets/scaleflow_bottom_nav.dart';
-
 import 'ai_insights_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
@@ -30,7 +29,6 @@ class _DashboardPageState extends State<DashboardPage> {
   bool _isLoading = true;
   bool _hasError = false;
   String _errorMessage = '';
-
   bool _notificationsEnabled = true;
 
   Map<String, dynamic>? _dashboard;
@@ -180,6 +178,29 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // ============================================================
+  // GET PROJECT ID
+  // ============================================================
+
+  int? _getProjectId(Map<String, dynamic> project) {
+    final possibleId = project['projectId'] ??
+        project['id'] ??
+        project['ProjectId'] ??
+        project['Id'];
+
+    if (possibleId is int) {
+      return possibleId;
+    }
+
+    if (possibleId is num) {
+      return possibleId.toInt();
+    }
+
+    return int.tryParse(
+      possibleId?.toString() ?? '',
+    );
+  }
+
+  // ============================================================
   // BUILD
   // ============================================================
 
@@ -296,7 +317,9 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildLoadingCard({required double height}) {
+  Widget _buildLoadingCard({
+    required double height,
+  }) {
     return Container(
       height: height,
       decoration: BoxDecoration(
@@ -410,7 +433,12 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 6, 16, 30),
+                padding: const EdgeInsets.fromLTRB(
+                  16,
+                  6,
+                  16,
+                  30,
+                ),
                 children: [
                   _buildOverviewCards(
                     activeProjects: activeProjects,
@@ -797,7 +825,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 fallback: 'Unnamed Project',
               );
 
-              final progressValue = (project['completionPercent'] is num)
+              final progressValue = project['completionPercent'] is num
                   ? (project['completionPercent'] as num).toInt()
                   : int.tryParse(
                         project['completionPercent']?.toString() ?? '',
@@ -1022,10 +1050,8 @@ class _DashboardPageState extends State<DashboardPage> {
     switch (status.toLowerCase()) {
       case 'overloaded':
         return AppColors.alertCoral;
-
       case 'underutilized':
         return AppColors.priorityYellow;
-
       default:
         return AppColors.statusGreen;
     }
@@ -1160,7 +1186,9 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? _parseDate(dynamic value) {
     if (value == null) return null;
 
-    return DateTime.tryParse(value.toString())?.toLocal();
+    return DateTime.tryParse(
+      value.toString(),
+    )?.toLocal();
   }
 
   _DueInfo _formatDueDate(DateTime? date) {
@@ -1189,7 +1217,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final difference = target.difference(today).inDays;
 
     if (difference < 0) {
-      return _DueInfo(
+      return const _DueInfo(
         label: 'Overdue',
         isToday: false,
         isOverdue: true,
@@ -1197,7 +1225,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     if (difference == 0) {
-      return _DueInfo(
+      return const _DueInfo(
         label: 'Due today',
         isToday: true,
         isOverdue: false,
@@ -1405,6 +1433,176 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // ============================================================
+  // AI PROJECT PICKER
+  // ============================================================
+
+  void _openAiProjectPicker() {
+    final projects = _listValue('projectPerformance');
+
+    final validProjects = projects.where((project) {
+      return _getProjectId(project) != null;
+    }).toList();
+
+    if (validProjects.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No project is available for AI Insights.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      showDragHandle: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              20,
+              4,
+              20,
+              24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'AI Insights',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.darkCharcoal,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'Select a project to open its AI analysis.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...validProjects.map(
+                  (project) {
+                    final projectId = _getProjectId(project)!;
+
+                    final projectName = _stringValue(
+                      project,
+                      'projectName',
+                      fallback: 'Unnamed Project',
+                    );
+
+                    final status = _stringValue(
+                      project,
+                      'status',
+                      fallback: 'In Progress',
+                    );
+
+                    final completion = project['completionPercent'] is num
+                        ? (project['completionPercent'] as num).toInt()
+                        : int.tryParse(
+                              project['completionPercent']?.toString() ?? '',
+                            ) ??
+                            0;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 9),
+                      child: Material(
+                        color: const Color(0xFFF8F9FB),
+                        borderRadius: BorderRadius.circular(14),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap: () {
+                            Navigator.of(sheetContext).pop();
+
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => AiInsightsPage(
+                                  projectId: projectId,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 42,
+                                  height: 42,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.aiPurple.withOpacity(0.10),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.auto_awesome_rounded,
+                                    color: AppColors.aiPurple,
+                                    size: 21,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        projectName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.darkCharcoal,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '$status • $completion% complete',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 10.5,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.chevron_right_rounded,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ============================================================
   // NAVIGATION
   // ============================================================
 
@@ -1428,11 +1626,9 @@ class _DashboardPageState extends State<DashboardPage> {
     } else if (index == 2) {
       return;
     } else if (index == 3) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => const AiInsightsPage(),
-        ),
-      );
+      // Dashboard is not tied to one specific project.
+      // Let the user choose the project before opening AI Insights.
+      _openAiProjectPicker();
     } else if (index == 4) {
       Navigator.of(context).push(
         MaterialPageRoute(

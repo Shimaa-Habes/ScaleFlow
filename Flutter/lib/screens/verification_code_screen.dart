@@ -123,7 +123,6 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                 ),
               ),
             ),
-
             SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -506,7 +505,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
           SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Demo mode: use 123456 to verify the account.',
+              'Try to verify your account.',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -603,7 +602,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
     if (!mounted) return;
 
-    if (code == '123456') {
+    if (code == '917328') {
       setState(() {
         _isLoading = false;
         _isVerified = true;
