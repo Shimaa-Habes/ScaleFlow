@@ -25,18 +25,6 @@ class ProjectDetailsScreen extends StatefulWidget {
 }
 
 class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
-  int? _toInt(dynamic value) {
-    if (value is int) {
-      return value;
-    }
-
-    if (value is num) {
-      return value.toInt();
-    }
-
-    return int.tryParse(value?.toString() ?? '');
-  }
-
   static const String _baseUrl = 'http://localhost:5233/api';
 
   Project get project => widget.project;
@@ -66,8 +54,26 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   String? _tasksError;
 
   // ============================================================
+  // AI
+  // ============================================================
+
+  bool _isLoadingRisk = false;
+  bool _isLoadingDelay = false;
+  bool _isLoadingBottleneck = false;
+  bool _isLoadingHealth = false;
+
+  Map<String, dynamic>? _riskResult;
+  Map<String, dynamic>? _delayResult;
+  Map<String, dynamic>? _bottleneckResult;
+  Map<String, dynamic>? _healthResult;
+
+  String? _riskError;
+  String? _delayError;
+  String? _bottleneckError;
+  String? _healthError;
+
+  // ============================================================
   // FILES
-  // Local until backend file endpoints are added.
   // ============================================================
 
   final List<Map<String, String>> _mockFiles = [
@@ -87,7 +93,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
 
   // ============================================================
   // TEAM
-  // Local until backend project-member endpoints are connected.
   // ============================================================
 
   final List<Map<String, String>> _mockTeam = [
@@ -111,10 +116,156 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
 
     _projectName = project.name;
     _projectSubtitle = project.subtitle;
-
     _projectImageUrl = _normalizeImageUrl(project.imageUrl);
 
     _loadProjectTasks();
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  int get _projectId => int.tryParse(project.id) ?? 0;
+
+  int? _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  double? _toDouble(dynamic value) {
+    if (value is double) return value;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
+  }
+
+  DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+
+    final text = value.toString().trim();
+
+    if (text.isEmpty) return null;
+
+    return DateTime.tryParse(text)?.toLocal();
+  }
+
+  String _cleanErrorMessage(Object error) {
+    final message = error.toString();
+
+    if (message.startsWith('Exception: ')) {
+      return message.substring(11);
+    }
+
+    return message;
+  }
+
+  Map<String, String> _jsonHeaders() {
+    final token = AuthService.accessToken;
+
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  Map<String, dynamic> _extractData(String body) {
+    try {
+      final decoded = jsonDecode(body);
+
+      if (decoded is Map<String, dynamic>) {
+        final data = decoded['data'];
+
+        if (data is Map<String, dynamic>) {
+          return data;
+        }
+
+        return decoded;
+      }
+    } catch (_) {}
+
+    return {};
+  }
+
+  Future<Map<String, dynamic>> _postAiRequest({
+    required String endpoint,
+  }) async {
+    final response = await http.post(
+      Uri.parse(
+        '$_baseUrl/projects/$_projectId/ai/$endpoint',
+      ),
+      headers: _jsonHeaders(),
+      body: jsonEncode({
+        'inputWindowDays': 30,
+      }),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'AI request failed: '
+        '${response.statusCode} ${response.body}',
+      );
+    }
+
+    return _extractData(response.body);
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+  }
+
+  String _formatNumber(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value.toStringAsFixed(1);
+  }
+
+  String _formatBudget(dynamic value) {
+    final number = _toDouble(value);
+
+    if (number == null) return '—';
+
+    if (number >= 1000000) {
+      return '\$${(number / 1000000).toStringAsFixed(1)}M';
+    }
+
+    if (number >= 1000) {
+      return '\$${(number / 1000).toStringAsFixed(1)}K';
+    }
+
+    return '\$${number.toStringAsFixed(0)}';
+  }
+
+  String? _normalizeImageUrl(String? url) {
+    if (url == null || url.trim().isEmpty) {
+      return null;
+    }
+
+    final value = url.trim();
+
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+
+    if (value.startsWith('/')) {
+      return 'http://localhost:5233$value';
+    }
+
+    return 'http://localhost:5233/$value';
   }
 
   // ============================================================
@@ -197,7 +348,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     }
   }
 
-  void _sortTasksByDueDate(List<Map<String, dynamic>> tasks) {
+  void _sortTasksByDueDate(
+    List<Map<String, dynamic>> tasks,
+  ) {
     tasks.sort((a, b) {
       final aDate = _parseDate(a['plannedEnd']);
       final bDate = _parseDate(b['plannedEnd']);
@@ -243,22 +396,14 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         _sortTasksByDueDate(_tasks);
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Task added successfully!'),
-        ),
-      );
+      _showMessage('Task added successfully!');
 
       return true;
     } catch (e) {
       if (!mounted) return false;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to add task: ${_cleanErrorMessage(e)}',
-          ),
-        ),
+      _showMessage(
+        'Failed to add task: ${_cleanErrorMessage(e)}',
       );
 
       return false;
@@ -317,12 +462,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         }
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to update task: ${_cleanErrorMessage(e)}',
-          ),
-        ),
+      _showMessage(
+        'Failed to update task: ${_cleanErrorMessage(e)}',
       );
     }
   }
@@ -394,6 +535,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         _tasks.removeWhere(
           (item) => _toInt(item['id']) == taskId,
         );
+
         _isDeletingTask = false;
       });
 
@@ -409,6 +551,636 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         'Failed to delete task: ${_cleanErrorMessage(e)}',
       );
     }
+  }
+
+  // ============================================================
+  // REAL AI MODELS
+  // ============================================================
+
+  Future<void> _loadRiskAnalysis() async {
+    if (_isLoadingRisk) return;
+
+    setState(() {
+      _isLoadingRisk = true;
+      _riskError = null;
+    });
+
+    try {
+      final result = await _postAiRequest(
+        endpoint: 'risk-analysis',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _riskResult = result;
+        _isLoadingRisk = false;
+      });
+
+      _showRiskPopup();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoadingRisk = false;
+        _riskError = _cleanErrorMessage(e);
+      });
+
+      _showMessage(
+        'Risk analysis failed: ${_cleanErrorMessage(e)}',
+      );
+    }
+  }
+
+  Future<void> _loadDelayPrediction() async {
+    if (_isLoadingDelay) return;
+
+    setState(() {
+      _isLoadingDelay = true;
+      _delayError = null;
+    });
+
+    try {
+      final result = await _postAiRequest(
+        endpoint: 'delay-prediction',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _delayResult = result;
+        _isLoadingDelay = false;
+      });
+
+      _showDelayPopup();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoadingDelay = false;
+        _delayError = _cleanErrorMessage(e);
+      });
+
+      _showMessage(
+        'Delay prediction failed: ${_cleanErrorMessage(e)}',
+      );
+    }
+  }
+
+  Future<void> _loadBottleneckDetection() async {
+    if (_isLoadingBottleneck) return;
+
+    setState(() {
+      _isLoadingBottleneck = true;
+      _bottleneckError = null;
+    });
+
+    try {
+      final result = await _postAiRequest(
+        endpoint: 'bottleneck-detection',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _bottleneckResult = result;
+        _isLoadingBottleneck = false;
+      });
+
+      _showBottleneckPopup();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoadingBottleneck = false;
+        _bottleneckError = _cleanErrorMessage(e);
+      });
+
+      _showMessage(
+        'Bottleneck detection failed: '
+        '${_cleanErrorMessage(e)}',
+      );
+    }
+  }
+
+  Future<void> _loadProjectHealth() async {
+    if (_isLoadingHealth) return;
+
+    setState(() {
+      _isLoadingHealth = true;
+      _healthError = null;
+    });
+
+    try {
+      final result = await _postAiRequest(
+        endpoint: 'project-health',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _healthResult = result;
+        _isLoadingHealth = false;
+      });
+
+      _showHealthPopup();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoadingHealth = false;
+        _healthError = _cleanErrorMessage(e);
+      });
+
+      _showMessage(
+        'Project health analysis failed: '
+        '${_cleanErrorMessage(e)}',
+      );
+    }
+  }
+
+  // ============================================================
+  // AI RESULT HELPERS
+  // ============================================================
+
+  String _riskScoreText() {
+    final value = _toDouble(
+      _riskResult?['riskScore'],
+    );
+
+    if (value == null) return '—';
+
+    return value.toStringAsFixed(2);
+  }
+
+  String _riskLevelText() {
+    return _riskResult?['riskLevel']?.toString() ?? 'Unknown';
+  }
+
+  String _riskConfidenceText() {
+    final value = _toDouble(
+      _riskResult?['confidence'],
+    );
+
+    if (value == null) return '—';
+
+    final percentage = value <= 1 ? value * 100 : value;
+
+    return '${percentage.toStringAsFixed(1)}%';
+  }
+
+  String _delayDaysText() {
+    final value = _toInt(
+      _delayResult?['predictedDelayDays'],
+    );
+
+    if (value == null) return '—';
+
+    return '$value day${value == 1 ? '' : 's'}';
+  }
+
+  String _delayProbabilityText() {
+    final value = _toDouble(
+      _delayResult?['delayProbability'],
+    );
+
+    if (value == null) return '—';
+
+    final percentage = value <= 1 ? value * 100 : value;
+
+    return '${percentage.toStringAsFixed(1)}%';
+  }
+
+  String _delayConfidenceText() {
+    final value = _toDouble(
+      _delayResult?['confidence'],
+    );
+
+    if (value == null) return '—';
+
+    final percentage = value <= 1 ? value * 100 : value;
+
+    return '${percentage.toStringAsFixed(1)}%';
+  }
+
+  String _healthScoreText() {
+    final value = _toDouble(
+      _healthResult?['healthScore'],
+    );
+
+    if (value == null) return '—';
+
+    return value.toStringAsFixed(2);
+  }
+
+  String _healthStatusText() {
+    return _healthResult?['status']?.toString() ?? 'Unknown';
+  }
+
+  String _failureProbabilityText() {
+    final value = _toDouble(
+      _healthResult?['failureProbability'],
+    );
+
+    if (value == null) return '—';
+
+    final percentage = value <= 1 ? value * 100 : value;
+
+    return '${percentage.toStringAsFixed(1)}%';
+  }
+
+  String _healthConfidenceText() {
+    final value = _toDouble(
+      _healthResult?['confidence'],
+    );
+
+    if (value == null) return '—';
+
+    final percentage = value <= 1 ? value * 100 : value;
+
+    return '${percentage.toStringAsFixed(1)}%';
+  }
+
+  List<Map<String, dynamic>> _bottlenecks() {
+    final raw = _bottleneckResult?['bottlenecks'];
+
+    if (raw is! List) {
+      return [];
+    }
+
+    return raw
+        .whereType<Map>()
+        .map(
+          (item) => Map<String, dynamic>.from(item),
+        )
+        .toList();
+  }
+
+  String _bottleneckCountText() {
+    return '${_bottlenecks().length} detected';
+  }
+
+  String _bottleneckTaskText(
+    Map<String, dynamic> item,
+  ) {
+    final taskId = item['taskId'];
+
+    final task = _tasks.cast<Map<String, dynamic>?>().firstWhere(
+          (task) => _toInt(task?['id']) == _toInt(taskId),
+          orElse: () => null,
+        );
+
+    if (task != null && task['title']?.toString().trim().isNotEmpty == true) {
+      return task['title'].toString();
+    }
+
+    return 'Task #$taskId';
+  }
+
+  String _bottleneckScoreText(
+    Map<String, dynamic> item,
+  ) {
+    final score = _toDouble(item['score']);
+
+    if (score == null) return '—';
+
+    return score.toStringAsFixed(3);
+  }
+
+  String _bottleneckExplanation(
+    Map<String, dynamic> item,
+  ) {
+    final explanation = item['explanation']?.toString().trim();
+
+    if (explanation == null || explanation.isEmpty) {
+      return 'Potential bottleneck detected by the AI model.';
+    }
+
+    return explanation;
+  }
+
+  // ============================================================
+  // AI POPUPS
+  // ============================================================
+
+  void _showAiPopup(
+    String title,
+    Color color,
+    IconData icon,
+    Widget content,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: content,
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4F46E5),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _aiMetric(
+    String label,
+    String value, {
+    Color color = const Color(0xFF1E293B),
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF64748B),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRiskPopup() {
+    final explanation = _riskResult?['explanation']?.toString();
+
+    _showAiPopup(
+      'Risk Prediction Analysis',
+      Colors.red,
+      Icons.warning_amber_rounded,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _aiMetric(
+            'Risk Score',
+            '${_riskScoreText()}/100',
+            color: Colors.red,
+          ),
+          _aiMetric(
+            'Risk Level',
+            _riskLevelText(),
+            color: Colors.red,
+          ),
+          _aiMetric(
+            'Model Confidence',
+            _riskConfidenceText(),
+          ),
+          if (explanation != null && explanation.trim().isNotEmpty)
+            _aiExplanation(
+              explanation,
+              Colors.red,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showDelayPopup() {
+    final explanation = _delayResult?['explanation']?.toString();
+
+    final predictedClass = _delayResult?['predictedClass']?.toString();
+
+    _showAiPopup(
+      'Delay Forecast Analysis',
+      Colors.green,
+      Icons.trending_up,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _aiMetric(
+            'Predicted Delay',
+            _delayDaysText(),
+            color: Colors.green,
+          ),
+          if (predictedClass != null && predictedClass.isNotEmpty)
+            _aiMetric(
+              'Forecast Category',
+              predictedClass,
+              color: Colors.green,
+            ),
+          _aiMetric(
+            'Delay Probability',
+            _delayProbabilityText(),
+          ),
+          _aiMetric(
+            'Model Confidence',
+            _delayConfidenceText(),
+          ),
+          if (explanation != null && explanation.trim().isNotEmpty)
+            _aiExplanation(
+              explanation,
+              Colors.green,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showBottleneckPopup() {
+    final bottlenecks = _bottlenecks();
+
+    _showAiPopup(
+      'Bottleneck Detector Analysis',
+      Colors.orange,
+      Icons.hourglass_bottom,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _aiMetric(
+            'Detected Bottlenecks',
+            bottlenecks.length.toString(),
+            color: Colors.orange,
+          ),
+          const SizedBox(height: 6),
+          if (bottlenecks.isEmpty)
+            _aiExplanation(
+              'No bottleneck tasks were detected by the model.',
+              Colors.green,
+            )
+          else
+            ...bottlenecks.map(
+              (item) => Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.orange.withOpacity(0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _bottleneckTaskText(item),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Bottleneck Score: '
+                      '${_bottleneckScoreText(item)}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _bottleneckExplanation(item),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF64748B),
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showHealthPopup() {
+    final explanation = _healthResult?['explanation']?.toString();
+
+    _showAiPopup(
+      'Project Health Matrix Analysis',
+      const Color(0xFF4F46E5),
+      Icons.health_and_safety_outlined,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _aiMetric(
+            'Health Score',
+            '${_healthScoreText()}/100',
+            color: const Color(0xFF4F46E5),
+          ),
+          _aiMetric(
+            'Health Status',
+            _healthStatusText(),
+            color: Colors.green,
+          ),
+          _aiMetric(
+            'Failure Probability',
+            _failureProbabilityText(),
+            color: Colors.orange,
+          ),
+          _aiMetric(
+            'Model Confidence',
+            _healthConfidenceText(),
+          ),
+          if (explanation != null && explanation.trim().isNotEmpty)
+            _aiExplanation(
+              explanation,
+              const Color(0xFF4F46E5),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _aiExplanation(
+    String text,
+    Color color,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(top: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.15),
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Color(0xFF334155),
+          height: 1.4,
+        ),
+      ),
+    );
   }
 
   // ============================================================
@@ -437,15 +1209,13 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         'budget': project.budget,
         'startDate': project.startDate?.toUtc().toIso8601String(),
         'endDate': project.endDate?.toUtc().toIso8601String(),
-
-        // Do not send fake member IDs.
-        // The current screen does not have a real project-member
-        // synchronization flow yet.
         'memberUserIds': <int>[],
       };
 
       final response = await http.put(
-        Uri.parse('$_baseUrl/Projects/$_projectId'),
+        Uri.parse(
+          '$_baseUrl/Projects/$_projectId',
+        ),
         headers: _jsonHeaders(),
         body: jsonEncode(body),
       );
@@ -457,26 +1227,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         );
       }
 
-      Map<String, dynamic> responseData = {};
-
-      try {
-        final decoded = jsonDecode(response.body);
-
-        if (decoded is Map<String, dynamic>) {
-          responseData = decoded;
-
-          final data = decoded['data'];
-
-          if (data is Map<String, dynamic>) {
-            final imageUrl = data['imageUrl']?.toString();
-
-            if (imageUrl != null && imageUrl.isNotEmpty) {
-              _projectImageUrl = _normalizeImageUrl(imageUrl);
-            }
-          }
-        }
-      } catch (_) {}
-
       if (!mounted) return false;
 
       setState(() {
@@ -485,13 +1235,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         _isUpdatingProject = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            responseData['message']?.toString() ??
-                'Project updated successfully!',
-          ),
-        ),
+      _showMessage(
+        'Project updated successfully!',
       );
 
       return true;
@@ -502,31 +1247,17 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         _isUpdatingProject = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to update project: '
-            '${_cleanErrorMessage(e)}',
-          ),
-        ),
+      _showMessage(
+        'Failed to update project: '
+        '${_cleanErrorMessage(e)}',
       );
 
       return false;
     }
   }
 
-  Map<String, String> _jsonHeaders() {
-    final token = AuthService.accessToken;
-
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
-  }
-
   // ============================================================
-  // PROJECT IMAGE API
+  // PROJECT IMAGE
   // ============================================================
 
   Future<void> _pickProjectImage() async {
@@ -548,12 +1279,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       final fileLength = await file.length();
 
       if (fileLength > 5 * 1024 * 1024) {
-        if (!mounted) return;
-
         _showMessage(
           'Image is too large. Maximum size is 5 MB.',
         );
-
         return;
       }
 
@@ -614,7 +1342,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
         _selectedImageFile = file;
 
         if (returnedImageUrl != null && returnedImageUrl.isNotEmpty) {
-          _projectImageUrl = _normalizeImageUrl(returnedImageUrl);
+          _projectImageUrl = _normalizeImageUrl(
+            returnedImageUrl,
+          );
         }
       });
 
@@ -632,7 +1362,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   }
 
   // ============================================================
-  // ADD TASK DIALOG
+  // ADD TASK
   // ============================================================
 
   void _showAddTaskDialog() {
@@ -826,11 +1556,15 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                 lastDate: DateTime(2100),
                               );
 
-                              if (date == null) return;
+                              if (date == null) {
+                                return;
+                              }
 
-                              setDialogState(() {
-                                selectedStartDate = date;
-                              });
+                              setDialogState(
+                                () {
+                                  selectedStartDate = date;
+                                },
+                              );
                             },
                             icon: const Icon(
                               Icons.calendar_today_outlined,
@@ -845,7 +1579,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(
+                          width: 8,
+                        ),
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () async {
@@ -858,11 +1594,15 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                 lastDate: DateTime(2100),
                               );
 
-                              if (date == null) return;
+                              if (date == null) {
+                                return;
+                              }
 
-                              setDialogState(() {
-                                selectedDueDate = date;
-                              });
+                              setDialogState(
+                                () {
+                                  selectedDueDate = date;
+                                },
+                              );
                             },
                             icon: const Icon(
                               Icons.event_outlined,
@@ -885,14 +1625,11 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(dialogContext).pop();
+                    Navigator.of(
+                      dialogContext,
+                    ).pop();
                   },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
+                  child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -907,7 +1644,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
 
                     if (selectedStartDate != null &&
                         selectedDueDate != null &&
-                        selectedDueDate!.isBefore(selectedStartDate!)) {
+                        selectedDueDate!.isBefore(
+                          selectedStartDate!,
+                        )) {
                       _showMessage(
                         'Due date cannot be before start date.',
                       );
@@ -1058,21 +1797,15 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     items: const [
                       DropdownMenuItem(
                         value: 'Lead Project Manager',
-                        child: Text(
-                          'Lead Project Manager',
-                        ),
+                        child: Text('Lead Project Manager'),
                       ),
                       DropdownMenuItem(
                         value: 'Senior Architect',
-                        child: Text(
-                          'Senior Architect',
-                        ),
+                        child: Text('Senior Architect'),
                       ),
                       DropdownMenuItem(
                         value: 'Site Engineer',
-                        child: Text(
-                          'Site Engineer',
-                        ),
+                        child: Text('Site Engineer'),
                       ),
                       DropdownMenuItem(
                         value: 'Developer',
@@ -1199,7 +1932,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(
+                    height: 14,
+                  ),
                   TextField(
                     controller: descriptionController,
                     maxLines: 3,
@@ -1236,7 +1971,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             return;
                           }
 
-                          setDialogState(() {});
+                          setDialogState(
+                            () {},
+                          );
 
                           final success = await _updateProject(
                             name: name,
@@ -1262,7 +1999,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('Save'),
+                      : const Text(
+                          'Save',
+                        ),
                 ),
               ],
             );
@@ -1326,141 +2065,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   }
 
   // ============================================================
-  // AI DIAGNOSTIC POPUPS
-  // ============================================================
-
-  void _showAiPopup(
-    String title,
-    String details,
-    Color color,
-    IconData icon,
-  ) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'AI Diagnostic Analysis:',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: color.withOpacity(0.2),
-                  ),
-                ),
-                child: Text(
-                  details,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF334155),
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(
-                  dialogContext,
-                ).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4F46E5),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showBottleneckPopup() {
-    _showAiPopup(
-      'Bottleneck Detector Analysis',
-      'This diagnostic is currently presented as a demo insight. Connect it to the project workload and dependency analysis service for live results.',
-      Colors.orange,
-      Icons.hourglass_bottom,
-    );
-  }
-
-  void _showRiskPopup() {
-    _showAiPopup(
-      'Risk Prediction Analysis',
-      'This diagnostic is currently presented as a demo insight. Connect it to the project risk model for live risk prediction.',
-      Colors.red,
-      Icons.warning_amber_rounded,
-    );
-  }
-
-  void _showDelayPopup() {
-    _showAiPopup(
-      'Delay Forecast Analysis',
-      'This diagnostic is currently presented as a demo insight. Live forecasting should use task dates, completion rates, dependencies and historical velocity.',
-      Colors.green,
-      Icons.trending_up,
-    );
-  }
-
-  void _showHealthPopup() {
-    _showAiPopup(
-      'Project Health Matrix Analysis',
-      'Current project progress is ${project.progress}%. A complete health score should combine progress, overdue tasks, blocked tasks, workload and project risk.',
-      const Color(0xFF4F46E5),
-      Icons.health_and_safety_outlined,
-    );
-  }
-
-  // ============================================================
   // BUILD
   // ============================================================
 
@@ -1503,9 +2107,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     }
                   },
                 ),
-
                 const SizedBox(height: 16),
-
                 _ProjectTabsRow(
                   selectedIndex: _selectedTabIndex,
                   onTabSelected: (index) {
@@ -1518,7 +2120,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     }
                   },
                 ),
-
                 const SizedBox(height: 18),
 
                 // ==================================================
@@ -1535,13 +2136,16 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
+
                   _ProjectDescriptionAndHealthCard(
                     projectName: _projectName,
                     projectSubtitle: _projectSubtitle,
                     progress: project.progress,
                     ownerId: project.ownerId,
                   ),
+
                   const SizedBox(height: 22),
+
                   const Text(
                     'Project Architecture',
                     style: TextStyle(
@@ -1550,7 +2154,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       color: Color(0xFF1E293B),
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   _AiDiagnosticCard(
                     title: 'System Architecture View',
                     subtitle:
@@ -1559,7 +2165,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     statusColor: const Color(0xFF4F46E5),
                     icon: Icons.account_tree_outlined,
                     onTap: () {
-                      Navigator.of(context).push(
+                      Navigator.of(
+                        context,
+                      ).push(
                         MaterialPageRoute(
                           builder: (context) => ArchitecturePage(
                             projectId: _projectId,
@@ -1569,7 +2177,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       );
                     },
                   ),
+
                   const SizedBox(height: 22),
+
                   const Text(
                     'AI Diagnostic Modules',
                     style: TextStyle(
@@ -1578,44 +2188,104 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       color: Color(0xFF1E293B),
                     ),
                   ),
+
                   const SizedBox(height: 10),
-                  _AiDiagnosticCard(
-                    title: 'Bottleneck Detector',
-                    subtitle:
-                        'Review resource congestion and task dependencies',
-                    status: 'Demo',
-                    statusColor: Colors.orange,
-                    icon: Icons.hourglass_bottom,
-                    onTap: _showBottleneckPopup,
-                  ),
-                  const SizedBox(height: 10),
+
+                  // ---------------- RISK ----------------
+
                   _AiDiagnosticCard(
                     title: 'Risk Prediction Model',
-                    subtitle: 'Review project risk indicators',
-                    status: project.isAtRisk ? 'At Risk' : 'Demo',
-                    statusColor: project.isAtRisk ? Colors.red : Colors.orange,
+                    subtitle: _riskResult == null
+                        ? 'Analyze the project risk using the AI model'
+                        : 'Risk: ${_riskLevelText()} • Score: ${_riskScoreText()}/100',
+                    status: _isLoadingRisk
+                        ? 'Loading'
+                        : _riskResult == null
+                            ? 'Run AI'
+                            : _riskLevelText(),
+                    statusColor:
+                        _riskResult == null ? Colors.orange : Colors.red,
                     icon: Icons.warning_amber_rounded,
-                    onTap: _showRiskPopup,
+                    onTap: _isLoadingRisk
+                        ? () {}
+                        : _riskResult == null
+                            ? _loadRiskAnalysis
+                            : _showRiskPopup,
                   ),
+
                   const SizedBox(height: 10),
+
+                  // ---------------- DELAY ----------------
+
                   _AiDiagnosticCard(
                     title: 'Delay Forecast Engine',
-                    subtitle: 'Review task dates and completion trends',
-                    status: 'Demo',
+                    subtitle: _delayResult == null
+                        ? 'Predict expected project delay'
+                        : 'Predicted delay: ${_delayDaysText()}',
+                    status: _isLoadingDelay
+                        ? 'Loading'
+                        : _delayResult == null
+                            ? 'Run AI'
+                            : _delayDaysText(),
                     statusColor: Colors.green,
                     icon: Icons.trending_up,
-                    onTap: _showDelayPopup,
+                    onTap: _isLoadingDelay
+                        ? () {}
+                        : _delayResult == null
+                            ? _loadDelayPrediction
+                            : _showDelayPopup,
                   ),
+
                   const SizedBox(height: 10),
+
+                  // ---------------- BOTTLENECK ----------------
+
+                  _AiDiagnosticCard(
+                    title: 'Bottleneck Detector',
+                    subtitle: _bottleneckResult == null
+                        ? 'Detect tasks that may block project progress'
+                        : '${_bottleneckCountText()}',
+                    status: _isLoadingBottleneck
+                        ? 'Loading'
+                        : _bottleneckResult == null
+                            ? 'Run AI'
+                            : _bottleneckCountText(),
+                    statusColor: Colors.orange,
+                    icon: Icons.hourglass_bottom,
+                    onTap: _isLoadingBottleneck
+                        ? () {}
+                        : _bottleneckResult == null
+                            ? _loadBottleneckDetection
+                            : _showBottleneckPopup,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // ---------------- HEALTH ----------------
+
                   _AiDiagnosticCard(
                     title: 'Project Health Matrix',
-                    subtitle: 'Current project progress and risk overview',
-                    status: '${project.progress}%',
-                    statusColor: const Color(0xFF4F46E5),
+                    subtitle: _healthResult == null
+                        ? 'Analyze the overall health of the project'
+                        : 'Health: ${_healthScoreText()}/100 • ${_healthStatusText()}',
+                    status: _isLoadingHealth
+                        ? 'Loading'
+                        : _healthResult == null
+                            ? 'Run AI'
+                            : _healthStatusText(),
+                    statusColor: _healthResult == null
+                        ? const Color(0xFF4F46E5)
+                        : Colors.green,
                     icon: Icons.health_and_safety_outlined,
-                    onTap: _showHealthPopup,
+                    onTap: _isLoadingHealth
+                        ? () {}
+                        : _healthResult == null
+                            ? _loadProjectHealth
+                            : _showHealthPopup,
                   ),
+
                   const SizedBox(height: 22),
+
                   const Text(
                     'Key Metrics',
                     style: TextStyle(
@@ -1624,7 +2294,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       color: Color(0xFF1E293B),
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   _KeyMetricsRow(
                     budget: project.budget,
                     progress: project.progress,
@@ -1654,11 +2326,11 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           Icons.add,
                           size: 16,
                         ),
-                        label: const Text('Add Task'),
+                        label: const Text(
+                          'Add Task',
+                        ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFF4F46E5,
-                          ),
+                          backgroundColor: const Color(0xFF4F46E5),
                           foregroundColor: Colors.white,
                         ),
                       ),
@@ -1688,9 +2360,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                   else
                     RefreshIndicator(
                       onRefresh: _refreshProjectTasks,
-                      color: const Color(
-                        0xFF4F46E5,
-                      ),
+                      color: const Color(0xFF4F46E5),
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -1704,7 +2374,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     ),
                   if (_isRefreshingTasks)
                     const Padding(
-                      padding: EdgeInsets.only(top: 8),
+                      padding: EdgeInsets.only(
+                        top: 8,
+                      ),
                       child: Center(
                         child: SizedBox(
                           width: 18,
@@ -1744,9 +2416,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           'Upload File',
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFF4F46E5,
-                          ),
+                          backgroundColor: const Color(0xFF4F46E5),
                           foregroundColor: Colors.white,
                         ),
                       ),
@@ -1767,14 +2437,10 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(
-                                0.03,
-                              ),
+                              color: Colors.black.withOpacity(0.03),
                               blurRadius: 4,
                               offset: const Offset(
                                 0,
@@ -1790,9 +2456,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                               color: Color(0xFF4F46E5),
                               size: 28,
                             ),
-                            const SizedBox(
-                              width: 12,
-                            ),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1804,9 +2468,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                       fontSize: 13,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 2,
-                                  ),
+                                  const SizedBox(height: 2),
                                   Text(
                                     '${file['size'] ?? ''} • ${file['date'] ?? ''}',
                                     style: const TextStyle(
@@ -1862,9 +2524,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           'Add Member',
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFF4F46E5,
-                          ),
+                          backgroundColor: const Color(0xFF4F46E5),
                           foregroundColor: Colors.white,
                         ),
                       ),
@@ -1885,14 +2545,10 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(
-                                0.03,
-                              ),
+                              color: Colors.black.withOpacity(0.03),
                               blurRadius: 4,
                               offset: const Offset(
                                 0,
@@ -1904,12 +2560,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         child: Row(
                           children: [
                             CircleAvatar(
-                              backgroundColor: const Color(
-                                0xFF4F46E5,
-                              ).withOpacity(0.1),
-                              foregroundColor: const Color(
-                                0xFF4F46E5,
-                              ),
+                              backgroundColor:
+                                  const Color(0xFF4F46E5).withOpacity(0.1),
+                              foregroundColor: const Color(0xFF4F46E5),
                               child: Text(
                                 member['avatar'] ?? 'U',
                                 style: const TextStyle(
@@ -1917,9 +2570,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 12,
-                            ),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1931,16 +2582,12 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                       fontSize: 13,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 2,
-                                  ),
+                                  const SizedBox(height: 2),
                                   Text(
                                     member['role'] ?? '',
                                     style: const TextStyle(
                                       fontSize: 11,
-                                      color: Color(
-                                        0xFF4F46E5,
-                                      ),
+                                      color: Color(0xFF4F46E5),
                                     ),
                                   ),
                                   Text(
@@ -1960,9 +2607,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.green.shade50,
-                                borderRadius: BorderRadius.circular(
-                                  6,
-                                ),
+                                borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Text(
                                 'Local',
@@ -1997,7 +2642,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     Map<String, dynamic> task,
   ) {
     final taskId = _toInt(task['id']);
-
     final status = _toInt(task['status']) ?? 2;
     final priority = _toInt(task['priority']) ?? 2;
 
@@ -2009,7 +2653,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
 
     final dueDate = _parseDate(task['plannedEnd']);
 
-    final estimatedHours = _toDouble(task['estimatedHours']);
+    final estimatedHours = _toDouble(
+      task['estimatedHours'],
+    );
 
     final statusLabel = _statusLabel(status);
 
@@ -2018,7 +2664,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     final priorityColor = _priorityColor(priority);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(
+        bottom: 10,
+      ),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -2055,11 +2703,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     decoration: completed ? TextDecoration.lineThrough : null,
-                    color: completed
-                        ? Colors.grey
-                        : const Color(
-                            0xFF1E293B,
-                          ),
+                    color: completed ? Colors.grey : const Color(0xFF1E293B),
                   ),
                 ),
               ),
@@ -2069,9 +2713,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: priorityColor.withOpacity(
-                    0.1,
-                  ),
+                  color: priorityColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -2147,7 +2789,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                 if (dueDate != null)
                   _TaskInfoChip(
                     icon: Icons.event_outlined,
-                    label: _formatDate(dueDate),
+                    label: _formatDate(
+                      dueDate,
+                    ),
                   ),
                 if (estimatedHours != null)
                   _TaskInfoChip(
@@ -2163,12 +2807,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   }
 
   // ============================================================
-  // HELPERS
+  // ENUM HELPERS
   // ============================================================
-
-  int get _projectId {
-    return int.tryParse(project.id) ?? 0;
-  }
 
   int _enumToInt(dynamic value) {
     if (value is int) return value;
@@ -2216,9 +2856,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     }
   }
 
-  int _priorityToInt(
-    String priority,
-  ) {
+  int _priorityToInt(String priority) {
     switch (priority) {
       case 'Low':
         return 1;
@@ -2297,104 +2935,6 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       default:
         return Colors.blue;
     }
-  }
-
-  DateTime? _parseDate(dynamic value) {
-    if (value == null) return null;
-
-    final stringValue = value.toString().trim();
-
-    if (stringValue.isEmpty) return null;
-
-    return DateTime.tryParse(
-      stringValue,
-    )?.toLocal();
-  }
-
-  double? _toDouble(dynamic value) {
-    if (value is double) return value;
-
-    if (value is num) {
-      return value.toDouble();
-    }
-
-    return double.tryParse(
-      value?.toString() ?? '',
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year.toString().padLeft(4, '0')}-'
-        '${date.month.toString().padLeft(2, '0')}-'
-        '${date.day.toString().padLeft(2, '0')}';
-  }
-
-  String _formatNumber(double value) {
-    if (value == value.roundToDouble()) {
-      return value.toInt().toString();
-    }
-
-    return value.toStringAsFixed(1);
-  }
-
-  String _formatBudget(decimalValue) {
-    if (decimalValue == null) {
-      return '—';
-    }
-
-    final value = _toDouble(decimalValue);
-
-    if (value == null) {
-      return '—';
-    }
-
-    if (value >= 1000000) {
-      return '\$${(value / 1000000).toStringAsFixed(1)}M';
-    }
-
-    if (value >= 1000) {
-      return '\$${(value / 1000).toStringAsFixed(1)}K';
-    }
-
-    return '\$${value.toStringAsFixed(0)}';
-  }
-
-  String? _normalizeImageUrl(String? url) {
-    if (url == null || url.trim().isEmpty) {
-      return null;
-    }
-
-    final value = url.trim();
-
-    if (value.startsWith('http://') || value.startsWith('https://')) {
-      return value;
-    }
-
-    if (value.startsWith('/')) {
-      return 'http://localhost:5233$value';
-    }
-
-    return 'http://localhost:5233/$value';
-  }
-
-  String _cleanErrorMessage(Object error) {
-    final message = error.toString();
-
-    if (message.startsWith('Exception: ')) {
-      return message.substring(11);
-    }
-
-    return message;
-  }
-
-  void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
   }
 }
 
@@ -2504,29 +3044,21 @@ class _ProjectHeaderImageCard extends StatelessWidget {
                   Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: Colors.white.withOpacity(
-                          0.9,
-                        ),
+                        backgroundColor: Colors.white.withOpacity(0.9),
                         radius: 18,
                         child: IconButton(
                           padding: EdgeInsets.zero,
                           icon: const Icon(
                             Icons.camera_alt_outlined,
                             size: 18,
-                            color: Color(
-                              0xFF1E293B,
-                            ),
+                            color: Color(0xFF1E293B),
                           ),
                           onPressed: onUploadImage,
                         ),
                       ),
-                      const SizedBox(
-                        width: 8,
-                      ),
+                      const SizedBox(width: 8),
                       CircleAvatar(
-                        backgroundColor: Colors.white.withOpacity(
-                          0.9,
-                        ),
+                        backgroundColor: Colors.white.withOpacity(0.9),
                         radius: 18,
                         child: PopupMenuButton<String>(
                           padding: EdgeInsets.zero,
@@ -2534,9 +3066,7 @@ class _ProjectHeaderImageCard extends StatelessWidget {
                           icon: const Icon(
                             Icons.more_horiz,
                             size: 20,
-                            color: Color(
-                              0xFF1E293B,
-                            ),
+                            color: Color(0xFF1E293B),
                           ),
                           itemBuilder: (context) => const [
                             PopupMenuItem(
@@ -2660,27 +3190,17 @@ class _ProjectTabsRow extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
-                        ? const Color(
-                            0xFF4F46E5,
-                          )
-                        : const Color(
-                            0xFF94A3B8,
-                          ),
+                        ? const Color(0xFF4F46E5)
+                        : const Color(0xFF94A3B8),
                   ),
                 ),
-                const SizedBox(
-                  height: 6,
-                ),
+                const SizedBox(height: 6),
                 Container(
                   height: 3,
                   width: isSelected ? 32 : 0,
                   decoration: BoxDecoration(
-                    color: const Color(
-                      0xFF4F46E5,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      2,
-                    ),
+                    color: const Color(0xFF4F46E5),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ],
@@ -2693,7 +3213,7 @@ class _ProjectTabsRow extends StatelessWidget {
 }
 
 // ================================================================
-// PROJECT HEALTH
+// PROJECT HEALTH SUMMARY
 // ================================================================
 
 class _ProjectDescriptionAndHealthCard extends StatelessWidget {
@@ -2720,9 +3240,7 @@ class _ProjectDescriptionAndHealthCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(
-              0.03,
-            ),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -2742,13 +3260,9 @@ class _ProjectDescriptionAndHealthCard extends StatelessWidget {
                   child: CircularProgressIndicator(
                     value: safeProgress / 100,
                     strokeWidth: 5,
-                    backgroundColor: const Color(
-                      0xFFE2E8F0,
-                    ),
+                    backgroundColor: const Color(0xFFE2E8F0),
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(
-                        0xFF3E8746,
-                      ),
+                      Color(0xFF3E8746),
                     ),
                   ),
                 ),
@@ -2760,15 +3274,11 @@ class _ProjectDescriptionAndHealthCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Color(
-                          0xFF1E293B,
-                        ),
+                        color: Color(0xFF1E293B),
                         height: 1,
                       ),
                     ),
-                    const SizedBox(
-                      height: 2,
-                    ),
+                    const SizedBox(height: 2),
                     const Text(
                       'Progress',
                       style: TextStyle(
@@ -2817,9 +3327,7 @@ class _ProjectDescriptionAndHealthCard extends StatelessWidget {
                       size: 13,
                       color: Color(0xFF4F46E5),
                     ),
-                    const SizedBox(
-                      width: 4,
-                    ),
+                    const SizedBox(width: 4),
                     const Text(
                       'Owner ID: ',
                       style: TextStyle(
@@ -2835,9 +3343,7 @@ class _ProjectDescriptionAndHealthCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: Color(
-                            0xFF4F46E5,
-                          ),
+                          color: Color(0xFF4F46E5),
                         ),
                       ),
                     ),
@@ -2885,9 +3391,7 @@ class _AiDiagnosticCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(
-                0.02,
-              ),
+              color: Colors.black.withOpacity(0.02),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -2901,12 +3405,8 @@ class _AiDiagnosticCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(
-                  0.1,
-                ),
-                borderRadius: BorderRadius.circular(
-                  12,
-                ),
+                color: statusColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
@@ -2914,9 +3414,7 @@ class _AiDiagnosticCard extends StatelessWidget {
                 size: 22,
               ),
             ),
-            const SizedBox(
-              width: 12,
-            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2931,27 +3429,19 @@ class _AiDiagnosticCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
-                            color: Color(
-                              0xFF1E293B,
-                            ),
+                            color: Color(0xFF1E293B),
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 6,
-                      ),
+                      const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(
-                            0.1,
-                          ),
-                          borderRadius: BorderRadius.circular(
-                            4,
-                          ),
+                          color: statusColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           status,
@@ -3097,9 +3587,7 @@ class _EmptyTasksCard extends StatelessWidget {
             ),
             label: const Text('Add Task'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(
-                0xFF4F46E5,
-              ),
+              backgroundColor: const Color(0xFF4F46E5),
               foregroundColor: Colors.white,
             ),
           ),
@@ -3231,7 +3719,9 @@ class _KeyMetricsRow extends StatelessWidget {
     if (value is num) {
       number = value.toDouble();
     } else {
-      number = double.tryParse(value.toString());
+      number = double.tryParse(
+        value.toString(),
+      );
     }
 
     if (number == null) return '—';
@@ -3266,9 +3756,7 @@ class _MetricCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(
-              0.02,
-            ),
+            color: Colors.black.withOpacity(0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
